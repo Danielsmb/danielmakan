@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Peminjaman Dana - Linetogel</title>
+    <title>Line Togel - Daniel</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -46,63 +46,356 @@
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--glass-dark), var(--glass));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            height: 100vh;
+            position: fixed;
+            box-shadow: var(--shadow);
+            border-right: var(--border);
+            z-index: 100;
+            transform: translateX(0);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(to right, var(--accent), transparent);
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 10px rgba(114, 9, 183, 0.5);
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .sidebar-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40%;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 25px;
+            color: var(--light);
+            text-decoration: none;
+            margin: 8px 15px;
+            border-radius: var(--border-radius);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(5px);
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.6s;
+        }
+
+        .menu-item:hover::before {
+            left: 100%;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateX(8px);
+            box-shadow: 0 5px 15px rgba(114, 9, 183, 0.3);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(67, 97, 238, 0.3), rgba(114, 9, 183, 0.2));
+            box-shadow: 0 5px 20px rgba(114, 9, 183, 0.4);
+            border-left: 3px solid var(--accent);
+        }
+
+        .menu-icon {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            color: var(--accent);
+            transition: var(--transition);
+        }
+
+        .menu-item:hover .menu-icon {
+            transform: scale(1.2);
+            color: white;
+        }
+
+        .menu-text {
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .menu-item:hover .menu-text {
+            font-weight: 600;
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
             padding: 30px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+            transition: var(--transition);
         }
 
-        .form-card {
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--lighter);
+            padding: 20px 25px;
+            border-radius: var(--border-radius);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        #clock {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            border: none;
+            font-weight: 500;
+            animation: pulse 2s infinite;
+            transition: var(--transition);
+        }
+
+        #clock:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
             background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-radius: var(--border-radius-lg);
-            padding: 40px;
+            padding: 25px;
             box-shadow: var(--shadow);
             border: var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+            animation: fadeInUp 0.6s both;
             position: relative;
             overflow: hidden;
             border-top: 1px solid rgba(255,255,255,0.5);
             border-left: 1px solid rgba(255,255,255,0.5);
         }
 
-        .form-title {
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            transition: var(--transition);
+        }
+
+        .card:hover::before {
+            height: 8px;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(67, 97, 238, 0.2);
+        }
+
+        .card h3 {
             color: var(--primary);
-            margin-bottom: 30px;
-            font-size: 2rem;
-            font-weight: 600;
-            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             position: relative;
         }
 
-        .form-title::after {
+        .card h3 i {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .card h3::after {
             content: '';
             position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(to right, var(--primary), var(--accent));
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
             border-radius: 2px;
         }
 
-        .form-group {
-            margin-bottom: 25px;
+        .card p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
         }
 
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
+        .card-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
             font-weight: 500;
-            color: var(--text);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
 
-        .form-control {
+        .card-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
-            padding: 15px 20px;
+            height: 100%;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .card-btn:hover::before {
+            left: 0;
+        }
+
+        .card-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
+        }
+
+        .data-container {
+            background: var(--lighter);
+            border-radius: var(--border-radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+            animation: fadeInUp 0.6s both;
+            transition: var(--transition);
+            border-top: 1px solid rgba(255,255,255,0.5);
+            border-left: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .data-container h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .data-container h2 i {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .data-container h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .search-container {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
             border-radius: 8px;
             border: 1px solid rgba(67, 97, 238, 0.2);
             font-family: 'Poppins', sans-serif;
@@ -113,151 +406,652 @@
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .form-control:focus {
+        .search-input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
             background: white;
         }
 
-        .form-textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 15px 30px;
+        .search-btn {
+            padding: 14px 25px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
             border: none;
             border-radius: 8px;
+            cursor: pointer;
             font-family: 'Poppins', sans-serif;
             font-weight: 500;
-            font-size: 1.1rem;
-            cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            gap: 8px;
             box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
             background: linear-gradient(to right, var(--secondary), var(--primary));
         }
 
-        .success-message {
-            display: none;
-            background: linear-gradient(135deg, var(--success), var(--primary-light));
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 20px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: white;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.8);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .loading {
             text-align: center;
-            font-weight: 500;
-            animation: fadeInUp 0.5s both;
+            padding: 30px;
+            color: var(--text-light);
+            margin: 200px auto;
+            font-size: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+            font-style: italic;
+            background: rgba(255,255,255,0.8);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .no-results i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .report-menu-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 16px 25px;
+            margin: 8px 15px;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.05));
+            border: 1px solid rgba(67, 97, 238, 0.2);
+            border-radius: var(--border-radius);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: left;
+            transition: var(--transition);
+            gap: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        .report-menu-btn:hover {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(114, 9, 183, 0.1));
+            transform: translateX(8px);
+            box-shadow: 0 5px 15px rgba(114, 9, 183, 0.1);
+            border-color: rgba(114, 9, 183, 0.3);
+        }
+
+        .report-menu-btn i {
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .report-menu-btn:hover i {
+            transform: scale(1.2);
+            color: var(--accent);
+        }
+
+        #reportContent {
+            margin-top: 20px;
+            padding: 25px;
+            background: rgba(255,255,255,0.8);
+            border-radius: var(--border-radius-lg);
+            display: none;
+            box-shadow: var(--shadow);
+            border: var(--border);
+            position: relative;
+            transition: var(--transition);
+            border-top: 1px solid rgba(255,255,255,0.5);
+            border-left: 1px solid rgba(255,255,255,0.5);
+        }
+
+        #reportTitle {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        #reportInfo {
+            white-space: pre-line;
+            line-height: 1.8;
+            position: relative;
+            padding-top: 10px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(114, 9, 183, 0.3);
+        }
+
+        .copy-rekening-btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .copy-rekening-btn:hover {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(114, 9, 183, 0.3);
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.4);
+            transition: var(--transition);
+        }
+
+        .menu-toggle:hover {
+            transform: rotate(90deg);
+            box-shadow: 0 6px 25px rgba(67, 97, 238, 0.5);
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(67, 97, 238, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="form-card">
-            <h1 class="form-title">Form Peminjaman Dana</h1>
-            
-            <form id="loanForm">
-                <div class="form-group">
-                    <label for="bank">BANK</label>
-                    <select class="form-control" id="bank" required>
-                        <option value="">Pilih Bank</option>
-                        <option value="BCA">BCA</option>
-                        <option value="BRI">BRI</option>
-                        <option value="MANDIRI">MANDIRI</option>
-                        <option value="BNI">BNI</option>
-                        <option value="CIMB Niaga">CIMB Niaga</option>
-                        <option value="HSBC">HSBC</option>
-                        <option value="OJKLAIN">OJKLAIN</option>
-                    </select>
+    <div class="particles" id="particles"></div>
+
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Line Togel</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="#" class="menu-item active" id="dashboardMenu">
+                <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                <span class="menu-text">LINETOGEL.COM</span>
+            </a>
+            <a href="https://script.google.com/macros/s/AKfycbw0b6AFIB91hdvMFLDZNfhHnc4_K_yrPzJwt4yQ0WVIjLG3oEftMZdI0ZNhLHab2Urj_Q/exec" class="menu-item" target="_blank">
+                <span class="menu-icon"><i class="fas fa-bolt"></i></span>
+                <span class="menu-text">Shortcut WD</span>
+            </a>
+            <a href="#" class="menu-item" id="dataRekeningMenu">
+                <span class="menu-icon"><i class="fas fa-piggy-bank"></i></span>
+                <span class="menu-text">Data Rekening</span>
+            </a>
+            <a href="#" class="menu-item" id="reportMenu">
+                <span class="menu-icon"><i class="fas fa-file-alt"></i></span>
+                <span class="menu-text">Report</span>
+            </a>
+            <a href="http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL" class="menu-item" target="_blank">
+                <span class="menu-icon"><i class="fas fa-headset"></i></span>
+                <span class="menu-text">Admin Line</span>
+            </a>
+            <a href="https://bk.bksmb.com/linetogel/dashboard/dashboard/about" class="menu-item" target="_blank">
+                <span class="menu-icon"><i class="fas fa-book"></i></span>
+                <span class="menu-text">BK Line</span>
+            </a>
+            <a href="https://linetogel.hokibgs.com/modules/kapten/dashboard.php" class="menu-item" target="_blank">
+                <span class="menu-icon"><i class="fas fa-desktop"></i></span>
+                <span class="menu-text">Dashboard</span>
+            </a>
+            <a href="https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec" class="menu-item" target="_blank">
+                <span class="menu-icon"><i class="fas fa-door-open"></i></span>
+                <span class="menu-text">Izin Keluar</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Daniel</h1>
+            <div id="clock"></div>
+        </div>
+
+        <div id="dashboardSection">
+            <div class="card-container">
+                <div class="card" onclick="window.open('https://script.google.com/macros/s/AKfycbw0b6AFIB91hdvMFLDZNfhHnc4_K_yrPzJwt4yQ0WVIjLG3oEftMZdI0ZNhLHab2Urj_Q/exec', '_blank')">
+                    <h3><i class="fas fa-bolt"></i> Shortcut WD</h3>
+                    <p>Akses cepat untuk proses withdraw dengan sekali klik</p>
+                    <a href="https://script.google.com/macros/s/AKfycbw0b6AFIB91hdvMFLDZNfhHnc4_K_yrPzJwt4yQ0WVIjLG3oEftMZdI0ZNhLHab2Urj_Q/exec" class="card-btn" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Buka
+                    </a>
                 </div>
-                
-                <div class="form-group">
-                    <label for="accountHolder">NAMA REKENING</label>
-                    <input type="text" class="form-control" id="accountHolder" placeholder="Masukkan nama pemilik rekening" required>
+                <div class="card" onclick="showDataRekening()">
+                    <h3><i class="fas fa-piggy-bank"></i> Data Rekening</h3>
+                    <p>Informasi lengkap rekening bank yang terdaftar</p>
+                    <a href="#" class="card-btn" onclick="showDataRekening(); return false;">
+                        <i class="fas fa-search"></i> Lihat Data
+                    </a>
                 </div>
-                
-                <div class="form-group">
-                    <label for="accountNumber">NO REKENING</label>
-                    <input type="text" class="form-control" id="accountNumber" placeholder="Masukkan nomor rekening" required>
+                <div class="card" onclick="showReport()">
+                    <h3><i class="fas fa-file-alt"></i> Report</h3>
+                    <p>Laporan dan informasi penting terbaru</p>
+                    <a href="#" class="card-btn" onclick="showReport(); return false;">
+                        <i class="fas fa-book-open"></i> Buka Laporan
+                    </a>
                 </div>
-                
-                <div class="form-group">
-                    <label for="amount">NOMINAL</label>
-                    <input type="number" class="form-control" id="amount" placeholder="Masukkan nominal dana" min="10000" step="1000" required>
+                <div class="card" onclick="window.open('http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL', '_blank')">
+                    <h3><i class="fas fa-headset"></i> Admin Line</h3>
+                    <p>Hubungi admin untuk bantuan dan informasi</p>
+                    <a href="http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL" class="card-btn" target="_blank">
+                        <i class="fas fa-comment-dots"></i> Chat Admin
+                    </a>
                 </div>
-                
-                <div class="form-group">
-                    <label for="description">KETERANGAN</label>
-                    <textarea class="form-control form-textarea" id="description" rows="4" placeholder="Deskripsi detail peminjaman dana..." required></textarea>
+                <div class="card" onclick="window.open('https://bk.bksmb.com/linetogel/dashboard/dashboard/about', '_blank')">
+                    <h3><i class="fas fa-book"></i> BK Line</h3>
+                    <p>Buku panduan dan informasi lengkap</p>
+                    <a href="https://bk.bksmb.com/linetogel/dashboard/dashboard/about" class="card-btn" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Buka BK
+                    </a>
                 </div>
-                
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i>
-                    Kirim Permintaan
+                <div class="card" onclick="window.open('https://linetogel.hokibgs.com/modules/kapten/dashboard.php', '_blank')">
+                    <h3><i class="fas fa-desktop"></i> Dashboard</h3>
+                    <p>Delta tempat paling nikmat</p>
+                    <a href="https://linetogel.hokibgs.com/modules/kapten/dashboard.php" class="card-btn" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Kunjungi
+                    </a>
+                </div>
+                <div class="card" onclick="window.open('https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec', '_blank')">
+                    <h3><i class="fas fa-door-open"></i> Izin Keluar</h3>
+                    <p>Pintu Ngular</p>
+                    <a href="https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec" class="card-btn" target="_blank">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-container" id="dataRekeningContainer" style="display: none;">
+            <h2><i class="fas fa-piggy-bank"></i> Data Rekening</h2>
+            <p>Cari data rekening berdasarkan Bank, Nomor Rekening, atau Nama</p>
+            <div class="search-container">
+                <input type="text" id="searchRekening" placeholder="Cari rekening...">
+                <button id="searchBtn">
+                    <i class="fas fa-search"></i> Cari
                 </button>
-            </form>
-            
-            <div class="success-message" id="successMessage">
-                <i class="fas fa-check-circle"></i>
-                Permintaan peminjaman dana telah dikirim! Admin akan segera memproses.
+            </div>
+            <div id="rekeningResults">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Bank</th>
+                            <th>Nomor Rekening</th>
+                            <th>Nama</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rekeningData"></tbody>
+                </table>
+                <div id="loading" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i><br>
+                    Memuat data rekening...
+                </div>
+                <div id="noResults" class="no-results" style="display:none;">
+                    <i class="fas fa-info-circle"></i><br>
+                    Tidak ditemukan data yang sesuai
+                </div>
+            </div>
+        </div>
+
+        <div class="data-container" id="reportContainer" style="display: none;">
+            <h2><i class="fas fa-file-alt"></i> Report</h2>
+            <p>Pilih laporan untuk melihat informasi terbaru</p>
+            <div id="reportMenuList"></div>
+            <div id="reportContent">
+                <h3 id="reportTitle"></h3>
+                <div id="reportInfo"></div>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('loanForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Fungsi jam
+        function updateClock() {
+            const now = new Date();
+            document.getElementById("clock").textContent = now.toLocaleTimeString();
+        }
+        
+        setInterval(updateClock, 1000);
+
+        // Toggle menu mobile
+        document.getElementById("menuToggle").addEventListener("click", function() {
+            document.getElementById("sidebar").classList.toggle("active");
+        });
+
+        // Show/hide sections
+        function showDashboard() {
+            document.getElementById("dashboardSection").style.display = "block";
+            document.getElementById("dataRekeningContainer").style.display = "none";
+            document.getElementById("reportContainer").style.display = "none";
+        }
+
+        function showDataRekening() {
+            document.getElementById("dashboardSection").style.display = "none";
+            document.getElementById("dataRekeningContainer").style.display = "block";
+            document.getElementById("reportContainer").style.display = "none";
             
-            // Get form values
-            const bank = document.getElementById('bank').value;
-            const accountHolder = document.getElementById('accountHolder').value;
-            const accountNumber = document.getElementById('accountNumber').value;
-            const amount = document.getElementById('amount').value;
-            const description = document.getElementById('description').value;
+            loadRekeningData();
+        }
+
+        function showReport() {
+            document.getElementById("dashboardSection").style.display = "none";
+            document.getElementById("dataRekeningContainer").style.display = "none";
+            document.getElementById("reportContainer").style.display = "block";
             
-            // Create data object
-            const loanData = {
-                bank: bank,
-                accountHolder: accountHolder,
-                accountNumber: accountNumber,
-                amount: amount,
-                description: description,
-                date: new Date().toISOString()
-            };
+            loadReportMenu();
+        }
+
+        // Load data rekening
+        function loadRekeningData() {
+            showLoading();
             
-            // Here you would typically send the data to your server or Google Apps Script
-            console.log('Loan Request Data:', loanData);
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    displayRekeningData(data);
+                })
+                .withFailureHandler(showError)
+                .getRekeningData();
+        }
+
+        // Display data rekening
+        function displayRekeningData(data) {
+            hideLoading();
+            const tbody = document.getElementById("rekeningData");
+            tbody.innerHTML = "";
             
-            // Show success message
-            document.getElementById('successMessage').style.display = 'block';
+            if (!data || data.length === 0) {
+                document.getElementById("noResults").style.display = "flex";
+                return;
+            }
             
-            // Reset form
-            this.reset();
+            document.getElementById("noResults").style.display = "none";
             
-            // Scroll to success message
-            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+            data.forEach((item, index) => {
+                const row = document.createElement("tr");
+                row.style.animationDelay = `${index * 0.1}s`;
+                
+                row.innerHTML = `
+                    <td>${item.bank || "-"}</td>
+                    <td>${item.rekening || "-"}</td>
+                    <td>${item.nama || "-"}</td>
+                    <td>
+                        <button class="copy-rekening-btn" onclick="copyToClipboard('${item.nama} - ${item.rekening}')">
+                            <i class="fas fa-copy"></i> Salin
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Search rekening
+        function searchRekening() {
+            const searchTerm = document.getElementById("searchRekening").value.trim();
+            
+            if (searchTerm === "") {
+                loadRekeningData();
+                return;
+            }
+            
+            showLoading();
+            
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    displayRekeningData(data);
+                })
+                .withFailureHandler(showError)
+                .searchRekening(searchTerm);
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast("Tersalin ke clipboard!", "success");
+            } catch (err) {
+                console.error("Gagal menyalin:", err);
+                showToast("Gagal menyalin!", "error");
+            }
+        }
+
+        // Show loading
+        function showLoading() {
+            document.getElementById("loading").style.display = "flex";
+            document.getElementById("rekeningData").innerHTML = "";
+        }
+
+        // Hide loading
+        function hideLoading() {
+            document.getElementById("loading").style.display = "none";
+        }
+
+        // Show error
+        function showError(message) {
+            document.getElementById("errorMessage").textContent = message;
+            document.getElementById("errorBanner").style.display = "flex";
+            
+            setTimeout(() => {
+                document.getElementById("errorBanner").style.opacity = "0";
+                setTimeout(() => document.getElementById("errorBanner").style.display = "none", 300);
+            }, 5000);
+        }
+
+        // Load report menu
+        function loadReportMenu() {
+            google.script.run
+                .withSuccessHandler(function(data) {
+                    displayReportMenu(data);
+                })
+                .withFailureHandler(showError)
+                .getReportMenu();
+        }
+
+        // Display report menu
+        function displayReportMenu(data) {
+            const menuList = document.getElementById("reportMenuList");
+            menuList.innerHTML = "";
+            
+            if (!data || data.length === 0) {
+                menuList.innerHTML = "<div class='no-results'>Tidak ada laporan tersedia</div>";
+                return;
+            }
+            
+            data.forEach(item => {
+                const button = document.createElement("button");
+                button.className = "report-menu-btn";
+                button.textContent = item.menu || "Untitled Report";
+                
+                button.addEventListener("click", () => {
+                    showReportInfo(item.menu);
+                });
+                
+                menuList.appendChild(button);
+            });
+        }
+
+        // Show report info
+        function showReportInfo(menuName) {
+            google.script.run
+                .withSuccessHandler(function(info) {
+                    displayReportInfo(menuName, info);
+                })
+                .withFailureHandler(showError)
+                .getReportInfo(menuName);
+        }
+
+        // Display report info
+        function displayReportInfo(title, info) {
+            document.getElementById("reportTitle").textContent = title || "Report";
+            document.getElementById("reportInfo").textContent = info || "No information available for this report.";
+            
+            document.getElementById("reportContent").style.display = "block";
+        }
+
+        // Toast notification
+        function showToast(message, type = "success") {
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas fa-${type === "success" ? "check" : "times"}"></i>${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize on page load
+        window.addEventListener("load", function() {
+            updateClock();
+            showDashboard();
         });
     </script>
 </body>
