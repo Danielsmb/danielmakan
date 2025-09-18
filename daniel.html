@@ -3,31 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penyimpan Data</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Aplikasi Penyimpanan Data</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #000;
+            color: #fff;
             overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
         }
         
+        /* Efek bintang jatuh */
         .stars-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: 1;
             pointer-events: none;
-            z-index: -1;
+            overflow: hidden;
         }
         
         .star {
             position: absolute;
-            background-color: white;
+            background-color: #fff;
             border-radius: 50%;
             animation: fall linear infinite;
         }
@@ -35,12 +44,6 @@
         @keyframes fall {
             0% {
                 transform: translateY(-100px);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
                 opacity: 1;
             }
             100% {
@@ -49,63 +52,789 @@
             }
         }
         
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: rgba(20, 20, 30, 0.8);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-        
-        .neon-text {
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7),
-                         0 0 20px rgba(255, 255, 255, 0.5),
-                         0 0 30px rgba(255, 255, 255, 0.3);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
             transition: all 0.3s ease;
         }
         
-        .btn-primary:hover {
+        .sidebar-header {
+            padding: 0 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+            color: #4facfe;
+        }
+        
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6ec7, #7873f5, #4facfe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: #4facfe;
+            background: rgba(79, 172, 254, 0.1);
+        }
+        
+        .nav-link.active {
+            color: #4facfe;
+        }
+        
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(to bottom, #4facfe, #7873f5);
+        }
+        
+        .nav-link i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        header {
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #ccc;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        
+        /* Form container */
+        .form-container {
+            background: rgba(30, 30, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ccc;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(20, 20, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #4facfe, #7873f5);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Data container */
+        .data-container {
+            margin-top: 20px;
         }
         
         .data-item {
+            background: rgba(30, 30, 40, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
         
         .data-item:hover {
-            transform: translateX(5px);
-            border-left: 3px solid #8b5cf6;
-            padding-left: 12px;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.2);
         }
         
-        .toast {
+        .data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .data-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #4facfe;
+        }
+        
+        .data-date {
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        .data-content {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .data-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Search container */
+        .search-container {
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding-left: 45px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+        
+        /* Notification */
+        .notification {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(99, 102, 241, 0.9);
-            color: white;
-            padding: 12px 24px;
+            background: rgba(79, 172, 254, 0.9);
+            color: #fff;
+            padding: 15px 25px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 1000;
         }
         
-        .toast.show {
+        .notification.show {
             transform: translateY(0);
             opacity: 1;
         }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #888;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4facfe, #7873f5);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+            z-index: 1000;
+            cursor: pointer;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 999;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .data-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+        
+        /* Highlight untuk hasil pencarian */
+        mark {
+            background-color: #ffeb3b;
+            color: #000;
+            padding: 2px 0;
+            border-radius: 2px;
+        }
     </style>
 </head>
-<body class="min-h-screen text-white">
+<body>
+    <!-- Efek bintang jatuh -->
     <div class="stars-container" id="starsContainer"></div>
     
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <header class="text-center mb-12">
-            <h1
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-database"></i>
+                    <span class="logo-text">DataApp</span>
+                </div>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-page="save">
+                            <i class="fas fa-save"></i>
+                            <span>Simpan Data</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="search">
+                            <i class="fas fa-search"></i>
+                            <span>Cari Reportan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="about">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Tentang</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Halaman Simpan Data -->
+            <div id="save-page" class="page-content">
+                <header>
+                    <h1>Simpan Data</h1>
+                    <p class="subtitle">Simpan data penting Anda dengan mudah</p>
+                </header>
+                
+                <div class="form-container">
+                    <h2 style="margin-bottom: 20px; color: #4facfe;">Input Data</h2>
+                    <form id="dataForm">
+                        <div class="form-group">
+                            <label for="title">Judul</label>
+                            <input type="text" id="title" placeholder="Masukkan judul data" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="content">Isi Data</label>
+                            <textarea id="content" placeholder="Masukkan isi data" required></textarea>
+                        </div>
+                        <button type="submit" class="btn">
+                            <i class="fas fa-save"></i> Simpan Data
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="data-container">
+                    <h2 style="margin-bottom: 20px; color: #4facfe;">Data Tersimpan</h2>
+                    <div id="savedData">
+                        <!-- Data akan ditampilkan di sini -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Halaman Cari Reportan -->
+            <div id="search-page" class="page-content" style="display: none;">
+                <header>
+                    <h1>Cari Reportan</h1>
+                    <p class="subtitle">Temukan data yang Anda simpan dengan cepat</p>
+                </header>
+                
+                <div class="form-container">
+                    <h2 style="margin-bottom: 20px; color: #4facfe;">Pencarian Data</h2>
+                    <div class="search-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Cari data berdasarkan judul atau isi...">
+                        </div>
+                    </div>
+                    
+                    <div class="data-container">
+                        <div id="searchResults">
+                            <!-- Hasil pencarian akan ditampilkan di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Halaman Tentang -->
+            <div id="about-page" class="page-content" style="display: none;">
+                <header>
+                    <h1>Tentang Aplikasi</h1>
+                    <p class="subtitle">Informasi tentang aplikasi penyimpanan data</p>
+                </header>
+                
+                <div class="form-container">
+                    <h2 style="margin-bottom: 20px; color: #4facfe;">DataApp</h2>
+                    <p style="line-height: 1.6; margin-bottom: 15px;">
+                        DataApp adalah aplikasi sederhana untuk menyimpan dan mengelola data penting Anda. 
+                        Dengan antarmuka yang modern dan mudah digunakan, Anda dapat dengan cepat menyimpan 
+                        informasi dan menemukannya kembali saat dibutuhkan.
+                    </p>
+                    <p style="line-height: 1.6; margin-bottom: 15px;">
+                        Fitur utama:
+                    </p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Penyimpanan data di browser Anda</li>
+                        <li>Pencarian data yang cepat dan mudah</li>
+                        <li>Tombol salin untuk mengambil data dengan cepat</li>
+                        <li>Antarmuka yang modern dan responsif</li>
+                    </ul>
+                    <p style="margin-top: 20px; color: #888;">
+                        Versi 1.0.0
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        // Efek bintang jatuh
+        function createStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Ukuran acak
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Posisi acak
+                star.style.left = `${Math.random() * 100}%`;
+                
+                // Durasi animasi acak
+                const duration = Math.random() * 10 + 5;
+                star.style.animationDuration = `${duration}s`;
+                
+                // Delay acak
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Inisialisasi efek bintang
+        createStars();
+        
+        // Navigasi halaman
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page-content');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const targetPage = link.getAttribute('data-page');
+                
+                // Hapus kelas aktif dari semua link
+                navLinks.forEach(l => l.classList.remove('active'));
+                
+                // Tambahkan kelas aktif ke link yang diklik
+                link.classList.add('active');
+                
+                // Sembunyikan semua halaman
+                pages.forEach(page => {
+                    page.style.display = 'none';
+                });
+                
+                // Tampilkan halaman yang dipilih
+                document.getElementById(`${targetPage}-page`).style.display = 'block';
+                
+                // Tutup sidebar di mobile
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('active');
+                }
+            });
+        });
+        
+        // Toggle mobile menu
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+        
+        // Fungsi notifikasi
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Fungsi untuk menyimpan data
+        const dataForm = document.getElementById('dataForm');
+        dataForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            
+            // Buat objek data
+            const data = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                date: new Date().toLocaleString('id-ID')
+            };
+            
+            // Ambil data yang sudah ada dari localStorage
+            let savedData = JSON.parse(localStorage.getItem('savedData')) || [];
+            
+            // Tambahkan data baru
+            savedData.push(data);
+            
+            // Simpan kembali ke localStorage
+            localStorage.setItem('savedData', JSON.stringify(savedData));
+            
+            // Reset form
+            dataForm.reset();
+            
+            // Tampilkan notifikasi
+            showNotification('Data berhasil disimpan!');
+            
+            // Tampilkan data yang tersimpan
+            displaySavedData();
+        });
+        
+        // Fungsi untuk menampilkan data yang tersimpan
+        function displaySavedData() {
+            const savedData = JSON.parse(localStorage.getItem('savedData')) || [];
+            const savedDataContainer = document.getElementById('savedData');
+            
+            if (savedData.length === 0) {
+                savedDataContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <p>Belum ada data yang disimpan</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            savedDataContainer.innerHTML = '';
+            
+            // Urutkan data dari yang terbaru
+            savedData.sort((a, b) => b.id - a.id);
+            
+            savedData.forEach(data => {
+                const dataItem = document.createElement('div');
+                dataItem.classList.add('data-item');
+                dataItem.innerHTML = `
+                    <div class="data-header">
+                        <div class="data-title">${data.title}</div>
+                        <div class="data-date">${data.date}</div>
+                    </div>
+                    <div class="data-content">${data.content}</div>
+                    <div class="data-actions">
+                        <button class="btn btn-secondary copy-btn" data-id="${data.id}">
+                            <i class="fas fa-copy"></i> Salin
+                        </button>
+                        <button class="btn btn-secondary delete-btn" data-id="${data.id}">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
+                    </div>
+                `;
+                
+                savedDataContainer.appendChild(dataItem);
+            });
+            
+            // Tambahkan event listener untuk tombol salin
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                    const data = savedData.find(d => d.id === id);
+                    
+                    if (data) {
+                        const textToCopy = `Judul: ${data.title}\nIsi: ${data.content}\nTanggal: ${data.date}`;
+                        
+                        navigator.clipboard.writeText(textToCopy)
+                            .then(() => {
+                                showNotification('Data berhasil disalin!');
+                            })
+                            .catch(err => {
+                                showNotification('Gagal menyalin data!');
+                                console.error('Gagal menyalin: ', err);
+                            });
+                    }
+                });
+            });
+            
+            // Tambahkan event listener untuk tombol hapus
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                    
+                    // Hapus data dari array
+                    const updatedData = savedData.filter(d => d.id !== id);
+                    
+                    // Simpan kembali ke localStorage
+                    localStorage.setItem('savedData', JSON.stringify(updatedData));
+                    
+                    // Tampilkan notifikasi
+                    showNotification('Data berhasil dihapus!');
+                    
+                    // Tampilkan kembali data yang tersimpan
+                    displaySavedData();
+                });
+            });
+        }
+        
+        // Fungsi untuk mencari data
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const savedData = JSON.parse(localStorage.getItem('savedData')) || [];
+            const searchResultsContainer = document.getElementById('searchResults');
+            
+            if (searchTerm === '') {
+                searchResultsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>Masukkan kata kunci untuk mencari data</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Filter data berdasarkan judul atau isi
+            const filteredData = savedData.filter(data => 
+                data.title.toLowerCase().includes(searchTerm) || 
+                data.content.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filteredData.length === 0) {
+                searchResultsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>Tidak ada data yang ditemukan</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            searchResultsContainer.innerHTML = '';
+            
+            filteredData.forEach(data => {
+                const dataItem = document.createElement('div');
+                dataItem.classList.add('data-item');
+                dataItem.innerHTML = `
+                    <div class="data-header">
+                        <div class="data-title">${highlightText(data.title, searchTerm)}</div>
+                        <div class="data-date">${data.date}</div>
+                    </div>
+                    <div class="data-content">${highlightText(data.content, searchTerm)}</div>
+                    <div class="data-actions">
+                        <button class="btn btn-secondary copy-btn-search" data-id="${data.id}">
+                            <i class="fas fa-copy"></i> Salin
+                        </button>
+                    </div>
+                `;
+                
+                searchResultsContainer.appendChild(dataItem);
+            });
+            
+            // Tambahkan event listener untuk tombol salin
+            document.querySelectorAll('.copy-btn-search').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                    const data = savedData.find(d => d.id === id);
+                    
+                    if (data) {
+                        const textToCopy = `Judul: ${data.title}\nIsi: ${data.content}\nTanggal: ${data.date}`;
+                        
+                        navigator.clipboard.writeText(textToCopy)
+                            .then(() => {
+                                showNotification('Data berhasil disalin!');
+                            })
+                            .catch(err => {
+                                showNotification('Gagal menyalin data!');
+                                console.error('Gagal menyalin: ', err);
+                            });
+                    }
+                });
+            });
+        });
+        
+        // Fungsi untuk menyoroti teks yang cocok dengan pencarian
+        function highlightText(text, searchTerm) {
+            if (!searchTerm) return text;
+            
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+        
+        // Tampilkan data yang tersimpan saat halaman dimuat
+        displaySavedData();
+        
+        // Inisialisasi tampilan pencarian
+        document.getElementById('searchResults').innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <p>Masukkan kata kunci untuk mencari data</p>
+            </div>
+        `;
+    </script>
+</body>
+</html>
