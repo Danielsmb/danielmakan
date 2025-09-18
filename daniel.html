@@ -284,6 +284,7 @@
         .data-content {
             margin-bottom: 15px;
             line-height: 1.6;
+            white-space: pre-wrap; /* Mempertahankan format teks */
         }
         
         .data-actions {
@@ -522,7 +523,7 @@
                     <ul style="margin-left: 20px; line-height: 1.8;">
                         <li>Penyimpanan data di browser Anda</li>
                         <li>Pencarian data yang cepat dan mudah</li>
-                        <li>Tombol salin untuk mengambil data dengan cepat</li>
+                        <li>Tombol salin untuk mengambil data dengan tepat</li>
                         <li>Antarmuka yang modern dan responsif</li>
                     </ul>
                     <p style="margin-top: 20px; color: #888;">
@@ -707,7 +708,8 @@
                     const data = savedData.find(d => d.id === id);
                     
                     if (data) {
-                        const textToCopy = `Judul: ${data.title}\nIsi: ${data.content}\nTanggal: ${data.date}`;
+                        // Salin persis data yang disimpan tanpa penambahan atau pengurangan
+                        const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
                         
                         navigator.clipboard.writeText(textToCopy)
                             .then(() => {
@@ -802,7 +804,8 @@
                     const data = savedData.find(d => d.id === id);
                     
                     if (data) {
-                        const textToCopy = `Judul: ${data.title}\nIsi: ${data.content}\nTanggal: ${data.date}`;
+                        // Salin persis data yang disimpan tanpa penambahan atau pengurangan
+                        const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
                         
                         navigator.clipboard.writeText(textToCopy)
                             .then(() => {
