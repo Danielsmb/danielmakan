@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+```html
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Peminjaman Dana - Linetogel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #4895ef;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #ef233c;
+            --dark: #14213d;
+            --darker: #0a1128;
+            --light: #f8f9fa;
+            --lighter: #ffffff;
+            --text: #2b2d42;
+            --text-light: #8d99ae;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --glass: rgba(255, 255, 255, 0.15);
+            --glass-dark: rgba(21, 21, 21, 0.25);
+            --shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+            --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.2);
+            --border: 1px solid rgba(255, 255, 255, 0.18);
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .form-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border: var(--border);
+            position: relative;
+            overflow: hidden;
+            border-top: 1px solid rgba(255,255,255,0.5);
+            border-left: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .form-title {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+        }
+
+        .form-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(67, 97, 238, 0.2);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+            background: rgba(255,255,255,0.8);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            background: white;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+        }
+
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, var(--success), var(--primary-light));
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 500;
+            animation: fadeInUp 0.5s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-card">
+            <h1 class="form-title">Form Peminjaman Dana</h1>
+            
+            <form id="loanForm">
+                <div class="form-group">
+                    <label for="bank">BANK</label>
+                    <select class="form-control" id="bank" required>
+                        <option value="">Pilih Bank</option>
+                        <option value="BCA">BCA</option>
+                        <option value="BRI">BRI</option>
+                        <option value="MANDIRI">MANDIRI</option>
+                        <option value="BNI">BNI</option>
+                        <option value="CIMB Niaga">CIMB Niaga</option>
+                        <option value="HSBC">HSBC</option>
+                        <option value="OJKLAIN">OJKLAIN</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountHolder">NAMA REKENING</label>
+                    <input type="text" class="form-control" id="accountHolder" placeholder="Masukkan nama pemilik rekening" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountNumber">NO REKENING</label>
+                    <input type="text" class="form-control" id="accountNumber" placeholder="Masukkan nomor rekening" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">NOMINAL</label>
+                    <input type="number" class="form-control" id="amount" placeholder="Masukkan nominal dana" min="10000" step="1000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">KETERANGAN</label>
+                    <textarea class="form-control form-textarea" id="description" rows="4" placeholder="Deskripsi detail peminjaman dana..." required></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Kirim Permintaan
+                </button>
+            </form>
+            
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i>
+                Permintaan peminjaman dana telah dikirim! Admin akan segera memproses.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loanForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const bank = document.getElementById('bank').value;
+            const accountHolder = document.getElementById('accountHolder').value;
+            const accountNumber = document.getElementById('accountNumber').value;
+            const amount = document.getElementById('amount').value;
+            const description = document.getElementById('description').value;
+            
+            // Create data object
+            const loanData = {
+                bank: bank,
+                accountHolder: accountHolder,
+                accountNumber: accountNumber,
+                amount: amount,
+                description: description,
+                date: new Date().toISOString()
+            };
+            
+            // Here you would typically send the data to your server or Google Apps Script
+            console.log('Loan Request Data:', loanData);
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Reset form
+            this.reset();
+            
+            // Scroll to success message
+            document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
