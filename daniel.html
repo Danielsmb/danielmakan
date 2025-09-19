@@ -1,1400 +1,682 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DataApp - Aplikasi Penyimpanan Data</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-<style>
-* {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
-
-body {
-font-family: 'Poppins', sans-serif;
-background-color: #4a0e0e; /* Merah maron */
-color: #fff;
-overflow-x: hidden;
-position: relative;
-min-height: 100vh;
-}
-
-/* Efek gradient */
-.gradient-text {
-background: linear-gradient(45deg, #ff6ec7, #7873f5, #4facfe);
--webkit-background-clip: text;
-background-clip: text;
-color: transparent;
-}
-
-.gradient-bg {
-background: linear-gradient(135deg, #4a0e0e, #800000, #4a0e0e);
-}
-
-/* Efek bintang jatuh */
-.stars-container {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-z-index: 1;
-pointer-events: none;
-overflow: hidden;
-}
-
-.star {
-position: absolute;
-background-color: #fff;
-border-radius: 50%;
-animation: fall linear infinite;
-}
-
-@keyframes fall {
-0% {
-transform: translateY(-100px);
-opacity: 1;
-}
-100% {
-transform: translateY(100vh);
-opacity: 0;
-}
-}
-
-/* Login Container */
-.login-container {
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 100vh;
-padding: 20px;
-position: relative;
-z-index: 10;
-}
-
-.login-form {
-background: rgba(30, 30, 40, 0.8);
-backdrop-filter: blur(10px);
-border-radius: 15px;
-padding: 40px;
-width: 100%;
-max-width: 400px;
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.login-header {
-text-align: center;
-margin-bottom: 30px;
-}
-
-.login-logo {
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 12px;
-margin-bottom: 20px;
-}
-
-.login-logo i {
-font-size: 2.5rem;
-color: #ff6ec7;
-}
-
-.login-logo-text {
-font-size: 1.8rem;
-font-weight: 700;
-}
-
-.login-title {
-font-size: 1.5rem;
-font-weight: 600;
-margin-bottom: 10px;
-}
-
-.login-subtitle {
-color: #ccc;
-font-size: 1rem;
-}
-
-/* Layout */
-.app-container {
-display: flex;
-min-height: 100vh;
-position: relative;
-z-index: 2;
-display: none;
-}
-
-/* Sidebar */
-.sidebar {
-width: 260px;
-background: rgba(30, 10, 10, 0.9); /* Merah maron gelap */
-backdrop-filter: blur(10px);
-border-right: 1px solid rgba(255, 255, 255, 0.1);
-padding: 20px 0;
-position: fixed;
-height: 100vh;
-overflow-y: auto;
-transition: all 0.3s ease;
-}
-
-.sidebar-header {
-padding: 0 20px 30px;
-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-margin-bottom: 20px;
-}
-
-.logo {
-display: flex;
-align-items: center;
-gap: 12px;
-}
-
-.logo i {
-font-size: 1.8rem;
-color: #ff6ec7;
-}
-
-.logo-text {
-font-size: 1.4rem;
-font-weight: 700;
-}
-
-.user-info {
-padding: 0 20px;
-margin-bottom: 20px;
-display: flex;
-align-items: center;
-gap: 10px;
-}
-
-.user-avatar {
-width: 36px;
-height: 36px;
-border-radius: 50%;
-background: linear-gradient(45deg, #ff6ec7, #7873f5);
-display: flex;
-align-items: center;
-justify-content: center;
-}
-
-.user-details {
-flex: 1;
-}
-
-.user-name {
-font-weight: 600;
-font-size: 0.95rem;
-}
-
-.user-role {
-font-size: 0.8rem;
-color: #888;
-}
-
-.logout-btn {
-background: none;
-border: none;
-color: #ff6ec7;
-cursor: pointer;
-font-size: 1.2rem;
-transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-color: #ff4d94;
-}
-
-.nav-menu {
-list-style: none;
-}
-
-.nav-item {
-margin-bottom: 5px;
-}
-
-.nav-link {
-display: flex;
-align-items: center;
-gap: 12px;
-padding: 14px 20px;
-color: #ccc;
-text-decoration: none;
-font-weight: 500;
-transition: all 0.3s ease;
-position: relative;
-}
-
-.nav-link:hover {
-color: #ff6ec7;
-background: rgba(255, 110, 199, 0.1);
-}
-
-.nav-link.active {
-color: #ff6ec7;
-}
-
-.nav-link.active::before {
-content: '';
-position: absolute;
-left: 0;
-top: 0;
-height: 100%;
-width: 3px;
-background: linear-gradient(to bottom, #ff6ec7, #7873f5);
-}
-
-.nav-link i {
-font-size: 1.2rem;
-width: 24px;
-text-align: center;
-}
-
-/* Main Content */
-.main-content {
-margin-left: 260px;
-flex: 1;
-padding: 30px;
-transition: all 0.3s ease;
-}
-
-header {
-margin-bottom: 30px;
-}
-
-h1 {
-font-size: 2.2rem;
-font-weight: 700;
-margin-bottom: 10px;
-}
-
-.subtitle {
-color: #ccc;
-font-size: 1.1rem;
-font-weight: 300;
-}
-
-/* Form container */
-.form-container {
-background: rgba(30, 30, 40, 0.7);
-backdrop-filter: blur(10px);
-border-radius: 15px;
-padding: 30px;
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-border: 1px solid rgba(255, 255, 255, 0.1);
-margin-bottom: 30px;
-}
-
-.form-group {
-margin-bottom: 20px;
-}
-
-label {
-display: block;
-margin-bottom: 8px;
-font-weight: 500;
-color: #ccc;
-}
-
-input, textarea, select {
-width: 100%;
-padding: 12px 15px;
-background: rgba(20, 20, 30, 0.7);
-border: 1px solid rgba(255, 255, 255, 0.1);
-border-radius: 8px;
-color: #fff;
-font-family: 'Poppins', sans-serif;
-font-size: 1rem;
-transition: all 0.3s ease;
-}
-
-input:focus, textarea:focus, select:focus {
-outline: none;
-border-color: #ff6ec7;
-box-shadow: 0 0 10px rgba(255, 110, 199, 0.3);
-}
-
-textarea {
-resize: vertical;
-min-height: 120px;
-}
-
-.btn {
-padding: 12px 25px;
-background: linear-gradient(45deg, #ff6ec7, #7873f5);
-border: none;
-border-radius: 8px;
-color: #fff;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.3s ease;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 8px;
-}
-
-.btn:hover {
-transform: translateY(-2px);
-box-shadow: 0 5px 15px rgba(255, 110, 199, 0.4);
-}
-
-.btn-secondary {
-background: rgba(255, 255, 255, 0.1);
-border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-secondary:hover {
-background: rgba(255, 255, 255, 0.2);
-box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
-}
-
-.btn-danger {
-background: linear-gradient(45deg, #ff6ec7, #ff4d94);
-}
-
-.btn-danger:hover {
-box-shadow: 0 5px 15px rgba(255, 78, 148, 0.4);
-}
-
-/* Data container */
-.data-container {
-margin-top: 20px;
-}
-
-.data-item {
-background: rgba(30, 30, 40, 0.7);
-backdrop-filter: blur(10px);
-border-radius: 15px;
-padding: 20px;
-margin-bottom: 15px;
-border: 1px solid rgba(255, 255, 255, 0.1);
-transition: all 0.3s ease;
-}
-
-.data-item:hover {
-transform: translateY(-3px);
-box-shadow: 0 5px 20px rgba(255, 110, 199, 0.2);
-}
-
-.data-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 10px;
-}
-
-.data-title {
-font-weight: 600;
-font-size: 1.2rem;
-color: #ff6ec7;
-}
-
-.data-date {
-font-size: 0.9rem;
-color: #888;
-}
-
-.data-content {
-margin-bottom: 15px;
-line-height: 1.6;
-white-space: pre-wrap;
-}
-
-.data-actions {
-display: flex;
-gap: 10px;
-}
-
-/* Search container */
-.search-container {
-margin-bottom: 30px;
-}
-
-.search-box {
-position: relative;
-}
-
-.search-box input {
-padding-left: 45px;
-}
-
-.search-box i {
-position: absolute;
-left: 15px;
-top: 50%;
-transform: translateY(-50%);
-color: #888;
-}
-
-/* Notification */
-.notification {
-position: fixed;
-bottom: 20px;
-right: 20px;
-background: rgba(255, 110, 199, 0.9);
-color: #fff;
-padding: 15px 25px;
-border-radius: 8px;
-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-transform: translateY(100px);
-opacity: 0;
-transition: all 0.3s ease;
-z-index: 1000;
-}
-
-.notification.show {
-transform: translateY(0);
-opacity: 1;
-}
-
-/* Empty state */
-.empty-state {
-text-align: center;
-padding: 50px 20px;
-color: #888;
-}
-
-.empty-state i {
-font-size: 3rem;
-margin-bottom: 20px;
-color: #555;
-}
-
-/* Mobile menu toggle */
-.mobile-menu-toggle {
-display: none;
-position: fixed;
-bottom: 20px;
-right: 20px;
-width: 60px;
-height: 60px;
-border-radius: 50%;
-background: linear-gradient(45deg, #ff6ec7, #7873f5);
-border: none;
-color: #fff;
-font-size: 1.5rem;
-box-shadow: 0 5px 15px rgba(255, 110, 199, 0.4);
-z-index: 1000;
-cursor: pointer;
-}
-
-/* Admin Table */
-.admin-table {
-width: 100%;
-border-collapse: collapse;
-margin-top: 20px;
-}
-
-.admin-table th,
-.admin-table td {
-padding: 12px 15px;
-text-align: left;
-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.admin-table th {
-background: rgba(255, 110, 199, 0.2);
-font-weight: 600;
-}
-
-.admin-table tr:hover {
-background: rgba(255, 255, 255, 0.05);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-.sidebar {
-transform: translateX(-100%);
-z-index: 999;
-}
-
-.sidebar.active {
-transform: translateX(0);
-}
-
-.main-content {
-margin-left: 0;
-padding: 20px;
-}
-
-h1 {
-font-size: 1.8rem;
-}
-
-.mobile-menu-toggle {
-display: flex;
-align-items: center;
-justify-content: center;
-}
-
-.data-header {
-flex-direction: column;
-align-items: flex-start;
-gap: 5px;
-}
-}
-
-/* Highlight untuk hasil pencarian */
-mark {
-background-color: #ffeb3b;
-color: #000;
-padding: 2px 0;
-border-radius: 2px;
-}
-
-/* Loading indicator */
-.loading {
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 30px;
-}
-
-.loading i {
-font-size: 2rem;
-color: #ff6ec7;
-animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-0% { transform: rotate(0deg); }
-100% { transform: rotate(360deg); }
-}
-
-/* Status connection */
-.connection-status {
-position: fixed;
-top: 20px;
-right: 20px;
-padding: 10px 15px;
-border-radius: 8px;
-font-size: 0.9rem;
-z-index: 1000;
-display: flex;
-align-items: center;
-gap: 8px;
-}
-
-.connection-status.connected {
-background: rgba(76, 175, 80, 0.9);
-}
-
-.connection-status.disconnected {
-background: rgba(244, 67, 54, 0.9);
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataApp - Aplikasi Penyimpanan Data</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #800020; /* Maron */
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .logo h2 {
+            color: #FFD700; /* Warna emas untuk judul */
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .logo p {
+            color: #f0f0f0;
+            font-size: 12px;
+        }
+        
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #FFD700;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-left: 3px solid #FFD700;
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            color: #FFD700;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .login-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-container h2 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #f0f0f0;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        
+        .btn {
+            background-color: #FFD700;
+            color: #800020;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #FFC700;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .data-container {
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .data-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .data-item button {
+            background-color: #FFD700;
+            color: #800020;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .admin-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #FFD700;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .user-info h2 {
+            color: #FFD700;
+        }
+        
+        .logout-btn {
+            background-color: transparent;
+            border: 1px solid #FFD700;
+            color: #FFD700;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background-color: #FFD700;
+            color: #800020;
+        }
+    </style>
 </head>
-<body class="gradient-bg">
-<!-- Efek bintang jatuh -->
-<div class="stars-container" id="starsContainer"></div>
-
-<!-- Connection Status -->
-<div class="connection-status disconnected" id="connectionStatus">
-<i class="fas fa-wifi"></i>
-<span>Memeriksa koneksi...</span>
-</div>
-
-<!-- Login Container -->
-<div class="login-container" id="loginContainer">
-<div class="login-form">
-<div class="login-header">
-<div class="login-logo">
-<i class="fas fa-database"></i>
-<span class="login-logo-text gradient-text">DataApp</span>
-</div>
-<h2 class="login-title gradient-text">Login</h2>
-<p class="login-subtitle">Masukkan ID dan password Anda</p>
-</div>
-<form id="loginForm">
-<div class="form-group">
-<label for="userId">ID Pengguna</label>
-<input type="text" id="userId" placeholder="Masukkan ID pengguna" required>
-</div>
-<div class="form-group">
-<label for="userPassword">Password</label>
-<input type="password" id="userPassword" placeholder="Masukkan password" required>
-</div>
-<button type="submit" class="btn" style="width: 100%;">
-<i class="fas fa-sign-in-alt"></i> Login
-</button>
-</form>
-<div style="margin-top: 20px; text-align: center; color: #888; font-size: 0.9rem;">
-<p>Gunakan ID: superadmin dan password: super123 untuk akses penuh</p>
-</div>
-</div>
-</div>
-
-<div class="app-container" id="appContainer">
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-<div class="sidebar-header">
-<div class="logo">
-<i class="fas fa-database"></i>
-<span class="logo-text gradient-text">DataApp</span>
-</div>
-</div>
-
-<div class="user-info">
-<div class="user-avatar">
-<i class="fas fa-user"></i>
-</div>
-<div class="user-details">
-<div class="user-name" id="userName">User</div>
-<div class="user-role" id="userRole">Regular User</div>
-</div>
-<button class="logout-btn" id="logoutBtn">
-<i class="fas fa-sign-out-alt"></i>
-</button>
-</div>
-
-<nav>
-<ul class="nav-menu">
-<li class="nav-item">
-<a href="#" class="nav-link active" data-page="input">
-<i class="fas fa-plus-circle"></i>
-<span>Input</span>
-</a>
-</li>
-<li class="nav-item">
-<a href="#" class="nav-link" data-page="search">
-<i class="fas fa-search"></i>
-<span>Cari</span>
-</a>
-</li>
-<li class="nav-item">
-<a href="#" class="nav-link" data-page="admin">
-<i class="fas fa-user-shield"></i>
-<span>Admin</span>
-</a>
-</li>
-</ul>
-</nav>
-</aside>
-
-<!-- Main Content -->
-<main class="main-content" id="mainContent">
-<!-- Halaman Input -->
-<div id="input-page" class="page-content">
-<header>
-<h1 class="gradient-text">Input Data</h1>
-<p class="subtitle">Simpan data penting Anda dengan mudah</p>
-</header>
-
-<div class="form-container">
-<h2 style="margin-bottom: 20px;" class="gradient-text">Input Data</h2>
-<form id="dataForm">
-<div class="form-group">
-<label for="title">Judul</label>
-<input type="text" id="title" placeholder="Masukkan judul data" required>
-</div>
-<div class="form-group">
-<label for="content">Isi Data</label>
-<textarea id="content" placeholder="Masukkan isi data" required></textarea>
-</div>
-<button type="submit" class="btn">
-<i class="fas fa-save"></i> Simpan Data
-</button>
-</form>
-</div>
-
-<div class="data-container">
-<h2 style="margin-bottom: 20px;" class="gradient-text">Semua Data Tersimpan</h2>
-<div id="savedData">
-<!-- Data akan ditampilkan di sini -->
-</div>
-</div>
-</div>
-
-<!-- Halaman Cari -->
-<div id="search-page" class="page-content" style="display: none;">
-<header>
-<h1 class="gradient-text">Cari Data</h1>
-<p class="subtitle">Temukan data yang Anda simpan dengan cepat</p>
-</header>
-
-<div class="form-container">
-<h2 style="margin-bottom: 20px;" class="gradient-text">Pencarian Data</h2>
-<div class="search-container">
-<div class="search-box">
-<i class="fas fa-search"></i>
-<input type="text" id="searchInput" placeholder="Cari data berdasarkan judul atau isi...">
-</div>
-</div>
-
-<div class="data-container">
-<div id="searchResults">
-<!-- Hasil pencarian akan ditampilkan di sini -->
-</div>
-</div>
-</div>
-</div>
-
-<!-- Halaman Admin -->
-<div id="admin-page" class="page-content" style="display: none;">
-<header>
-<h1 class="gradient-text">Admin</h1>
-<p class="subtitle">Kelola admin dan akses pengguna</p>
-</header>
-
-<div class="form-container">
-<h2 style="margin-bottom: 20px;" class="gradient-text">Tambah Admin Baru</h2>
-<form id="adminForm">
-<div class="form-group">
-<label for="adminId">ID Admin</label>
-<input type="text" id="adminId" placeholder="Masukkan ID admin" required>
-</div>
-<div class="form-group">
-<label for="adminPassword">Password</label>
-<input type="password" id="adminPassword" placeholder="Masukkan password" required>
-</div>
-<div class="form-group">
-<label for="adminName">Nama Lengkap</label>
-<input type="text" id="adminName" placeholder="Masukkan nama lengkap" required>
-</div>
-<div class="form-group">
-<label for="adminRole">Role</label>
-<select id="adminRole" required>
-<option value="admin">Admin (Akses Terbatas)</option>
-<option value="superadmin">Super Admin (Akses Penuh)</option>
-</select>
-</div>
-<button type="submit" class="btn">
-<i class="fas fa-user-plus"></i> Tambah Admin
-</button>
-</form>
-</div>
-
-<div class="form-container">
-<h2 style="margin-bottom: 20px;" class="gradient-text">Daftar Admin</h2>
-<div class="data-container">
-<div id="adminsList">
-<!-- Daftar admin akan ditampilkan di sini -->
-</div>
-</div>
-</div>
-</div>
-</main>
-</div>
-
-<!-- Mobile Menu Toggle -->
-<button class="mobile-menu-toggle" id="mobileMenuToggle">
-<i class="fas fa-bars"></i>
-</button>
-
-<!-- Notification -->
-<div class="notification" id="notification"></div>
-
-<script>
-// Efek bintang jatuh
-function createStars() {
-const starsContainer = document.getElementById('starsContainer');
-const starCount = 100;
-
-for (let i = 0; i < starCount; i++) {
-const star = document.createElement('div');
-star.classList.add('star');
-
-// Ukuran acak
-const size = Math.random() * 3 + 1;
-star.style.width = `${size}px`;
-star.style.height = `${size}px`;
-
-// Posisi acak
-star.style.left = `${Math.random() * 100}%`;
-
-// Durasi animasi acak
-const duration = Math.random() * 10 + 5;
-star.style.animationDuration = `${duration}s`;
-
-// Delay acak
-star.style.animationDelay = `${Math.random() * 5}s`;
-
-starsContainer.appendChild(star);
-}
-}
-
-// Inisialisasi efek bintang
-createStars();
-
-// Konfigurasi Firebase - GANTI DENGAN KONFIGURASI FIREBASE ANDA
-const firebaseConfig = {
-apiKey: "AIzaSyB4vP1q3vQj7hJ8kL9mN0oP1q3vQj7hJ8kL",
-authDomain: "dataapp-12345.firebaseapp.com",
-projectId: "dataapp-12345",
-storageBucket: "dataapp-12345.appspot.com",
-messagingSenderId: "123456789",
-appId: "1:123456789:web:abcdef123456"
-};
-
-// Inisialisasi Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// Cek koneksi Firebase
-function checkFirebaseConnection() {
-const connectionStatus = document.getElementById('connectionStatus');
-try {
-// Coba akses Firestore untuk memastikan koneksi
-db.collection('connectionCheck').doc('check').get()
-.then(() => {
-connectionStatus.className = 'connection-status connected';
-connectionStatus.innerHTML = '<i class="fas fa-wifi"></i><span>Terhubung ke Firebase</span>';
-})
-.catch(error => {
-console.error('Koneksi Firebase gagal:', error);
-connectionStatus.className = 'connection-status disconnected';
-connectionStatus.innerHTML = '<i class="fas fa-wifi"></i><span>Koneksi Firebase gagal</span>';
-});
-} catch (error) {
-console.error('Inisialisasi Firebase gagal:', error);
-connectionStatus.className = 'connection-status disconnected';
-connectionStatus.innerHTML = '<i class="fas fa-wifi"></i><span>Koneksi Firebase gagal</span>';
-}
-}
-
-// Panggil fungsi pengecekan koneksi
-checkFirebaseConnection();
-
-// Data admin default
-const defaultAdmins = [
-{ id: 'superadmin', password: 'super123', name: 'Super Administrator', role: 'superadmin' },
-{ id: 'admin', password: 'admin123', name: 'Administrator', role: 'admin' }
-];
-
-// Login form
-const loginForm = document.getElementById('loginForm');
-const loginContainer = document.getElementById('loginContainer');
-const appContainer = document.getElementById('appContainer');
-const logoutBtn = document.getElementById('logoutBtn');
-const userName = document.getElementById('userName');
-const userRole = document.getElementById('userRole');
-
-// Cek apakah pengguna sudah login
-function checkAuth() {
-const currentUser = localStorage.getItem('currentUser');
-if (currentUser) {
-const user = JSON.parse(currentUser);
-showApp(user);
-}
-}
-
-// Fungsi untuk menampilkan aplikasi setelah login
-function showApp(user) {
-loginContainer.style.display = 'none';
-appContainer.style.display = 'flex';
-userName.textContent = user.name;
-userRole.textContent = user.role === 'superadmin' ? 'Super Admin' : 'Admin';
-
-// Tampilkan data yang tersimpan saat aplikasi dimuat
-displaySavedData();
-}
-
-// Proses login
-loginForm.addEventListener('submit', async (e) => {
-e.preventDefault();
-const userId = document.getElementById('userId').value;
-const userPassword = document.getElementById('userPassword').value;
-
-try {
-// Cek di Firestore
-const adminDoc = await db.collection('admins').doc(userId).get();
-  
-if (adminDoc.exists) {
-const adminData = adminDoc.data();
-if (adminData.password === userPassword) {
-// Simpan user ke localStorage
-localStorage.setItem('currentUser', JSON.stringify(adminData));
-showApp(adminData);
-showNotification('Login berhasil!');
-return;
-}
-}
-
-// Cek di data default
-const admin = defaultAdmins.find(a => a.id === userId && a.password === userPassword);
-if (admin) {
-// Simpan user ke localStorage
-localStorage.setItem('currentUser', JSON.stringify(admin));
-showApp(admin);
-showNotification('Login berhasil!');
-} else {
-showNotification('ID atau password salah!');
-}
-} catch (error) {
-console.error('Error login:', error);
-showNotification('Terjadi kesalahan saat login!');
-}
-});
-
-// Proses logout
-logoutBtn.addEventListener('click', () => {
-localStorage.removeItem('currentUser');
-loginContainer.style.display = 'flex';
-appContainer.style.display = 'none';
-showNotification('Anda telah logout!');
-});
-
-// Navigasi halaman
-const navLinks = document.querySelectorAll('.nav-link');
-const pages = document.querySelectorAll('.page-content');
-
-navLinks.forEach(link => {
-link.addEventListener('click', (e) => {
-e.preventDefault();
-
-const targetPage = link.getAttribute('data-page');
-
-// Hapus kelas aktif dari semua link
-navLinks.forEach(l => l.classList.remove('active'));
-
-// Tambahkan kelas aktif ke link yang diklik
-link.classList.add('active');
-
-// Sembunyikan semua halaman
-pages.forEach(page => {
-page.style.display = 'none';
-});
-
-// Tampilkan halaman yang dipilih
-document.getElementById(`${targetPage}-page`).style.display = 'block';
-
-// Jika halaman admin, muat daftar admin
-if (targetPage === 'admin') {
-displayAdmins();
-}
-
-// Tutup sidebar di mobile
-if (window.innerWidth <= 768) {
-document.getElementById('sidebar').classList.remove('active');
-}
-});
-});
-
-// Toggle mobile menu
-const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-const sidebar = document.getElementById('sidebar');
-
-mobileMenuToggle.addEventListener('click', () => {
-sidebar.classList.toggle('active');
-});
-
-// Fungsi notifikasi
-function showNotification(message) {
-const notification = document.getElementById('notification');
-notification.textContent = message;
-notification.classList.add('show');
-
-setTimeout(() => {
-notification.classList.remove('show');
-}, 3000);
-}
-
-// Fungsi untuk menyimpan data
-const dataForm = document.getElementById('dataForm');
-dataForm.addEventListener('submit', async (e) => {
-e.preventDefault();
-
-const title = document.getElementById('title').value;
-const content = document.getElementById('content').value;
-
-// Dapatkan user yang sedang login
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-// Buat objek data
-const data = {
-title: title,
-content: content,
-date: new Date().toLocaleString('id-ID'),
-userId: currentUser.id,
-userName: currentUser.name,
-timestamp: firebase.firestore.FieldValue.serverTimestamp()
-};
-
-try {
-// Simpan data ke Firestore dengan koleksi 'publicData'
-await db.collection('publicData').add(data);
-    
-// Reset form
-dataForm.reset();
-
-// Tampilkan notifikasi
-showNotification('Data berhasil disimpan!');
-
-// Tampilkan data yang tersimpan
-displaySavedData();
-} catch (error) {
-console.error('Error menyimpan data: ', error);
-showNotification('Gagal menyimpan data!');
-}
-});
-
-// Fungsi untuk menampilkan data yang tersimpan
-async function displaySavedData() {
-const savedDataContainer = document.getElementById('savedData');
-
-// Tampilkan indikator loading
-savedDataContainer.innerHTML = `
-<div class="loading">
-<i class="fas fa-spinner"></i>
-</div>
-`;
-
-try {
-// Ambil semua data dari Firestore dari koleksi 'publicData'
-const querySnapshot = await db.collection('publicData')
-.orderBy('timestamp', 'desc')
-.get();
-
-if (querySnapshot.empty) {
-savedDataContainer.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-folder-open"></i>
-<p>Belum ada data yang disimpan</p>
-</div>
-`;
-return;
-}
-
-savedDataContainer.innerHTML = '';
-
-querySnapshot.forEach(doc => {
-const data = doc.data();
-const dataItem = document.createElement('div');
-dataItem.classList.add('data-item');
-dataItem.innerHTML = `
-<div class="data-header">
-<div class="data-title">${data.title}</div>
-<div class="data-date">${data.date} oleh ${data.userName}</div>
-</div>
-<div class="data-content">${data.content}</div>
-<div class="data-actions">
-<button class="btn btn-secondary copy-btn" data-id="${doc.id}">
-<i class="fas fa-copy"></i> Salin
-</button>
-<button class="btn btn-secondary delete-btn" data-id="${doc.id}">
-<i class="fas fa-trash"></i> Hapus
-</button>
-</div>
-`;
-
-savedDataContainer.appendChild(dataItem);
-});
-
-// Tambahkan event listener untuk tombol salin
-document.querySelectorAll('.copy-btn').forEach(btn => {
-btn.addEventListener('click', (e) => {
-const id = e.currentTarget.getAttribute('data-id');
-db.collection('publicData').doc(id).get().then(doc => {
-if (doc.exists) {
-const data = doc.data();
-const textToCopy = `${data.title}\n${data.content}\n${data.date} oleh ${data.userName}`;
-
-navigator.clipboard.writeText(textToCopy)
-.then(() => {
-showNotification('Data berhasil disalin!');
-})
-.catch(err => {
-showNotification('Gagal menyalin data!');
-console.error('Gagal menyalin: ', err);
-});
-}
-});
-});
-});
-
-// Tambahkan event listener untuk tombol hapus
-document.querySelectorAll('.delete-btn').forEach(btn => {
-btn.addEventListener('click', async (e) => {
-const id = e.currentTarget.getAttribute('data-id');
-try {
-await db.collection('publicData').doc(id).delete();
-showNotification('Data berhasil dihapus!');
-displaySavedData();
-} catch (error) {
-console.error('Error menghapus data: ', error);
-showNotification('Gagal menghapus data!');
-}
-});
-});
-} catch (error) {
-console.error('Error mengambil data: ', error);
-savedDataContainer.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-exclamation-triangle"></i>
-<p>Gagal memuat data. Silakan coba lagi.</p>
-</div>
-`;
-}
-}
-
-// Fungsi untuk mencari data
-const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('input', async (e) => {
-const searchTerm = e.target.value.toLowerCase();
-const searchResultsContainer = document.getElementById('searchResults');
-
-if (searchTerm === '') {
-searchResultsContainer.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-search"></i>
-<p>Masukkan kata kunci untuk mencari data</p>
-</div>
-`;
-return;
-}
-
-// Tampilkan indikator loading
-searchResultsContainer.innerHTML = `
-<div class="loading">
-<i class="fas fa-spinner"></i>
-</div>
-`;
-
-try {
-// Ambil semua data dari Firestore dari koleksi 'publicData'
-const querySnapshot = await db.collection('publicData').get();
-
-// Filter data berdasarkan judul atau isi
-const filteredData = [];
-querySnapshot.forEach(doc => {
-const data = doc.data();
-if (data.title.toLowerCase().includes(searchTerm) || 
-    data.content.toLowerCase().includes(searchTerm)) {
-  filteredData.push({ id: doc.id, data: data });
-}
-});
-
-if (filteredData.length === 0) {
-searchResultsContainer.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-search"></i>
-<p>Tidak ada data yang ditemukan</p>
-</div>
-`;
-return;
-}
-
-searchResultsContainer.innerHTML = '';
-
-filteredData.forEach(item => {
-const dataItem = document.createElement('div');
-dataItem.classList.add('data-item');
-dataItem.innerHTML = `
-<div class="data-header">
-<div class="data-title">${highlightText(item.data.title, searchTerm)}</div>
-<div class="data-date">${item.data.date} oleh ${item.data.userName}</div>
-</div>
-<div class="data-content">${highlightText(item.data.content, searchTerm)}</div>
-<div class="data-actions">
-<button class="btn btn-secondary copy-btn-search" data-id="${item.id}">
-<i class="fas fa-copy"></i> Salin
-</button>
-</div>
-`;
-
-searchResultsContainer.appendChild(dataItem);
-});
-
-// Tambahkan event listener untuk tombol salin
-document.querySelectorAll('.copy-btn-search').forEach(btn => {
-btn.addEventListener('click', (e) => {
-const id = e.currentTarget.getAttribute('data-id');
-db.collection('publicData').doc(id).get().then(doc => {
-if (doc.exists) {
-const data = doc.data();
-const textToCopy = `${data.title}\n${data.content}\n${data.date} oleh ${data.userName}`;
-
-navigator.clipboard.writeText(textToCopy)
-.then(() => {
-showNotification('Data berhasil disalin!');
-})
-.catch(err => {
-showNotification('Gagal menyalin data!');
-console.error('Gagal menyalin: ', err);
-});
-}
-});
-});
-});
-} catch (error) {
-console.error('Error mencari data: ', error);
-searchResultsContainer.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-exclamation-triangle"></i>
-<p>Gagal mencari data. Silakan coba lagi.</p>
-</div>
-`;
-}
-});
-
-// Fungsi untuk menyoroti teks yang cocok dengan pencarian
-function highlightText(text, searchTerm) {
-if (!searchTerm) return text;
-
-const regex = new RegExp(`(${searchTerm})`, 'gi');
-return text.replace(regex, '<mark>$1</mark>');
-}
-
-// Fungsi untuk menambah admin
-const adminForm = document.getElementById('adminForm');
-adminForm.addEventListener('submit', async (e) => {
-e.preventDefault();
-
-const adminId = document.getElementById('adminId').value;
-const adminPassword = document.getElementById('adminPassword').value;
-const adminName = document.getElementById('adminName').value;
-const adminRole = document.getElementById('adminRole').value;
-
-// Dapatkan user yang sedang login
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-// Cek apakah user adalah superadmin
-if (currentUser.role !== 'superadmin') {
-showNotification('Hanya superadmin yang bisa menambah admin baru!');
-return;
-}
-
-try {
-// Simpan admin ke Firestore
-await db.collection('admins').doc(adminId).set({
-id: adminId,
-password: adminPassword,
-name: adminName,
-role: adminRole,
-timestamp: firebase.firestore.FieldValue.serverTimestamp()
-});
-    
-// Reset form
-adminForm.reset();
-
-// Tampilkan notifikasi
-showNotification('Admin berhasil ditambahkan!');
-
-// Tampilkan daftar admin
-displayAdmins();
-} catch (error) {
-console.error('Error menambah admin: ', error);
-showNotification('Gagal menambah admin!');
-}
-});
-
-// Fungsi untuk menampilkan daftar admin
-async function displayAdmins() {
-const adminsList = document.getElementById('adminsList');
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-// Tampilkan indikator loading
-adminsList.innerHTML = `
-<div class="loading">
-<i class="fas fa-spinner"></i>
-</div>
-`;
-
-try {
-// Ambil semua admin dari Firestore
-const querySnapshot = await db.collection('admins').get();
-
-// Tambahkan admin default
-const allAdmins = [...defaultAdmins];
-querySnapshot.forEach(doc => {
-allAdmins.push(doc.data());
-});
-
-if (allAdmins.length === 0) {
-adminsList.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-user-shield"></i>
-<p>Belum ada admin yang terdaftar</p>
-</div>
-`;
-return;
-}
-
-// Buat tabel admin
-const table = document.createElement('table');
-table.className = 'admin-table';
-
-// Buat header tabel
-const thead = document.createElement('thead');
-const headerRow = document.createElement('tr');
-headerRow.innerHTML = `
-<th>ID</th>
-<th>Nama</th>
-<th>Role</th>
-${currentUser.role === 'superadmin' ? '<th>Aksi</th>' : ''}
-`;
-thead.appendChild(headerRow);
-table.appendChild(thead);
-
-// Buat body tabel
-const tbody = document.createElement('tbody');
-allAdmins.forEach(admin => {
-const row = document.createElement('tr');
-row.innerHTML = `
-<td>${admin.id}</td>
-<td>${admin.name}</td>
-<td>${admin.role === 'superadmin' ? 'Super Admin' : 'Admin'}</td>
-${currentUser.role === 'superadmin' ? 
-`<td>
-${admin.id !== 'superadmin' ? 
-`<button class="btn btn-danger delete-admin-btn" data-id="${admin.id}">
-<i class="fas fa-trash"></i> Hapus
-</button>` : 
-'-'}
-</td>` : ''}
-`;
-tbody.appendChild(row);
-});
-table.appendChild(tbody);
-
-adminsList.innerHTML = '';
-adminsList.appendChild(table);
-
-// Tambahkan event listener untuk tombol hapus admin
-if (currentUser.role === 'superadmin') {
-document.querySelectorAll('.delete-admin-btn').forEach(btn => {
-btn.addEventListener('click', async (e) => {
-const adminId = e.currentTarget.getAttribute('data-id');
-try {
-await db.collection('admins').doc(adminId).delete();
-showNotification('Admin berhasil dihapus!');
-displayAdmins();
-} catch (error) {
-console.error('Error menghapus admin: ', error);
-showNotification('Gagal menghapus admin!');
-}
-});
-});
-}
-} catch (error) {
-console.error('Error mengambil data admin: ', error);
-adminsList.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-exclamation-triangle"></i>
-<p>Gagal memuat data admin. Silakan coba lagi.</p>
-</div>
-`;
-}
-}
-
-// Cek autentikasi saat halaman dimuat
-checkAuth();
-
-// Inisialisasi tampilan pencarian
-document.getElementById('searchResults').innerHTML = `
-<div class="empty-state">
-<i class="fas fa-search"></i>
-<p>Masukkan kata kunci untuk mencari data</p>
-</div>
-`;
-</script>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>DataApp</h2>
+            <p>Penyimpanan Data Cloud</p>
+        </div>
+        <div class="menu-item active" id="menu-input">
+            <i class="fas fa-plus-circle"></i>
+            <span>Input Data</span>
+        </div>
+        <div class="menu-item" id="menu-search">
+            <i class="fas fa-search"></i>
+            <span>Cari Data</span>
+        </div>
+        <div class="menu-item" id="menu-admin" style="display: none;">
+            <i class="fas fa-user-shield"></i>
+            <span>Admin</span>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Login Form -->
+        <div class="login-container" id="login-form">
+            <h2>Login ke DataApp</h2>
+            <div class="form-group">
+                <label for="login-id">ID Admin</label>
+                <input type="text" id="login-id" placeholder="Masukkan ID Admin">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" placeholder="Masukkan Password">
+            </div>
+            <button class="btn btn-block" onclick="login()">Login</button>
+            <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+                Demo: ID: admin, Password: admin123
+            </p>
+        </div>
+
+        <!-- Input Data Section -->
+        <div class="hidden" id="input-section">
+            <div class="user-info">
+                <h2>Input Data</h2>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <div class="data-container">
+                <div class="form-group">
+                    <label for="data-title">Judul Data</label>
+                    <input type="text" id="data-title" placeholder="Masukkan judul data">
+                </div>
+                <div class="form-group">
+                    <label for="data-content">Isi Data</label>
+                    <textarea id="data-content" rows="5" placeholder="Masukkan isi data"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="data-category">Kategori</label>
+                    <select id="data-category">
+                        <option value="pribadi">Pribadi</option>
+                        <option value="kerja">Kerja</option>
+                        <option value="penting">Penting</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="saveData()">Simpan Data</button>
+            </div>
+            <div class="data-container">
+                <h3 style="color: #FFD700; margin-bottom: 15px;">Data Tersimpan</h3>
+                <div id="saved-data-list">
+                    <!-- Data items will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Data Section -->
+        <div class="hidden" id="search-section">
+            <div class="user-info">
+                <h2>Cari Data</h2>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <div class="data-container">
+                <div class="form-group">
+                    <label for="search-keyword">Kata Kunci</label>
+                    <input type="text" id="search-keyword" placeholder="Masukkan kata kunci pencarian">
+                </div>
+                <button class="btn" onclick="searchData()">Cari</button>
+            </div>
+            <div class="data-container">
+                <h3 style="color: #FFD700; margin-bottom: 15px;">Hasil Pencarian</h3>
+                <div id="search-results">
+                    <!-- Search results will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Section -->
+        <div class="hidden" id="admin-section">
+            <div class="user-info">
+                <h2>Admin Panel</h2>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <div class="data-container">
+                <h3 style="color: #FFD700; margin-bottom: 15px;">Tambah Admin Baru</h3>
+                <div class="form-group">
+                    <label for="admin-id">ID Admin</label>
+                    <input type="text" id="admin-id" placeholder="Masukkan ID Admin baru">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" placeholder="Masukkan password">
+                </div>
+                <div class="form-group">
+                    <label for="admin-access">Hak Akses</label>
+                    <select id="admin-access">
+                        <option value="limited">Terbatas</option>
+                        <option value="full">Penuh</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="addAdmin()">Tambah Admin</button>
+            </div>
+            <div class="data-container">
+                <h3 style="color: #FFD700; margin-bottom: 15px;">Daftar Admin</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID Admin</th>
+                            <th>Hak Akses</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-list">
+                        <!-- Admin list will be displayed here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // In a real application, this would be replaced with Firebase integration
+        let currentUser = null;
+        let dataStorage = [];
+        let adminUsers = [
+            { id: 'admin', password: 'admin123', access: 'full' }
+        ];
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load data from localStorage
+            const savedData = localStorage.getItem('dataStorage');
+            if (savedData) {
+                dataStorage = JSON.parse(savedData);
+            }
+            
+            const savedAdmins = localStorage.getItem('adminUsers');
+            if (savedAdmins) {
+                adminUsers = JSON.parse(savedAdmins);
+            }
+            
+            // Set up menu item click handlers
+            document.getElementById('menu-input').addEventListener('click', function() {
+                showSection('input-section');
+                setActiveMenuItem('menu-input');
+            });
+            
+            document.getElementById('menu-search').addEventListener('click', function() {
+                showSection('search-section');
+                setActiveMenuItem('menu-search');
+            });
+            
+            document.getElementById('menu-admin').addEventListener('click', function() {
+                showSection('admin-section');
+                setActiveMenuItem('menu-admin');
+            });
+        });
+
+        function login() {
+            const id = document.getElementById('login-id').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Find admin user
+            const admin = adminUsers.find(user => user.id === id && user.password === password);
+            
+            if (admin) {
+                currentUser = admin;
+                document.getElementById('login-form').classList.add('hidden');
+                
+                // Show admin menu only if user has full access
+                if (admin.access === 'full') {
+                    document.getElementById('menu-admin').style.display = 'flex';
+                }
+                
+                showSection('input-section');
+                setActiveMenuItem('menu-input');
+                showNotification('Login berhasil!', 'success');
+                
+                // Load saved data
+                displaySavedData();
+            } else {
+                showNotification('ID atau password salah!', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('menu-admin').style.display = 'none';
+            
+            // Hide all sections
+            document.getElementById('input-section').classList.add('hidden');
+            document.getElementById('search-section').classList.add('hidden');
+            document.getElementById('admin-section').classList.add('hidden');
+            
+            // Reset active menu item
+            setActiveMenuItem('menu-input');
+            
+            showNotification('Anda telah logout', 'success');
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('input-section').classList.add('hidden');
+            document.getElementById('search-section').classList.add('hidden');
+            document.getElementById('admin-section').classList.add('hidden');
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Load section-specific data
+            if (sectionId === 'input-section') {
+                displaySavedData();
+            } else if (sectionId === 'admin-section') {
+                displayAdminList();
+            }
+        }
+
+        function setActiveMenuItem(menuId) {
+            // Remove active class from all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to selected menu item
+            document.getElementById(menuId).classList.add('active');
+        }
+
+        function saveData() {
+            const title = document.getElementById('data-title').value;
+            const content = document.getElementById('data-content').value;
+            const category = document.getElementById('data-category').value;
+            
+            if (!title || !content) {
+                showNotification('Judul dan isi data harus diisi!', 'error');
+                return;
+            }
+            
+            const newData = {
+                id: Date.now(),
+                title,
+                content,
+                category,
+                createdAt: new Date().toISOString()
+            };
+            
+            dataStorage.push(newData);
+            
+            // Save to localStorage
+            localStorage.setItem('dataStorage', JSON.stringify(dataStorage));
+            
+            // Clear form
+            document.getElementById('data-title').value = '';
+            document.getElementById('data-content').value = '';
+            
+            // Refresh data list
+            displaySavedData();
+            
+            showNotification('Data berhasil disimpan!', 'success');
+        }
+
+        function displaySavedData() {
+            const dataList = document.getElementById('saved-data-list');
+            dataList.innerHTML = '';
+            
+            if (dataStorage.length === 0) {
+                dataList.innerHTML = '<p>Belum ada data tersimpan</p>';
+                return;
+            }
+            
+            dataStorage.forEach(data => {
+                const dataItem = document.createElement('div');
+                dataItem.className = 'data-item';
+                dataItem.innerHTML = `
+                    <div>
+                        <h4>${data.title}</h4>
+                        <p>${data.content.substring(0, 100)}${data.content.length > 100 ? '...' : ''}</p>
+                        <small>Kategori: ${data.category}</small>
+                    </div>
+                    <button onclick="copyData('${data.id}')">Salin</button>
+                `;
+                dataList.appendChild(dataItem);
+            });
+        }
+
+        function copyData(dataId) {
+            const data = dataStorage.find(item => item.id == dataId);
+            if (data) {
+                const textToCopy = `Judul: ${data.title}\nIsi: ${data.content}\nKategori: ${data.category}`;
+                
+                // Create a temporary textarea element
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                showNotification('Data berhasil disalin!', 'success');
+            }
+        }
+
+        function searchData() {
+            const keyword = document.getElementById('search-keyword').value.toLowerCase();
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '';
+            
+            if (!keyword) {
+                resultsContainer.innerHTML = '<p>Masukkan kata kunci untuk mencari</p>';
+                return;
+            }
+            
+            const results = dataStorage.filter(data => 
+                data.title.toLowerCase().includes(keyword) || 
+                data.content.toLowerCase().includes(keyword) ||
+                data.category.toLowerCase().includes(keyword)
+            );
+            
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<p>Tidak ada data yang cocok dengan kata kunci</p>';
+                return;
+            }
+            
+            results.forEach(data => {
+                const dataItem = document.createElement('div');
+                dataItem.className = 'data-item';
+                dataItem.innerHTML = `
+                    <div>
+                        <h4>${data.title}</h4>
+                        <p>${data.content.substring(0, 100)}${data.content.length > 100 ? '...' : ''}</p>
+                        <small>Kategori: ${data.category}</small>
+                    </div>
+                    <button onclick="copyData('${data.id}')">Salin</button>
+                `;
+                resultsContainer.appendChild(dataItem);
+            });
+        }
+
+        function addAdmin() {
+            if (currentUser.access !== 'full') {
+                showNotification('Anda tidak memiliki hak akses untuk menambah admin!', 'error');
+                return;
+            }
+            
+            const id = document.getElementById('admin-id').value;
+            const password = document.getElementById('admin-password').value;
+            const access = document.getElementById('admin-access').value;
+            
+            if (!id || !password) {
+                showNotification('ID dan password harus diisi!', 'error');
+                return;
+            }
+            
+            // Check if admin ID already exists
+            if (adminUsers.find(user => user.id === id)) {
+                showNotification('ID admin sudah ada!', 'error');
+                return;
+            }
+            
+            const newAdmin = {
+                id,
+                password,
+                access
+            };
+            
+            adminUsers.push(newAdmin);
+            
+            // Save to localStorage
+            localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+            
+            // Clear form
+            document.getElementById('admin-id').value = '';
+            document.getElementById('admin-password').value = '';
+            
+            // Refresh admin list
+            displayAdminList();
+            
+            showNotification('Admin berhasil ditambahkan!', 'success');
+        }
+
+        function displayAdminList() {
+            const adminList = document.getElementById('admin-list');
+            adminList.innerHTML = '';
+            
+            adminUsers.forEach(admin => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${admin.id}</td>
+                    <td>${admin.access === 'full' ? 'Penuh' : 'Terbatas'}</td>
+                    <td>
+                        ${currentUser.access === 'full' && admin.id !== currentUser.id ? 
+                            `<button class="btn" onclick="deleteAdmin('${admin.id}')">Hapus</button>` : 
+                            '-'}
+                    </td>
+                `;
+                adminList.appendChild(row);
+            });
+        }
+
+        function deleteAdmin(adminId) {
+            if (currentUser.access !== 'full') {
+                showNotification('Anda tidak memiliki hak akses untuk menghapus admin!', 'error');
+                return;
+            }
+            
+            adminUsers = adminUsers.filter(admin => admin.id !== adminId);
+            
+            // Save to localStorage
+            localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
+            
+            // Refresh admin list
+            displayAdminList();
+            
+            showNotification('Admin berhasil dihapus!', 'success');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (type === 'error') {
+                notification.classList.add('error');
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
