@@ -6,6 +6,9 @@
 <title>Aplikasi Penyimpanan Data</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Tambahkan Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 <style>
 * {
 margin: 0;
@@ -560,6 +563,25 @@ color: #000;
 padding: 2px 0;
 border-radius: 2px;
 }
+
+/* Loading indicator */
+.loading {
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 30px;
+}
+
+.loading i {
+font-size: 2rem;
+color: #4facfe;
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
 </style>
 </head>
 <body>
@@ -758,7 +780,7 @@ informasi dan menemukannya kembali saat dibutuhkan.
 Fitur utama:
 </p>
 <ul style="margin-left: 20px; line-height: 1.8;">
-<li>Penyimpanan data di browser Anda</li>
+<li>Penyimpanan data di cloud dengan Firebase</li>
 <li>Pencarian data yang cepat dan mudah</li>
 <li>Tombol salin untuk mengambil data dengan tepat</li>
 <li>Antarmuka yang modern dan responsif</li>
@@ -812,6 +834,20 @@ starsContainer.appendChild(star);
 // Inisialisasi efek bintang
 createStars();
 
+// Konfigurasi Firebase - GANTI DENGAN KONFIGURASI FIREBASE ANDA
+const firebaseConfig = {
+apiKey: "AIzaSyB4vP1q3vQj7hJ8kL9mN0oP1q3vQj7hJ8kL",
+authDomain: "dataapp-12345.firebaseapp.com",
+projectId: "dataapp-12345",
+storageBucket: "dataapp-12345.appspot.com",
+messagingSenderId: "123456789",
+appId: "1:123456789:web:abcdef123456"
+};
+
+// Inisialisasi Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 // Data pengguna (dalam aplikasi nyata, ini harus dari server)
 const users = [
 { id: 'admin', password: 'admin123', name: 'Administrator', role: 'admin' },
@@ -849,6 +885,9 @@ document.querySelectorAll('.admin-only').forEach(el => {
 el.style.display = 'block';
 });
 }
+
+// Tampilkan data yang tersimpan saat aplikasi dimuat
+displaySavedData();
 }
 
 // Proses login
@@ -954,7 +993,7 @@ document.getElementById('ipISP').textContent = 'Tidak tersedia';
 
 // Fungsi untuk menyimpan data
 const dataForm = document.getElementById('dataForm');
-dataForm.addEventListener('submit', (e) => {
+dataForm.addEventListener('submit', async (e) => {
 e.preventDefault();
 
 const title = document.getElementById('title').value;
@@ -965,23 +1004,18 @@ const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
 // Buat objek data
 const data = {
-id: Date.now(),
 title: title,
 content: content,
 date: new Date().toLocaleString('id-ID'),
 userId: currentUser.id,
-userName: currentUser.name
+userName: currentUser.name,
+timestamp: firebase.firestore.FieldValue.serverTimestamp()
 };
 
-// Ambil data yang sudah ada dari localStorage
-let savedData = JSON.parse(localStorage.getItem('savedData')) || [];
-
-// Tambahkan data baru
-savedData.push(data);
-
-// Simpan kembali ke localStorage
-localStorage.setItem('savedData', JSON.stringify(savedData));
-
+try {
+// Simpan data ke Firestore
+await db.collection('savedData').add(data);
+    
 // Reset form
 dataForm.reset();
 
@@ -990,18 +1024,32 @@ showNotification('Data berhasil disimpan!');
 
 // Tampilkan data yang tersimpan
 displaySavedData();
+} catch (error) {
+console.error('Error menyimpan data: ', error);
+showNotification('Gagal menyimpan data!');
+}
 });
 
 // Fungsi untuk menampilkan data yang tersimpan
-function displaySavedData() {
+async function displaySavedData() {
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-const savedData = JSON.parse(localStorage.getItem('savedData')) || [];
 const savedDataContainer = document.getElementById('savedData');
 
-// Filter data berdasarkan user yang sedang login
-const userSavedData = savedData.filter(data => data.userId === currentUser.id);
+// Tampilkan indikator loading
+savedDataContainer.innerHTML = `
+<div class="loading">
+<i class="fas fa-spinner"></i>
+</div>
+`;
 
-if (userSavedData.length === 0) {
+try {
+// Ambil data dari Firestore
+const querySnapshot = await db.collection('savedData')
+.where('userId', '==', currentUser.id)
+.orderBy('timestamp', 'desc')
+.get();
+
+if (querySnapshot.empty) {
 savedDataContainer.innerHTML = `
 <div class="empty-state">
 <i class="fas fa-folder-open"></i>
@@ -1013,10 +1061,8 @@ return;
 
 savedDataContainer.innerHTML = '';
 
-// Urutkan data dari yang terbaru
-userSavedData.sort((a, b) => b.id - a.id);
-
-userSavedData.forEach(data => {
+querySnapshot.forEach(doc => {
+const data = doc.data();
 const dataItem = document.createElement('div');
 dataItem.classList.add('data-item');
 dataItem.innerHTML = `
@@ -1026,10 +1072,10 @@ dataItem.innerHTML = `
 </div>
 <div class="data-content">${data.content}</div>
 <div class="data-actions">
-<button class="btn btn-secondary copy-btn" data-id="${data.id}">
+<button class="btn btn-secondary copy-btn" data-id="${doc.id}">
 <i class="fas fa-copy"></i> Salin
 </button>
-<button class="btn btn-secondary delete-btn" data-id="${data.id}">
+<button class="btn btn-secondary delete-btn" data-id="${doc.id}">
 <i class="fas fa-trash"></i> Hapus
 </button>
 </div>
@@ -1041,11 +1087,10 @@ savedDataContainer.appendChild(dataItem);
 // Tambahkan event listener untuk tombol salin
 document.querySelectorAll('.copy-btn').forEach(btn => {
 btn.addEventListener('click', (e) => {
-const id = parseInt(e.currentTarget.getAttribute('data-id'));
-const data = savedData.find(d => d.id === id);
-
-if (data) {
-// Salin persis data yang disimpan tanpa penambahan atau pengurangan
+const id = e.currentTarget.getAttribute('data-id');
+db.collection('savedData').doc(id).get().then(doc => {
+if (doc.exists) {
+const data = doc.data();
 const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
 
 navigator.clipboard.writeText(textToCopy)
@@ -1059,33 +1104,51 @@ console.error('Gagal menyalin: ', err);
 }
 });
 });
+});
 
 // Tambahkan event listener untuk tombol hapus
 document.querySelectorAll('.delete-btn').forEach(btn => {
-btn.addEventListener('click', (e) => {
-const id = parseInt(e.currentTarget.getAttribute('data-id'));
-
-// Hapus data dari array
-const updatedData = savedData.filter(d => d.id !== id);
-
-// Simpan kembali ke localStorage
-localStorage.setItem('savedData', JSON.stringify(updatedData));
-
-// Tampilkan notifikasi
+btn.addEventListener('click', async (e) => {
+const id = e.currentTarget.getAttribute('data-id');
+try {
+await db.collection('savedData').doc(id).delete();
 showNotification('Data berhasil dihapus!');
-
-// Tampilkan kembali data yang tersimpan
 displaySavedData();
+} catch (error) {
+console.error('Error menghapus data: ', error);
+showNotification('Gagal menghapus data!');
+}
 });
 });
+} catch (error) {
+console.error('Error mengambil data: ', error);
+savedDataContainer.innerHTML = `
+<div class="empty-state">
+<i class="fas fa-exclamation-triangle"></i>
+<p>Gagal memuat data. Silakan coba lagi.</p>
+</div>
+`;
+}
 }
 
 // Fungsi untuk menampilkan semua data tersimpan (untuk admin)
-function displayAllSavedData() {
-const savedData = JSON.parse(localStorage.getItem('savedData')) || [];
+async function displayAllSavedData() {
 const allSavedDataContainer = document.getElementById('allSavedData');
 
-if (savedData.length === 0) {
+// Tampilkan indikator loading
+allSavedDataContainer.innerHTML = `
+<div class="loading">
+<i class="fas fa-spinner"></i>
+</div>
+`;
+
+try {
+// Ambil semua data dari Firestore
+const querySnapshot = await db.collection('savedData')
+.orderBy('timestamp', 'desc')
+.get();
+
+if (querySnapshot.empty) {
 allSavedDataContainer.innerHTML = `
 <div class="empty-state">
 <i class="fas fa-folder-open"></i>
@@ -1097,10 +1160,8 @@ return;
 
 allSavedDataContainer.innerHTML = '';
 
-// Urutkan data dari yang terbaru
-savedData.sort((a, b) => b.id - a.id);
-
-savedData.forEach(data => {
+querySnapshot.forEach(doc => {
+const data = doc.data();
 const dataItem = document.createElement('div');
 dataItem.classList.add('data-item');
 dataItem.innerHTML = `
@@ -1110,10 +1171,10 @@ dataItem.innerHTML = `
 </div>
 <div class="data-content">${data.content}</div>
 <div class="data-actions">
-<button class="btn btn-secondary copy-btn-all" data-id="${data.id}">
+<button class="btn btn-secondary copy-btn-all" data-id="${doc.id}">
 <i class="fas fa-copy"></i> Salin
 </button>
-<button class="btn btn-danger delete-btn-all" data-id="${data.id}">
+<button class="btn btn-danger delete-btn-all" data-id="${doc.id}">
 <i class="fas fa-trash"></i> Hapus
 </button>
 </div>
@@ -1125,11 +1186,10 @@ allSavedDataContainer.appendChild(dataItem);
 // Tambahkan event listener untuk tombol salin
 document.querySelectorAll('.copy-btn-all').forEach(btn => {
 btn.addEventListener('click', (e) => {
-const id = parseInt(e.currentTarget.getAttribute('data-id'));
-const data = savedData.find(d => d.id === id);
-
-if (data) {
-// Salin persis data yang disimpan tanpa penambahan atau pengurangan
+const id = e.currentTarget.getAttribute('data-id');
+db.collection('savedData').doc(id).get().then(doc => {
+if (doc.exists) {
+const data = doc.data();
 const textToCopy = `${data.title}\n${data.content}\n${data.date} oleh ${data.userName}`;
 
 navigator.clipboard.writeText(textToCopy)
@@ -1143,37 +1203,39 @@ console.error('Gagal menyalin: ', err);
 }
 });
 });
+});
 
 // Tambahkan event listener untuk tombol hapus
 document.querySelectorAll('.delete-btn-all').forEach(btn => {
-btn.addEventListener('click', (e) => {
-const id = parseInt(e.currentTarget.getAttribute('data-id'));
-
-// Hapus data dari array
-const updatedData = savedData.filter(d => d.id !== id);
-
-// Simpan kembali ke localStorage
-localStorage.setItem('savedData', JSON.stringify(updatedData));
-
-// Tampilkan notifikasi
+btn.addEventListener('click', async (e) => {
+const id = e.currentTarget.getAttribute('data-id');
+try {
+await db.collection('savedData').doc(id).delete();
 showNotification('Data berhasil dihapus!');
-
-// Tampilkan kembali semua data yang tersimpan
 displayAllSavedData();
+} catch (error) {
+console.error('Error menghapus data: ', error);
+showNotification('Gagal menghapus data!');
+}
 });
 });
+} catch (error) {
+console.error('Error mengambil semua data: ', error);
+allSavedDataContainer.innerHTML = `
+<div class="empty-state">
+<i class="fas fa-exclamation-triangle"></i>
+<p>Gagal memuat data. Silakan coba lagi.</p>
+</div>
+`;
+}
 }
 
 // Fungsi untuk mencari data
 const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('input', (e) => {
+searchInput.addEventListener('input', async (e) => {
 const searchTerm = e.target.value.toLowerCase();
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-const savedData = JSON.parse(localStorage.getItem('savedData')) || [];
 const searchResultsContainer = document.getElementById('searchResults');
-
-// Filter data berdasarkan user yang sedang login
-const userSavedData = savedData.filter(data => data.userId === currentUser.id);
 
 if (searchTerm === '') {
 searchResultsContainer.innerHTML = `
@@ -1185,11 +1247,28 @@ searchResultsContainer.innerHTML = `
 return;
 }
 
+// Tampilkan indikator loading
+searchResultsContainer.innerHTML = `
+<div class="loading">
+<i class="fas fa-spinner"></i>
+</div>
+`;
+
+try {
+// Ambil data dari Firestore
+const querySnapshot = await db.collection('savedData')
+.where('userId', '==', currentUser.id)
+.get();
+
 // Filter data berdasarkan judul atau isi
-const filteredData = userSavedData.filter(data =>
-data.title.toLowerCase().includes(searchTerm) ||
-data.content.toLowerCase().includes(searchTerm)
-);
+const filteredData = [];
+querySnapshot.forEach(doc => {
+const data = doc.data();
+if (data.title.toLowerCase().includes(searchTerm) || 
+    data.content.toLowerCase().includes(searchTerm)) {
+  filteredData.push({ id: doc.id, data: data });
+}
+});
 
 if (filteredData.length === 0) {
 searchResultsContainer.innerHTML = `
@@ -1203,17 +1282,17 @@ return;
 
 searchResultsContainer.innerHTML = '';
 
-filteredData.forEach(data => {
+filteredData.forEach(item => {
 const dataItem = document.createElement('div');
 dataItem.classList.add('data-item');
 dataItem.innerHTML = `
 <div class="data-header">
-<div class="data-title">${highlightText(data.title, searchTerm)}</div>
-<div class="data-date">${data.date}</div>
+<div class="data-title">${highlightText(item.data.title, searchTerm)}</div>
+<div class="data-date">${item.data.date}</div>
 </div>
-<div class="data-content">${highlightText(data.content, searchTerm)}</div>
+<div class="data-content">${highlightText(item.data.content, searchTerm)}</div>
 <div class="data-actions">
-<button class="btn btn-secondary copy-btn-search" data-id="${data.id}">
+<button class="btn btn-secondary copy-btn-search" data-id="${item.id}">
 <i class="fas fa-copy"></i> Salin
 </button>
 </div>
@@ -1225,11 +1304,10 @@ searchResultsContainer.appendChild(dataItem);
 // Tambahkan event listener untuk tombol salin
 document.querySelectorAll('.copy-btn-search').forEach(btn => {
 btn.addEventListener('click', (e) => {
-const id = parseInt(e.currentTarget.getAttribute('data-id'));
-const data = savedData.find(d => d.id === id);
-
-if (data) {
-// Salin persis data yang disimpan tanpa penambahan atau pengurangan
+const id = e.currentTarget.getAttribute('data-id');
+db.collection('savedData').doc(id).get().then(doc => {
+if (doc.exists) {
+const data = doc.data();
 const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
 
 navigator.clipboard.writeText(textToCopy)
@@ -1243,6 +1321,16 @@ console.error('Gagal menyalin: ', err);
 }
 });
 });
+});
+} catch (error) {
+console.error('Error mencari data: ', error);
+searchResultsContainer.innerHTML = `
+<div class="empty-state">
+<i class="fas fa-exclamation-triangle"></i>
+<p>Gagal mencari data. Silakan coba lagi.</p>
+</div>
+`;
+}
 });
 
 // Fungsi untuk menyoroti teks yang cocok dengan pencarian
