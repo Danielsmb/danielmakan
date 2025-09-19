@@ -6,6 +6,9 @@
     <title>Aplikasi Penyimpanan Data</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -405,6 +408,27 @@
             padding: 2px 0;
             border-radius: 2px;
         }
+        
+        /* Loading indicator */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #4facfe;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -474,7 +498,9 @@
                 <div class="data-container">
                     <h2 style="margin-bottom: 20px; color: #4facfe;">Data Tersimpan</h2>
                     <div id="savedData">
-                        <!-- Data akan ditampilkan di sini -->
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -521,7 +547,8 @@
                         Fitur utama:
                     </p>
                     <ul style="margin-left: 20px; line-height: 1.8;">
-                        <li>Penyimpanan data di browser Anda</li>
+                        <li>Penyimpanan data di cloud (Firebase)</li>
+                        <li>Data dapat diakses oleh siapa saja</li>
                         <li>Pencarian data yang cepat dan mudah</li>
                         <li>Tombol salin untuk mengambil data dengan tepat</li>
                         <li>Antarmuka yang modern dan responsif</li>
@@ -543,6 +570,22 @@
     <div class="notification" id="notification"></div>
     
     <script>
+        // Inisialisasi Firebase - GANTI DENGAN KONFIGURASI FIREBASE ANDA
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5kqlv2J6p3KXJvX7w8Y9L0zX5vW7Y6x8",
+            authDomain: "dataapp-12345.firebaseapp.com",
+            databaseURL: "https://dataapp-12345-default-rtdb.firebaseio.com",
+            projectId: "dataapp-12345",
+            storageBucket: "dataapp-12345.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef123456789012345"
+        };
+        
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const dataRef = database.ref('data');
+        
         // Efek bintang jatuh
         function createStars() {
             const starsContainer = document.getElementById('starsContainer');
@@ -598,6 +641,11 @@
                 // Tampilkan halaman yang dipilih
                 document.getElementById(`${targetPage}-page`).style.display = 'block';
                 
+                // Jika halaman pencarian, tampilkan data
+                if (targetPage === 'search') {
+                    displaySearchData();
+                }
+                
                 // Tutup sidebar di mobile
                 if (window.innerWidth <= 768) {
                     document.getElementById('sidebar').classList.remove('active');
@@ -624,7 +672,7 @@
             }, 3000);
         }
         
-        // Fungsi untuk menyimpan data
+        // Fungsi untuk menyimpan data ke Firebase
         const dataForm = document.getElementById('dataForm');
         dataForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -634,190 +682,351 @@
             
             // Buat objek data
             const data = {
-                id: Date.now(),
                 title: title,
                 content: content,
-                date: new Date().toLocaleString('id-ID')
+                date: new Date().toLocaleString('id-ID'),
+                timestamp: Date.now() // Untuk pengurutan
             };
             
-            // Ambil data yang sudah ada dari localStorage
-            let savedData = JSON.parse(localStorage.getItem('savedData')) || [];
-            
-            // Tambahkan data baru
-            savedData.push(data);
-            
-            // Simpan kembali ke localStorage
-            localStorage.setItem('savedData', JSON.stringify(savedData));
-            
-            // Reset form
-            dataForm.reset();
-            
-            // Tampilkan notifikasi
-            showNotification('Data berhasil disimpan!');
-            
-            // Tampilkan data yang tersimpan
-            displaySavedData();
-        });
-        
-        // Fungsi untuk menampilkan data yang tersimpan
-        function displaySavedData() {
-            const savedData = JSON.parse(localStorage.getItem('savedData')) || [];
-            const savedDataContainer = document.getElementById('savedData');
-            
-            if (savedData.length === 0) {
-                savedDataContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-folder-open"></i>
-                        <p>Belum ada data yang disimpan</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            savedDataContainer.innerHTML = '';
-            
-            // Urutkan data dari yang terbaru
-            savedData.sort((a, b) => b.id - a.id);
-            
-            savedData.forEach(data => {
-                const dataItem = document.createElement('div');
-                dataItem.classList.add('data-item');
-                dataItem.innerHTML = `
-                    <div class="data-header">
-                        <div class="data-title">${data.title}</div>
-                        <div class="data-date">${data.date}</div>
-                    </div>
-                    <div class="data-content">${data.content}</div>
-                    <div class="data-actions">
-                        <button class="btn btn-secondary copy-btn" data-id="${data.id}">
-                            <i class="fas fa-copy"></i> Salin
-                        </button>
-                        <button class="btn btn-secondary delete-btn" data-id="${data.id}">
-                            <i class="fas fa-trash"></i> Hapus
-                        </button>
-                    </div>
-                `;
-                
-                savedDataContainer.appendChild(dataItem);
-            });
-            
-            // Tambahkan event listener untuk tombol salin
-            document.querySelectorAll('.copy-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(e.currentTarget.getAttribute('data-id'));
-                    const data = savedData.find(d => d.id === id);
-                    
-                    if (data) {
-                        // Salin persis data yang disimpan tanpa penambahan atau pengurangan
-                        const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
-                        
-                        navigator.clipboard.writeText(textToCopy)
-                            .then(() => {
-                                showNotification('Data berhasil disalin!');
-                            })
-                            .catch(err => {
-                                showNotification('Gagal menyalin data!');
-                                console.error('Gagal menyalin: ', err);
-                            });
-                    }
-                });
-            });
-            
-            // Tambahkan event listener untuk tombol hapus
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(e.currentTarget.getAttribute('data-id'));
-                    
-                    // Hapus data dari array
-                    const updatedData = savedData.filter(d => d.id !== id);
-                    
-                    // Simpan kembali ke localStorage
-                    localStorage.setItem('savedData', JSON.stringify(updatedData));
+            // Simpan ke Firebase
+            dataRef.push(data)
+                .then(() => {
+                    // Reset form
+                    dataForm.reset();
                     
                     // Tampilkan notifikasi
-                    showNotification('Data berhasil dihapus!');
+                    showNotification('Data berhasil disimpan!');
                     
-                    // Tampilkan kembali data yang tersimpan
+                    // Tampilkan data yang tersimpan
                     displaySavedData();
+                })
+                .catch(error => {
+                    console.error('Error saving data:', error);
+                    showNotification('Gagal menyimpan data!');
                 });
-            });
+        });
+        
+        // Fungsi untuk menampilkan data yang tersimpan dari Firebase
+        function displaySavedData() {
+            const savedDataContainer = document.getElementById('savedData');
+            
+            // Tampilkan loading
+            savedDataContainer.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+            
+            // Ambil data dari Firebase
+            dataRef.orderByChild('timestamp').once('value')
+                .then(snapshot => {
+                    const data = [];
+                    snapshot.forEach(childSnapshot => {
+                        const childData = childSnapshot.val();
+                        childData.id = childSnapshot.key; // Simpan ID dari Firebase
+                        data.push(childData);
+                    });
+                    
+                    // Urutkan dari yang terbaru
+                    data.reverse();
+                    
+                    if (data.length === 0) {
+                        savedDataContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <p>Belum ada data yang disimpan</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    savedDataContainer.innerHTML = '';
+                    
+                    data.forEach(item => {
+                        const dataItem = document.createElement('div');
+                        dataItem.classList.add('data-item');
+                        dataItem.innerHTML = `
+                            <div class="data-header">
+                                <div class="data-title">${item.title}</div>
+                                <div class="data-date">${item.date}</div>
+                            </div>
+                            <div class="data-content">${item.content}</div>
+                            <div class="data-actions">
+                                <button class="btn btn-secondary copy-btn" data-id="${item.id}">
+                                    <i class="fas fa-copy"></i> Salin
+                                </button>
+                                <button class="btn btn-secondary delete-btn" data-id="${item.id}">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </div>
+                        `;
+                        
+                        savedDataContainer.appendChild(dataItem);
+                    });
+                    
+                    // Tambahkan event listener untuk tombol salin
+                    document.querySelectorAll('.copy-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = e.currentTarget.getAttribute('data-id');
+                            
+                            // Cari data berdasarkan ID
+                            dataRef.child(id).once('value')
+                                .then(snapshot => {
+                                    const data = snapshot.val();
+                                    if (data) {
+                                        // Salin persis data yang disimpan
+                                        const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
+                                        
+                                        navigator.clipboard.writeText(textToCopy)
+                                            .then(() => {
+                                                showNotification('Data berhasil disalin!');
+                                            })
+                                            .catch(err => {
+                                                showNotification('Gagal menyalin data!');
+                                                console.error('Gagal menyalin: ', err);
+                                            });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching data:', error);
+                                    showNotification('Gagal mengambil data!');
+                                });
+                        });
+                    });
+                    
+                    // Tambahkan event listener untuk tombol hapus
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = e.currentTarget.getAttribute('data-id');
+                            
+                            // Hapus data dari Firebase
+                            dataRef.child(id).remove()
+                                .then(() => {
+                                    // Tampilkan notifikasi
+                                    showNotification('Data berhasil dihapus!');
+                                    
+                                    // Tampilkan kembali data yang tersimpan
+                                    displaySavedData();
+                                })
+                                .catch(error => {
+                                    console.error('Error deleting data:', error);
+                                    showNotification('Gagal menghapus data!');
+                                });
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    savedDataContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Gagal memuat data. Periksa koneksi internet Anda.</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        // Fungsi untuk menampilkan data di halaman pencarian
+        function displaySearchData() {
+            const searchResultsContainer = document.getElementById('searchResults');
+            
+            // Tampilkan loading
+            searchResultsContainer.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+            
+            // Ambil data dari Firebase
+            dataRef.orderByChild('timestamp').once('value')
+                .then(snapshot => {
+                    const data = [];
+                    snapshot.forEach(childSnapshot => {
+                        const childData = childSnapshot.val();
+                        childData.id = childSnapshot.key; // Simpan ID dari Firebase
+                        data.push(childData);
+                    });
+                    
+                    // Urutkan dari yang terbaru
+                    data.reverse();
+                    
+                    if (data.length === 0) {
+                        searchResultsContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <p>Belum ada data yang disimpan</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    searchResultsContainer.innerHTML = '';
+                    
+                    data.forEach(item => {
+                        const dataItem = document.createElement('div');
+                        dataItem.classList.add('data-item');
+                        dataItem.innerHTML = `
+                            <div class="data-header">
+                                <div class="data-title">${item.title}</div>
+                                <div class="data-date">${item.date}</div>
+                            </div>
+                            <div class="data-content">${item.content}</div>
+                            <div class="data-actions">
+                                <button class="btn btn-secondary copy-btn-search" data-id="${item.id}">
+                                    <i class="fas fa-copy"></i> Salin
+                                </button>
+                            </div>
+                        `;
+                        
+                        searchResultsContainer.appendChild(dataItem);
+                    });
+                    
+                    // Tambahkan event listener untuk tombol salin
+                    document.querySelectorAll('.copy-btn-search').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = e.currentTarget.getAttribute('data-id');
+                            
+                            // Cari data berdasarkan ID
+                            dataRef.child(id).once('value')
+                                .then(snapshot => {
+                                    const data = snapshot.val();
+                                    if (data) {
+                                        // Salin persis data yang disimpan
+                                        const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
+                                        
+                                        navigator.clipboard.writeText(textToCopy)
+                                            .then(() => {
+                                                showNotification('Data berhasil disalin!');
+                                            })
+                                            .catch(err => {
+                                                showNotification('Gagal menyalin data!');
+                                                console.error('Gagal menyalin: ', err);
+                                            });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching data:', error);
+                                    showNotification('Gagal mengambil data!');
+                                });
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    searchResultsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Gagal memuat data. Periksa koneksi internet Anda.</p>
+                        </div>
+                    `;
+                });
         }
         
         // Fungsi untuk mencari data
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const savedData = JSON.parse(localStorage.getItem('savedData')) || [];
             const searchResultsContainer = document.getElementById('searchResults');
             
             if (searchTerm === '') {
-                searchResultsContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <p>Masukkan kata kunci untuk mencari data</p>
-                    </div>
-                `;
+                // Tampilkan semua data jika search kosong
+                displaySearchData();
                 return;
             }
             
-            // Filter data berdasarkan judul atau isi
-            const filteredData = savedData.filter(data => 
-                data.title.toLowerCase().includes(searchTerm) || 
-                data.content.toLowerCase().includes(searchTerm)
-            );
+            // Tampilkan loading
+            searchResultsContainer.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
             
-            if (filteredData.length === 0) {
-                searchResultsContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <p>Tidak ada data yang ditemukan</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            searchResultsContainer.innerHTML = '';
-            
-            filteredData.forEach(data => {
-                const dataItem = document.createElement('div');
-                dataItem.classList.add('data-item');
-                dataItem.innerHTML = `
-                    <div class="data-header">
-                        <div class="data-title">${highlightText(data.title, searchTerm)}</div>
-                        <div class="data-date">${data.date}</div>
-                    </div>
-                    <div class="data-content">${highlightText(data.content, searchTerm)}</div>
-                    <div class="data-actions">
-                        <button class="btn btn-secondary copy-btn-search" data-id="${data.id}">
-                            <i class="fas fa-copy"></i> Salin
-                        </button>
-                    </div>
-                `;
-                
-                searchResultsContainer.appendChild(dataItem);
-            });
-            
-            // Tambahkan event listener untuk tombol salin
-            document.querySelectorAll('.copy-btn-search').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(e.currentTarget.getAttribute('data-id'));
-                    const data = savedData.find(d => d.id === id);
+            // Ambil data dari Firebase
+            dataRef.orderByChild('timestamp').once('value')
+                .then(snapshot => {
+                    const allData = [];
+                    snapshot.forEach(childSnapshot => {
+                        const childData = childSnapshot.val();
+                        childData.id = childSnapshot.key; // Simpan ID dari Firebase
+                        allData.push(childData);
+                    });
                     
-                    if (data) {
-                        // Salin persis data yang disimpan tanpa penambahan atau pengurangan
-                        const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
-                        
-                        navigator.clipboard.writeText(textToCopy)
-                            .then(() => {
-                                showNotification('Data berhasil disalin!');
-                            })
-                            .catch(err => {
-                                showNotification('Gagal menyalin data!');
-                                console.error('Gagal menyalin: ', err);
-                            });
+                    // Filter data berdasarkan judul atau isi
+                    const filteredData = allData.filter(data => 
+                        data.title.toLowerCase().includes(searchTerm) || 
+                        data.content.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    if (filteredData.length === 0) {
+                        searchResultsContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <p>Tidak ada data yang ditemukan</p>
+                            </div>
+                        `;
+                        return;
                     }
+                    
+                    searchResultsContainer.innerHTML = '';
+                    
+                    filteredData.forEach(data => {
+                        const dataItem = document.createElement('div');
+                        dataItem.classList.add('data-item');
+                        dataItem.innerHTML = `
+                            <div class="data-header">
+                                <div class="data-title">${highlightText(data.title, searchTerm)}</div>
+                                <div class="data-date">${data.date}</div>
+                            </div>
+                            <div class="data-content">${highlightText(data.content, searchTerm)}</div>
+                            <div class="data-actions">
+                                <button class="btn btn-secondary copy-btn-search" data-id="${data.id}">
+                                    <i class="fas fa-copy"></i> Salin
+                                </button>
+                            </div>
+                        `;
+                        
+                        searchResultsContainer.appendChild(dataItem);
+                    });
+                    
+                    // Tambahkan event listener untuk tombol salin
+                    document.querySelectorAll('.copy-btn-search').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = e.currentTarget.getAttribute('data-id');
+                            
+                            // Cari data berdasarkan ID
+                            dataRef.child(id).once('value')
+                                .then(snapshot => {
+                                    const data = snapshot.val();
+                                    if (data) {
+                                        // Salin persis data yang disimpan
+                                        const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
+                                        
+                                        navigator.clipboard.writeText(textToCopy)
+                                            .then(() => {
+                                                showNotification('Data berhasil disalin!');
+                                            })
+                                            .catch(err => {
+                                                showNotification('Gagal menyalin data!');
+                                                console.error('Gagal menyalin: ', err);
+                                            });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching data:', error);
+                                    showNotification('Gagal mengambil data!');
+                                });
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    searchResultsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Gagal memuat data. Periksa koneksi internet Anda.</p>
+                        </div>
+                    `;
                 });
-            });
         });
         
         // Fungsi untuk menyoroti teks yang cocok dengan pencarian
@@ -829,15 +1038,25 @@
         }
         
         // Tampilkan data yang tersimpan saat halaman dimuat
-        displaySavedData();
+        document.addEventListener('DOMContentLoaded', () => {
+            displaySavedData();
+            
+            // Inisialisasi tampilan pencarian
+            document.getElementById('searchResults').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <p>Masukkan kata kunci untuk mencari data</p>
+                </div>
+            `;
+        });
         
-        // Inisialisasi tampilan pencarian
-        document.getElementById('searchResults').innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-search"></i>
-                <p>Masukkan kata kunci untuk mencari data</p>
-            </div>
-        `;
+        // Listener untuk perubahan data real-time
+        dataRef.on('value', (snapshot) => {
+            // Periksa apakah kita berada di halaman simpan data
+            if (document.getElementById('save-page').style.display !== 'none') {
+                displaySavedData();
+            }
+        });
     </script>
 </body>
 </html>
