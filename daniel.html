@@ -582,11 +582,39 @@ animation: spin 1s linear infinite;
 0% { transform: rotate(0deg); }
 100% { transform: rotate(360deg); }
 }
+
+/* Status connection */
+.connection-status {
+position: fixed;
+top: 20px;
+right: 20px;
+padding: 10px 15px;
+border-radius: 8px;
+font-size: 0.9rem;
+z-index: 1000;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.connection-status.connected {
+background: rgba(76, 175, 80, 0.9);
+}
+
+.connection-status.disconnected {
+background: rgba(244, 67, 54, 0.9);
+}
 </style>
 </head>
 <body>
 <!-- Efek bintang jatuh -->
 <div class="stars-container" id="starsContainer"></div>
+
+<!-- Connection Status -->
+<div class="connection-status disconnected" id="connectionStatus">
+<i class="fas fa-wifi"></i>
+<span>Memeriksa koneksi...</span>
+</div>
 
 <!-- Login Container -->
 <div class="login-container" id="loginContainer">
@@ -698,7 +726,7 @@ animation: spin 1s linear infinite;
 </div>
 
 <div class="data-container">
-<h2 style="margin-bottom: 20px; color: #4facfe;">Data Tersimpan</h2>
+<h2 style="margin-bottom: 20px; color: #4facfe;">Semua Data Tersimpan</h2>
 <div id="savedData">
 <!-- Data akan ditampilkan di sini -->
 </div>
@@ -772,19 +800,21 @@ animation: spin 1s linear infinite;
 <div class="form-container">
 <h2 style="margin-bottom: 20px; color: #4facfe;">DataApp</h2>
 <p style="line-height: 1.6; margin-bottom: 15px;">
-DataApp adalah aplikasi sederhana untuk menyimpan dan mengelola data penting Anda.
+DataApp adalah aplikasi sederhana untuk menyimpan dan mengelola data penting.
 Dengan antarmuka yang modern dan mudah digunakan, Anda dapat dengan cepat menyimpan
-informasi dan menemukannya kembali saat dibutuhkan.
+informasi dan menemukannya kembali saat dibutuhkan. Data disimpan di cloud sehingga
+dapat diakses oleh siapa saja yang menggunakan aplikasi ini.
 </p>
 <p style="line-height: 1.6; margin-bottom: 15px;">
 Fitur utama:
 </p>
 <ul style="margin-left: 20px; line-height: 1.8;">
 <li>Penyimpanan data di cloud dengan Firebase</li>
+<li>Data dapat diakses oleh semua pengguna</li>
 <li>Pencarian data yang cepat dan mudah</li>
 <li>Tombol salin untuk mengambil data dengan tepat</li>
 <li>Antarmuka yang modern dan responsif</li>
-<li>Halaman Admin.IP untuk melihat semua data tersimpan</li>
+<li>Halaman Admin.IP untuk melihat informasi IP</li>
 </ul>
 <p style="margin-top: 20px; color: #888;">
 Versi 1.0.0
@@ -847,6 +877,31 @@ appId: "1:123456789:web:abcdef123456"
 // Inisialisasi Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+// Cek koneksi Firebase
+function checkFirebaseConnection() {
+const connectionStatus = document.getElementById('connectionStatus');
+try {
+// Coba akses Firestore untuk memastikan koneksi
+db.collection('connectionCheck').doc('check').get()
+.then(() => {
+connectionStatus.className = 'connection-status connected';
+connectionStatus.innerHTML = '<i class="fas fa-wifi"></i><span>Terhubung ke Firebase</span>';
+})
+.catch(error => {
+console.error('Koneksi Firebase gagal:', error);
+connectionStatus.className = 'connection-status disconnected';
+connectionStatus.innerHTML = '<i class="fas fa-wifi"></i><span>Koneksi Firebase gagal</span>';
+});
+} catch (error) {
+console.error('Inisialisasi Firebase gagal:', error);
+connectionStatus.className = 'connection-status disconnected';
+connectionStatus.innerHTML = '<i class="fas fa-wifi"></i><span>Koneksi Firebase gagal</span>';
+}
+}
+
+// Panggil fungsi pengecekan koneksi
+checkFirebaseConnection();
 
 // Data pengguna (dalam aplikasi nyata, ini harus dari server)
 const users = [
@@ -1013,8 +1068,8 @@ timestamp: firebase.firestore.FieldValue.serverTimestamp()
 };
 
 try {
-// Simpan data ke Firestore
-await db.collection('savedData').add(data);
+// Simpan data ke Firestore dengan koleksi 'publicData'
+await db.collection('publicData').add(data);
     
 // Reset form
 dataForm.reset();
@@ -1030,9 +1085,8 @@ showNotification('Gagal menyimpan data!');
 }
 });
 
-// Fungsi untuk menampilkan data yang tersimpan
+// Fungsi untuk menampilkan data yang tersimpan (tanpa filter userId)
 async function displaySavedData() {
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 const savedDataContainer = document.getElementById('savedData');
 
 // Tampilkan indikator loading
@@ -1043,9 +1097,8 @@ savedDataContainer.innerHTML = `
 `;
 
 try {
-// Ambil data dari Firestore
-const querySnapshot = await db.collection('savedData')
-.where('userId', '==', currentUser.id)
+// Ambil semua data dari Firestore dari koleksi 'publicData'
+const querySnapshot = await db.collection('publicData')
 .orderBy('timestamp', 'desc')
 .get();
 
@@ -1068,7 +1121,7 @@ dataItem.classList.add('data-item');
 dataItem.innerHTML = `
 <div class="data-header">
 <div class="data-title">${data.title}</div>
-<div class="data-date">${data.date}</div>
+<div class="data-date">${data.date} oleh ${data.userName}</div>
 </div>
 <div class="data-content">${data.content}</div>
 <div class="data-actions">
@@ -1088,10 +1141,10 @@ savedDataContainer.appendChild(dataItem);
 document.querySelectorAll('.copy-btn').forEach(btn => {
 btn.addEventListener('click', (e) => {
 const id = e.currentTarget.getAttribute('data-id');
-db.collection('savedData').doc(id).get().then(doc => {
+db.collection('publicData').doc(id).get().then(doc => {
 if (doc.exists) {
 const data = doc.data();
-const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
+const textToCopy = `${data.title}\n${data.content}\n${data.date} oleh ${data.userName}`;
 
 navigator.clipboard.writeText(textToCopy)
 .then(() => {
@@ -1111,7 +1164,7 @@ document.querySelectorAll('.delete-btn').forEach(btn => {
 btn.addEventListener('click', async (e) => {
 const id = e.currentTarget.getAttribute('data-id');
 try {
-await db.collection('savedData').doc(id).delete();
+await db.collection('publicData').doc(id).delete();
 showNotification('Data berhasil dihapus!');
 displaySavedData();
 } catch (error) {
@@ -1131,110 +1184,17 @@ savedDataContainer.innerHTML = `
 }
 }
 
-// Fungsi untuk menampilkan semua data tersimpan (untuk admin)
+// Fungsi untuk menampilkan semua data tersimpan (untuk admin) - sekarang sama dengan displaySavedData
 async function displayAllSavedData() {
-const allSavedDataContainer = document.getElementById('allSavedData');
-
-// Tampilkan indikator loading
-allSavedDataContainer.innerHTML = `
-<div class="loading">
-<i class="fas fa-spinner"></i>
-</div>
-`;
-
-try {
-// Ambil semua data dari Firestore
-const querySnapshot = await db.collection('savedData')
-.orderBy('timestamp', 'desc')
-.get();
-
-if (querySnapshot.empty) {
-allSavedDataContainer.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-folder-open"></i>
-<p>Belum ada data yang disimpan</p>
-</div>
-`;
-return;
+// Karena sekarang semua data sudah ditampilkan di halaman utama, 
+// kita bisa memanggil displaySavedData() atau membuat tampilan yang sama
+displaySavedData();
 }
 
-allSavedDataContainer.innerHTML = '';
-
-querySnapshot.forEach(doc => {
-const data = doc.data();
-const dataItem = document.createElement('div');
-dataItem.classList.add('data-item');
-dataItem.innerHTML = `
-<div class="data-header">
-<div class="data-title">${data.title}</div>
-<div class="data-date">${data.date} oleh ${data.userName}</div>
-</div>
-<div class="data-content">${data.content}</div>
-<div class="data-actions">
-<button class="btn btn-secondary copy-btn-all" data-id="${doc.id}">
-<i class="fas fa-copy"></i> Salin
-</button>
-<button class="btn btn-danger delete-btn-all" data-id="${doc.id}">
-<i class="fas fa-trash"></i> Hapus
-</button>
-</div>
-`;
-
-allSavedDataContainer.appendChild(dataItem);
-});
-
-// Tambahkan event listener untuk tombol salin
-document.querySelectorAll('.copy-btn-all').forEach(btn => {
-btn.addEventListener('click', (e) => {
-const id = e.currentTarget.getAttribute('data-id');
-db.collection('savedData').doc(id).get().then(doc => {
-if (doc.exists) {
-const data = doc.data();
-const textToCopy = `${data.title}\n${data.content}\n${data.date} oleh ${data.userName}`;
-
-navigator.clipboard.writeText(textToCopy)
-.then(() => {
-showNotification('Data berhasil disalin!');
-})
-.catch(err => {
-showNotification('Gagal menyalin data!');
-console.error('Gagal menyalin: ', err);
-});
-}
-});
-});
-});
-
-// Tambahkan event listener untuk tombol hapus
-document.querySelectorAll('.delete-btn-all').forEach(btn => {
-btn.addEventListener('click', async (e) => {
-const id = e.currentTarget.getAttribute('data-id');
-try {
-await db.collection('savedData').doc(id).delete();
-showNotification('Data berhasil dihapus!');
-displayAllSavedData();
-} catch (error) {
-console.error('Error menghapus data: ', error);
-showNotification('Gagal menghapus data!');
-}
-});
-});
-} catch (error) {
-console.error('Error mengambil semua data: ', error);
-allSavedDataContainer.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-exclamation-triangle"></i>
-<p>Gagal memuat data. Silakan coba lagi.</p>
-</div>
-`;
-}
-}
-
-// Fungsi untuk mencari data
+// Fungsi untuk mencari data (tanpa filter userId)
 const searchInput = document.getElementById('searchInput');
 searchInput.addEventListener('input', async (e) => {
 const searchTerm = e.target.value.toLowerCase();
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 const searchResultsContainer = document.getElementById('searchResults');
 
 if (searchTerm === '') {
@@ -1255,10 +1215,8 @@ searchResultsContainer.innerHTML = `
 `;
 
 try {
-// Ambil data dari Firestore
-const querySnapshot = await db.collection('savedData')
-.where('userId', '==', currentUser.id)
-.get();
+// Ambil semua data dari Firestore dari koleksi 'publicData'
+const querySnapshot = await db.collection('publicData').get();
 
 // Filter data berdasarkan judul atau isi
 const filteredData = [];
@@ -1288,7 +1246,7 @@ dataItem.classList.add('data-item');
 dataItem.innerHTML = `
 <div class="data-header">
 <div class="data-title">${highlightText(item.data.title, searchTerm)}</div>
-<div class="data-date">${item.data.date}</div>
+<div class="data-date">${item.data.date} oleh ${item.data.userName}</div>
 </div>
 <div class="data-content">${highlightText(item.data.content, searchTerm)}</div>
 <div class="data-actions">
@@ -1305,10 +1263,10 @@ searchResultsContainer.appendChild(dataItem);
 document.querySelectorAll('.copy-btn-search').forEach(btn => {
 btn.addEventListener('click', (e) => {
 const id = e.currentTarget.getAttribute('data-id');
-db.collection('savedData').doc(id).get().then(doc => {
+db.collection('publicData').doc(id).get().then(doc => {
 if (doc.exists) {
 const data = doc.data();
-const textToCopy = `${data.title}\n${data.content}\n${data.date}`;
+const textToCopy = `${data.title}\n${data.content}\n${data.date} oleh ${data.userName}`;
 
 navigator.clipboard.writeText(textToCopy)
 .then(() => {
