@@ -755,6 +755,45 @@ gap: 20px;
 flex: 1;
 }
 
+/* Tab Navigation */
+.tab-nav {
+display: flex;
+margin-bottom: 20px;
+border-bottom: 1px solid rgba(67, 97, 238, 0.2);
+}
+
+.tab-btn {
+flex: 1;
+padding: 12px 20px;
+background: none;
+border: none;
+border-bottom: 3px solid transparent;
+color: var(--text-light);
+font-family: 'Poppins', sans-serif;
+font-weight: 500;
+cursor: pointer;
+transition: var(--transition);
+text-align: center;
+}
+
+.tab-btn.active {
+color: var(--primary);
+border-bottom-color: var(--primary);
+}
+
+.tab-btn:hover {
+color: var(--primary);
+}
+
+.tab-content {
+display: none;
+}
+
+.tab-content.active {
+display: block;
+animation: fadeInUp 0.4s both;
+}
+
 /* Mobile Toggle Button - Floating Action Button */
 .menu-toggle {
 position: fixed;
@@ -903,6 +942,20 @@ justify-content: center;
 flex-direction: column;
 gap: 0;
 }
+
+.tab-nav {
+flex-direction: column;
+}
+
+.tab-btn {
+border-bottom: none;
+border-left: 3px solid transparent;
+text-align: left;
+}
+
+.tab-btn.active {
+border-left-color: var(--primary);
+}
 }
 </style>
 </head>
@@ -922,18 +975,6 @@ gap: 0;
 <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
 <span class="menu-text">LINETOGEL.COM</span>
 </a>
-<a href="#" class="menu-item" id="dataRekeningMenu">
-<span class="menu-icon"><i class="fas fa-piggy-bank"></i></span>
-<span class="menu-text">Data Rekening</span>
-</a>
-<a href="#" class="menu-item" id="inputDataMenu">
-<span class="menu-icon"><i class="fas fa-plus-circle"></i></span>
-<span class="menu-text">Input Data</span>
-</a>
-<a href="#" class="menu-item" id="reportMenu">
-<span class="menu-icon"><i class="fas fa-file-alt"></i></span>
-<span class="menu-text">Report</span>
-</a>
 <a href="http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL" class="menu-item" target="_blank">
 <span class="menu-icon"><i class="fas fa-headset"></i></span>
 <span class="menu-text">Admin Line</span>
@@ -949,6 +990,18 @@ gap: 0;
 <a href="https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec" class="menu-item" target="_blank">
 <span class="menu-icon"><i class="fas fa-door-open"></i></span>
 <span class="menu-text">Izin Keluar</span>
+</a>
+<a href="#" class="menu-item" id="dataRekeningMenu">
+<span class="menu-icon"><i class="fas fa-piggy-bank"></i></span>
+<span class="menu-text">Data Rekening</span>
+</a>
+<a href="#" class="menu-item" id="inputDataMenu">
+<span class="menu-icon"><i class="fas fa-plus-circle"></i></span>
+<span class="menu-text">Input Data</span>
+</a>
+<a href="#" class="menu-item" id="reportMenu">
+<span class="menu-icon"><i class="fas fa-file-alt"></i></span>
+<span class="menu-text">Report</span>
 </a>
 </div>
 </div>
@@ -1015,6 +1068,16 @@ gap: 0;
 
 <div class="data-container" id="dataRekeningContainer" style="display: none;">
 <h2><i class="fas fa-piggy-bank"></i> Data Rekening</h2>
+<div class="tab-nav">
+<button class="tab-btn active" id="viewRekeningTab" onclick="switchTab('viewRekening')">
+<i class="fas fa-table"></i> Lihat Data
+</button>
+<button class="tab-btn" id="addRekeningTab" onclick="switchTab('addRekening')">
+<i class="fas fa-plus-circle"></i> Tambah Data
+</button>
+</div>
+
+<div id="viewRekening" class="tab-content active">
 <p>Cari data rekening berdasarkan Bank, Nomor Rekening, atau Nama</p>
 <div class="search-container">
 <input type="text" id="searchRekening" class="search-input" placeholder="Cari rekening...">
@@ -1045,43 +1108,44 @@ Tidak ditemukan data yang sesuai
 </div>
 </div>
 
+<div id="addRekening" class="tab-content">
+<p>Tambahkan data rekening baru ke dalam sistem</p>
+<form id="addRekeningForm">
+<div class="form-row">
+<div class="form-group">
+<label class="form-label" for="addBank">Bank</label>
+<input type="text" id="addBank" class="form-input" placeholder="Masukkan nama bank" required>
+</div>
+<div class="form-group">
+<label class="form-label" for="addNomorRekening">Nomor Rekening</label>
+<input type="text" id="addNomorRekening" class="form-input" placeholder="Masukkan nomor rekening" required>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="addNamaRekening">Nama Pemilik</label>
+<input type="text" id="addNamaRekening" class="form-input" placeholder="Masukkan nama pemilik rekening" required>
+</div>
+<div class="form-group">
+<button type="submit" class="form-btn">
+<i class="fas fa-save"></i> Simpan Data Rekening
+</button>
+</div>
+</form>
+<div id="addRekeningMessage" style="display: none; margin-top: 20px; padding: 15px; border-radius: 8px;"></div>
+</div>
+</div>
+
 <div class="data-container" id="inputDataContainer" style="display: none;">
 <h2><i class="fas fa-plus-circle"></i> Input Data</h2>
 <p>Masukkan data baru ke dalam sistem</p>
 <form id="inputDataForm">
-<div class="form-row">
 <div class="form-group">
 <label class="form-label" for="inputJudul">Judul</label>
 <input type="text" id="inputJudul" class="form-input" placeholder="Masukkan judul" required>
 </div>
 <div class="form-group">
-<label class="form-label" for="inputKategori">Kategori</label>
-<select id="inputKategori" class="form-input" required>
-<option value="">Pilih kategori</option>
-<option value="Keuangan">Keuangan</option>
-<option value="Operasional">Operasional</option>
-<option value="Lainnya">Lainnya</option>
-</select>
-</div>
-</div>
-<div class="form-group">
 <label class="form-label" for="inputDeskripsi">Deskripsi</label>
 <textarea id="inputDeskripsi" class="form-textarea" placeholder="Masukkan deskripsi" required></textarea>
-</div>
-<div class="form-row">
-<div class="form-group">
-<label class="form-label" for="inputTanggal">Tanggal</label>
-<input type="date" id="inputTanggal" class="form-input" required>
-</div>
-<div class="form-group">
-<label class="form-label" for="inputStatus">Status</label>
-<select id="inputStatus" class="form-input" required>
-<option value="">Pilih status</option>
-<option value="Pending">Pending</option>
-<option value="Proses">Proses</option>
-<option value="Selesai">Selesai</option>
-</select>
-</div>
 </div>
 <div class="form-group">
 <button type="submit" class="form-btn">
@@ -1289,9 +1353,6 @@ document.getElementById('dataRekeningContainer').style.display = 'none';
 document.getElementById('inputDataContainer').style.display = 'block';
 document.getElementById('reportContainer').style.display = 'none';
 
-// Set today's date as default
-document.getElementById('inputTanggal').valueAsDate = new Date();
-
 document.getElementById('inputDataContainer').scrollIntoView({
 behavior: 'smooth',
 block: 'start'
@@ -1309,6 +1370,29 @@ document.getElementById('reportContainer').scrollIntoView({
 behavior: 'smooth',
 block: 'start'
 });
+}
+
+// Tab switching function
+function switchTab(tabName) {
+// Hide all tab contents
+document.querySelectorAll('.tab-content').forEach(tab => {
+tab.classList.remove('active');
+});
+
+// Remove active class from all tab buttons
+document.querySelectorAll('.tab-btn').forEach(btn => {
+btn.classList.remove('active');
+});
+
+// Show selected tab content
+document.getElementById(tabName).classList.add('active');
+
+// Add active class to the corresponding button
+if (tabName === 'viewRekening') {
+document.getElementById('viewRekeningTab').classList.add('active');
+} else if (tabName === 'addRekening') {
+document.getElementById('addRekeningTab').classList.add('active');
+}
 }
 
 // Menu click handlers with ripple effect
@@ -1450,16 +1534,56 @@ noResults.style.display = 'flex';
 }, 800);
 }
 
+// Add Rekening Form Functionality
+document.getElementById('addRekeningForm').addEventListener('submit', function(e) {
+e.preventDefault();
+    
+const formData = {
+bank: document.getElementById('addBank').value,
+rekening: document.getElementById('addNomorRekening').value,
+nama: document.getElementById('addNamaRekening').value
+};
+
+const messageDiv = document.getElementById('addRekeningMessage');
+messageDiv.style.display = 'block';
+messageDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan data rekening...';
+messageDiv.style.background = 'rgba(67, 97, 238, 0.1)';
+messageDiv.style.color = 'var(--primary)';
+
+// Simulate saving data
+setTimeout(() => {
+google.script.run.withSuccessHandler(function(response) {
+messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Data rekening berhasil disimpan!';
+messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
+messageDiv.style.color = 'var(--success)';
+    
+// Reset form
+document.getElementById('addRekeningForm').reset();
+    
+// Hide message after 3 seconds
+setTimeout(() => {
+messageDiv.style.display = 'none';
+}, 3000);
+    
+// Switch to view tab and reload data
+switchTab('viewRekening');
+loadRekeningData();
+}).withFailureHandler(function(error) {
+messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
+messageDiv.style.background = 'rgba(239, 35, 60, 0.1)';
+messageDiv.style.color = 'var(--danger)';
+console.error('Error saving rekening data:', error);
+}).saveRekeningData(formData);
+}, 800);
+});
+
 // Input Data Functionality
 document.getElementById('inputDataForm').addEventListener('submit', function(e) {
 e.preventDefault();
     
 const formData = {
 judul: document.getElementById('inputJudul').value,
-kategori: document.getElementById('inputKategori').value,
-deskripsi: document.getElementById('inputDeskripsi').value,
-tanggal: document.getElementById('inputTanggal').value,
-status: document.getElementById('inputStatus').value
+deskripsi: document.getElementById('inputDeskripsi').value
 };
 
 const messageDiv = document.getElementById('inputDataMessage');
@@ -1477,7 +1601,6 @@ messageDiv.style.color = 'var(--success)';
     
 // Reset form
 document.getElementById('inputDataForm').reset();
-document.getElementById('inputTanggal').valueAsDate = new Date();
     
 // Hide message after 3 seconds
 setTimeout(() => {
