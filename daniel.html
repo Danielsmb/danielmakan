@@ -1,1376 +1,1785 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataApp - Aplikasi Penyimpanan Data</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --maroon: #800000;
-            --dark-maroon: #5c0000;
-            --light-maroon: #a52a2a;
-            --white: #ffffff;
-            --light-gray: #f5f5f5;
-            --medium-gray: #e0e0e0;
-            --dark-gray: #333333;
-            --blue: #2196F3;
-            --green: #4CAF50;
-            --red: #f44336;
-            --orange: #ff9800;
-            --purple: #9c27b0;
-            --teal: #009688;
-            --gold: #FFD700;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--maroon);
-            background-image: linear-gradient(135deg, var(--dark-maroon) 0%, var(--maroon) 100%);
-            color: var(--white);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Login Page Styles */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: var(--maroon);
-            background-image: linear-gradient(135deg, var(--dark-maroon) 0%, var(--maroon) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
-            animation: pulse 15s infinite linear;
-        }
-
-        @keyframes pulse {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .login-card {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            padding: 40px;
-            width: 400px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            position: relative;
-            z-index: 1;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .login-header h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, var(--gold), var(--white), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-
-        .login-header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-            font-weight: 300;
-            letter-spacing: 1px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 500;
-            color: var(--gold);
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 15px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background-color: rgba(255, 255, 255, 0.15);
-            color: var(--white);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2), 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, var(--gold), var(--orange));
-            color: var(--dark-maroon);
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(255, 215, 0, 0.4);
-        }
-
-        .error-message {
-            color: var(--red);
-            margin-top: 15px;
-            font-size: 0.95rem;
-            text-align: center;
-            display: none;
-            padding: 10px;
-            background-color: rgba(244, 67, 54, 0.1);
-            border-radius: 8px;
-            border-left: 3px solid var(--red);
-        }
-
-        /* Main App Styles */
-        .app-container {
-            display: none;
-            flex: 1;
-            flex-direction: row;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 260px;
-            background-color: var(--dark-maroon);
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
-            z-index: 0;
-        }
-
-        .logo {
-            text-align: center;
-            padding: 0 20px 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo h2 {
-            font-size: 2rem;
-            margin-bottom: 5px;
-            background: linear-gradient(45deg, var(--gold), var(--white));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
-        }
-
-        .logo p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-            font-weight: 300;
-        }
-
-        .user-info {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .user-info p {
-            margin-bottom: 8px;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .user-info .user-role {
-            font-size: 0.9rem;
-            color: var(--gold);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 5px 12px;
-            background-color: rgba(255, 215, 0, 0.1);
-            border-radius: 20px;
-            display: inline-block;
-        }
-
-        .menu {
-            flex: 1;
-            padding: 20px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 25px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .menu-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0));
-            transition: width 0.3s ease;
-        }
-
-        .menu-item:hover::before {
-            width: 100%;
-        }
-
-        .menu-item:hover {
-            color: var(--white);
-        }
-
-        .menu-item.active {
-            background-color: rgba(255, 215, 0, 0.1);
-            color: var(--gold);
-            border-left: 4px solid var(--gold);
-        }
-
-        .menu-item i {
-            margin-right: 15px;
-            font-size: 1.3rem;
-            width: 25px;
-            text-align: center;
-        }
-
-        .logout-btn {
-            margin: 20px;
-            padding: 12px;
-            background-color: rgba(244, 67, 54, 0.2);
-            color: var(--red);
-            border: 1px solid var(--red);
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .logout-btn:hover {
-            background-color: var(--red);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3);
-        }
-
-        /* Content Styles */
-        .content {
-            flex: 1;
-            padding: 30px;
-            background-color: rgba(255, 255, 255, 0.05);
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at top right, rgba(255, 215, 0, 0.05), transparent 70%);
-            z-index: 0;
-        }
-
-        .content-header {
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .content-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: var(--white);
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            background: linear-gradient(45deg, var(--white), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .content-header p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
-            max-width: 80%;
-        }
-
-        .card {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--gold), var(--orange));
-        }
-
-        .card-header {
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .card-header h2 {
-            font-size: 1.8rem;
-            color: var(--white);
-            background: linear-gradient(45deg, var(--white), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Input Data Styles */
-        .form-group textarea {
-            width: 100%;
-            padding: 15px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background-color: rgba(255, 255, 255, 0.15);
-            color: var(--white);
-            font-size: 1rem;
-            min-height: 180px;
-            resize: vertical;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2), 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .form-group textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-right: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, var(--blue), var(--teal));
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(33, 150, 243, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(45deg, var(--green), var(--teal));
-            color: var(--white);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(76, 175, 80, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, var(--red), var(--purple));
-            color: var(--white);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(244, 67, 54, 0.3);
-        }
-
-        /* Search Data Styles */
-        .search-container {
-            margin-bottom: 30px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 18px 25px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background-color: rgba(255, 255, 255, 0.15);
-            color: var(--white);
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2), 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .data-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-        }
-
-        .data-item {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 25px;
-            border-left: 5px solid var(--gold);
-            position: relative;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .data-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.1), transparent 70%);
-            border-radius: 50%;
-            transform: translate(30px, -30px);
-        }
-
-        .data-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            background-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .data-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--gold);
-            line-height: 1.3;
-            max-height: 3.6rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .data-content {
-            white-space: pre-wrap;
-            word-break: break-word;
-            margin-bottom: 20px;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
-            max-height: 150px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .data-content::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .data-content::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .data-content::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 10px;
-        }
-
-        .data-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .copy-btn {
-            background: linear-gradient(45deg, var(--gold), var(--orange));
-            color: var(--dark-maroon);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.2);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .copy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .copy-btn.copied {
-            background: linear-gradient(45deg, var(--green), var(--teal));
-            color: var(--white);
-        }
-
-        /* Admin Styles */
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 25px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .admin-table th,
-        .admin-table td {
-            padding: 15px 20px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .admin-table th {
-            background-color: rgba(255, 215, 0, 0.1);
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .admin-table tr:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .admin-table td {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-        }
-
-        .access-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .access-full {
-            background: linear-gradient(45deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
-            color: var(--green);
-            border: 1px solid rgba(76, 175, 80, 0.3);
-        }
-
-        .access-limited {
-            background: linear-gradient(45deg, rgba(255, 152, 0, 0.2), rgba(255, 152, 0, 0.1));
-            color: var(--orange);
-            border: 1px solid rgba(255, 152, 0, 0.3);
-        }
-
-        .admin-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .admin-form .form-group {
-            margin-bottom: 0;
-        }
-
-        .admin-form select {
-            width: 100%;
-            padding: 15px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            background-color: rgba(255, 255, 255, 0.15);
-            color: var(--white);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .admin-form select:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2), 0 4px 15px rgba(0, 0, 0, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .admin-form select option {
-            background-color: var(--dark-maroon);
-            color: var(--white);
-        }
-
-        .notification {
-            position: fixed;
-            top: 25px;
-            right: 25px;
-            padding: 18px 25px;
-            border-radius: 12px;
-            background: linear-gradient(45deg, var(--green), var(--teal));
-            color: var(--white);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            transform: translateX(150%);
-            transition: transform 0.4s ease;
-            z-index: 1000;
-            font-weight: 500;
-            max-width: 350px;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.error {
-            background: linear-gradient(45deg, var(--red), var(--purple));
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 80px;
-            }
-
-            .logo h2,
-            .logo p,
-            .user-info p,
-            .menu-item span {
-                display: none;
-            }
-
-            .menu-item {
-                justify-content: center;
-                padding: 18px 0;
-            }
-
-            .menu-item i {
-                margin-right: 0;
-                font-size: 1.8rem;
-            }
-
-            .content {
-                padding: 20px;
-            }
-
-            .admin-form {
-                grid-template-columns: 1fr;
-            }
-
-            .data-list {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Line Togel - Daniel</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+--primary: #4361ee;
+--primary-dark: #3a56d4;
+--primary-light: #4895ef;
+--secondary: #7209b7;
+--accent: #f72585;
+--success: #4cc9f0;
+--warning: #f8961e;
+--danger: #ef233c;
+--dark: #14213d;
+--darker: #0a1128;
+--light: #f8f9fa;
+--lighter: #ffffff;
+--text: #2b2d42;
+--text-light: #8d99ae;
+--card-bg: rgba(255, 255, 255, 0.95);
+--glass: rgba(255, 255, 255, 0.15);
+--glass-dark: rgba(21, 21, 21, 0.25);
+--shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+--shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.2);
+--border: 1px solid rgba(255, 255, 255, 0.18);
+--border-radius: 12px;
+--border-radius-lg: 20px;
+--transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Poppins', sans-serif;
+background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+color: var(--text);
+min-height: 100vh;
+overflow-x: hidden;
+line-height: 1.6;
+}
+
+/* Neon Glass Sidebar */
+.sidebar {
+width: 280px;
+background: linear-gradient(135deg, var(--glass-dark), var(--glass));
+backdrop-filter: blur(16px);
+-webkit-backdrop-filter: blur(16px);
+height: 100vh;
+position: fixed;
+box-shadow: var(--shadow);
+border-right: var(--border);
+z-index: 100;
+transform: translateX(0);
+transition: var(--transition);
+overflow: hidden;
+}
+
+.sidebar::before {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, rgba(0,0,0,0) 70%);
+animation: rotate 20s linear infinite;
+z-index: -1;
+}
+
+.sidebar-header {
+padding: 25px;
+text-align: center;
+border-bottom: var(--border);
+position: relative;
+overflow: hidden;
+}
+
+.sidebar-header::after {
+content: '';
+position: absolute;
+bottom: 0;
+left: 25%;
+width: 50%;
+height: 2px;
+background: linear-gradient(to right, transparent, var(--accent), transparent);
+}
+
+.sidebar-header h2 {
+margin: 0;
+font-size: 1.8rem;
+font-weight: 700;
+color: white;
+text-shadow: 0 0 10px rgba(114, 9, 183, 0.5);
+letter-spacing: 1px;
+position: relative;
+}
+
+.sidebar-header h2::after {
+content: '';
+position: absolute;
+bottom: -5px;
+left: 0;
+width: 100%;
+height: 2px;
+background: linear-gradient(to right, var(--primary), var(--accent));
+border-radius: 2px;
+}
+
+.sidebar-menu {
+padding: 20px 0;
+}
+
+.menu-item {
+display: flex;
+align-items: center;
+padding: 16px 25px;
+color: var(--light);
+text-decoration: none;
+margin: 8px 15px;
+border-radius: var(--border-radius);
+position: relative;
+overflow: hidden;
+transition: var(--transition);
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(5px);
+}
+
+.menu-item::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+transition: 0.6s;
+}
+
+.menu-item:hover::before {
+left: 100%;
+}
+
+.menu-item:hover {
+background: rgba(255,255,255,0.15);
+transform: translateX(8px);
+box-shadow: 0 5px 15px rgba(114, 9, 183, 0.3);
+}
+
+.menu-item.active {
+background: linear-gradient(90deg, rgba(67, 97, 238, 0.3), rgba(114, 9, 183, 0.2));
+box-shadow: 0 5px 20px rgba(114, 9, 183, 0.4);
+border-left: 3px solid var(--accent);
+}
+
+.menu-icon {
+margin-right: 15px;
+font-size: 1.2rem;
+color: var(--accent);
+transition: var(--transition);
+text-shadow: 0 0 8px rgba(247, 37, 133, 0.5);
+}
+
+.menu-item:hover .menu-icon {
+transform: scale(1.2);
+color: white;
+}
+
+.menu-text {
+font-weight: 500;
+transition: var(--transition);
+}
+
+.menu-item:hover .menu-text {
+font-weight: 600;
+color: white;
+}
+
+/* Main Content Area */
+.main-content {
+flex: 1;
+margin-left: 280px;
+padding: 30px;
+min-height: 100vh;
+position: relative;
+z-index: 1;
+transition: var(--transition);
+}
+
+.header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 30px;
+animation: fadeInDown 0.8s both 0.2s;
+background: var(--lighter);
+padding: 20px 25px;
+border-radius: var(--border-radius);
+box-shadow: var(--shadow);
+}
+
+.header h1 {
+font-size: 2.2rem;
+font-weight: 700;
+background: linear-gradient(to right, var(--primary), var(--secondary));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+letter-spacing: 1px;
+position: relative;
+display: inline-block;
+}
+
+.header h1::after {
+content: '';
+position: absolute;
+bottom: -5px;
+left: 0;
+width: 100%;
+height: 3px;
+background: linear-gradient(to right, var(--primary), var(--secondary));
+border-radius: 3px;
+}
+
+#clock {
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+color: white;
+padding: 12px 20px;
+border-radius: var(--border-radius);
+box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+border: none;
+font-weight: 500;
+animation: pulse 2s infinite;
+transition: var(--transition);
+text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+#clock:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+}
+
+/* Card Grid - Modern Glass Cards */
+.card-container {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 25px;
+margin-top: 30px;
+}
+
+.card {
+background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+border-radius: var(--border-radius-lg);
+padding: 25px;
+box-shadow: var(--shadow);
+border: var(--border);
+transition: var(--transition);
+cursor: pointer;
+animation: fadeInUp 0.6s both;
+position: relative;
+overflow: hidden;
+border-top: 1px solid rgba(255,255,255,0.5);
+border-left: 1px solid rgba(255,255,255,0.5);
+}
+
+.card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 5px;
+background: linear-gradient(to right, var(--primary), var(--accent));
+transition: var(--transition);
+}
+
+.card::after {
+content: '';
+position: absolute;
+bottom: 0;
+right: 0;
+width: 100px;
+height: 100px;
+background: radial-gradient(circle, rgba(114,9,183,0.1) 0%, rgba(0,0,0,0) 70%);
+z-index: -1;
+}
+
+.card:hover {
+transform: translateY(-10px) scale(1.02);
+box-shadow: 0 15px 40px rgba(67, 97, 238, 0.2);
+}
+
+.card:hover::before {
+height: 8px;
+}
+
+.card h3 {
+color: var(--primary);
+margin-bottom: 15px;
+font-size: 1.3rem;
+display: flex;
+align-items: center;
+gap: 10px;
+position: relative;
+}
+
+.card h3::after {
+content: '';
+position: absolute;
+bottom: -5px;
+left: 0;
+width: 40px;
+height: 2px;
+background: var(--accent);
+border-radius: 2px;
+}
+
+.card h3 i {
+font-size: 1.5rem;
+color: var(--secondary);
+}
+
+.card p {
+color: var(--text-light);
+margin-bottom: 20px;
+font-size: 0.95rem;
+}
+
+.card-btn {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+padding: 10px 22px;
+background: linear-gradient(to right, var(--primary), var(--secondary));
+color: white;
+border-radius: 8px;
+text-decoration: none;
+font-weight: 500;
+box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+transition: var(--transition);
+border: none;
+cursor: pointer;
+position: relative;
+overflow: hidden;
+z-index: 1;
+}
+
+.card-btn::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(to right, var(--secondary), var(--primary));
+transition: var(--transition);
+z-index: -1;
+}
+
+.card-btn:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
+}
+
+.card-btn:hover::before {
+left: 0;
+}
+
+/* Floating Particles Background - Modern Design */
+.particles {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+overflow: hidden;
+}
+
+.particle {
+position: absolute;
+border-radius: 50%;
+filter: blur(2px);
+animation: float linear infinite;
+opacity: 0.7;
+background: linear-gradient(135deg, var(--primary-light), var(--accent));
+box-shadow: 0 0 20px rgba(114, 9, 183, 0.3);
+}
+
+/* Data Containers - Glass Panel Design */
+.data-container {
+background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+border-radius: var(--border-radius-lg);
+padding: 30px;
+box-shadow: var(--shadow);
+border: var(--border);
+margin-top: 30px;
+animation: fadeInUp 0.6s both;
+transition: var(--transition);
+border-top: 1px solid rgba(255,255,255,0.5);
+border-left: 1px solid rgba(255,255,255,0.5);
+}
+
+.data-container:hover {
+box-shadow: 0 15px 40px rgba(67, 97, 238, 0.15);
+}
+
+.data-container h2 {
+color: var(--primary);
+margin-bottom: 15px;
+font-size: 1.8rem;
+display: flex;
+align-items: center;
+gap: 10px;
+position: relative;
+}
+
+.data-container h2::after {
+content: '';
+position: absolute;
+bottom: -5px;
+left: 0;
+width: 50px;
+height: 3px;
+background: var(--accent);
+border-radius: 3px;
+}
+
+.data-container h2 i {
+font-size: 1.5rem;
+color: var(--secondary);
+}
+
+.search-container {
+display: flex;
+margin-bottom: 20px;
+gap: 10px;
+}
+
+.search-input {
+flex: 1;
+padding: 14px 20px;
+border-radius: 8px;
+border: 1px solid rgba(67, 97, 238, 0.2);
+font-family: 'Poppins', sans-serif;
+font-size: 1rem;
+outline: none;
+transition: var(--transition);
+background: rgba(255,255,255,0.8);
+box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.search-input:focus {
+border-color: var(--primary);
+box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+background: white;
+}
+
+.search-btn {
+padding: 14px 25px;
+background: linear-gradient(to right, var(--primary), var(--secondary));
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-family: 'Poppins', sans-serif;
+font-weight: 500;
+transition: var(--transition);
+display: flex;
+align-items: center;
+gap: 8px;
+box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+}
+
+.search-btn:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
+background: linear-gradient(to right, var(--secondary), var(--primary));
+}
+
+.data-table {
+width: 100%;
+border-collapse: separate;
+border-spacing: 0;
+margin-top: 20px;
+border-radius: var(--border-radius);
+overflow: hidden;
+}
+
+.data-table th {
+background: linear-gradient(to right, var(--primary), var(--primary-dark));
+padding: 15px;
+text-align: left;
+font-weight: 600;
+color: white;
+border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+
+.data-table td {
+padding: 15px;
+border-bottom: 1px solid rgba(0,0,0,0.05);
+background: rgba(255,255,255,0.8);
+}
+
+.data-table tr:last-child td {
+border-bottom: none;
+}
+
+.data-table tr:hover td {
+background: rgba(67, 97, 238, 0.05);
+}
+
+.loading {
+text-align: center;
+padding: 30px;
+color: var(--text-light);
+font-size: 1.1rem;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 200px;
+}
+
+.loading i {
+font-size: 2rem;
+margin-bottom: 15px;
+color: var(--primary);
+animation: spin 1s linear infinite;
+}
+
+.no-results {
+text-align: center;
+padding: 30px;
+color: var(--text-light);
+font-style: italic;
+background: rgba(255,255,255,0.8);
+border-radius: var(--border-radius);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 200px;
+}
+
+.no-results i {
+font-size: 2rem;
+margin-bottom: 15px;
+color: var(--text-light);
+}
+
+/* Report Section - Modern Design */
+.report-menu-btn {
+display: flex;
+align-items: center;
+width: 100%;
+padding: 16px 25px;
+margin-bottom: 12px;
+background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.05));
+border: 1px solid rgba(67, 97, 238, 0.2);
+border-radius: var(--border-radius);
+color: var(--text);
+font-family: 'Poppins', sans-serif;
+font-size: 1rem;
+cursor: pointer;
+text-align: left;
+transition: var(--transition);
+gap: 12px;
+backdrop-filter: blur(5px);
+}
+
+.report-menu-btn:hover {
+background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(114, 9, 183, 0.1));
+transform: translateX(8px);
+box-shadow: 0 5px 15px rgba(114, 9, 183, 0.1);
+border-color: rgba(114, 9, 183, 0.3);
+}
+
+.report-menu-btn i {
+color: var(--primary);
+transition: var(--transition);
+}
+
+.report-menu-btn:hover i {
+transform: scale(1.2);
+color: var(--accent);
+}
+
+#reportContent {
+margin-top: 20px;
+padding: 25px;
+background: rgba(255,255,255,0.8);
+border-radius: var(--border-radius-lg);
+display: none;
+box-shadow: var(--shadow);
+border: var(--border);
+position: relative;
+transition: var(--transition);
+border-top: 1px solid rgba(255,255,255,0.5);
+border-left: 1px solid rgba(255,255,255,0.5);
+}
+
+#reportContent:hover {
+box-shadow: 0 15px 40px rgba(67, 97, 238, 0.1);
+}
+
+#reportTitle {
+color: var(--primary);
+margin-bottom: 15px;
+font-size: 1.5rem;
+position: relative;
+}
+
+#reportTitle::after {
+content: '';
+position: absolute;
+bottom: -5px;
+left: 0;
+width: 40px;
+height: 2px;
+background: var(--accent);
+border-radius: 2px;
+}
+
+#reportInfo {
+white-space: pre-line;
+line-height: 1.8;
+position: relative;
+padding-top: 10px;
+}
+
+.copy-btn {
+position: absolute;
+top: 20px;
+right: 20px;
+background: linear-gradient(to right, var(--primary), var(--secondary));
+color: white;
+border: none;
+border-radius: 6px;
+padding: 8px 15px;
+cursor: pointer;
+font-size: 0.9rem;
+transition: var(--transition);
+display: flex;
+align-items: center;
+gap: 6px;
+box-shadow: 0 2px 10px rgba(67, 97, 238, 0.2);
+}
+
+.copy-btn:hover {
+background: linear-gradient(to right, var(--secondary), var(--primary));
+transform: translateY(-3px);
+box-shadow: 0 4px 15px rgba(114, 9, 183, 0.3);
+}
+
+.copy-rekening-btn {
+background: linear-gradient(to right, var(--primary), var(--secondary));
+color: white;
+border: none;
+border-radius: 6px;
+padding: 6px 12px;
+cursor: pointer;
+font-size: 0.8rem;
+transition: var(--transition);
+display: flex;
+align-items: center;
+gap: 5px;
+box-shadow: 0 2px 8px rgba(67, 97, 238, 0.2);
+}
+
+.copy-rekening-btn:hover {
+background: linear-gradient(to right, var(--secondary), var(--primary));
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(114, 9, 183, 0.3);
+}
+
+/* Input Data Form */
+.form-group {
+margin-bottom: 20px;
+}
+
+.form-label {
+display: block;
+margin-bottom: 8px;
+font-weight: 500;
+color: var(--primary);
+}
+
+.form-input, .form-textarea {
+width: 100%;
+padding: 12px 15px;
+border-radius: 8px;
+border: 1px solid rgba(67, 97, 238, 0.2);
+font-family: 'Poppins', sans-serif;
+font-size: 1rem;
+outline: none;
+transition: var(--transition);
+background: rgba(255,255,255,0.8);
+box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.form-textarea {
+min-height: 120px;
+resize: vertical;
+}
+
+.form-input:focus, .form-textarea:focus {
+border-color: var(--primary);
+box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+background: white;
+}
+
+.form-btn {
+padding: 14px 25px;
+background: linear-gradient(to right, var(--primary), var(--secondary));
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-family: 'Poppins', sans-serif;
+font-weight: 500;
+transition: var(--transition);
+display: inline-flex;
+align-items: center;
+gap: 8px;
+box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+}
+
+.form-btn:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
+background: linear-gradient(to right, var(--secondary), var(--primary));
+}
+
+.form-row {
+display: flex;
+gap: 20px;
+}
+
+.form-row .form-group {
+flex: 1;
+}
+
+/* Mobile Toggle Button - Floating Action Button */
+.menu-toggle {
+position: fixed;
+top: 20px;
+left: 20px;
+z-index: 1000;
+background: linear-gradient(135deg, var(--primary), var(--secondary));
+color: white;
+width: 50px;
+height: 50px;
+border-radius: 50%;
+display: none;
+justify-content: center;
+align-items: center;
+font-size: 1.5rem;
+cursor: pointer;
+box-shadow: 0 4px 20px rgba(67, 97, 238, 0.4);
+transition: var(--transition);
+border: none;
+}
+
+.menu-toggle:hover {
+transform: scale(1.1);
+box-shadow: 0 6px 25px rgba(114, 9, 183, 0.5);
+background: linear-gradient(135deg, var(--secondary), var(--primary));
+}
+
+/* Animations */
+@keyframes fadeInDown {
+from {
+opacity: 0;
+transform: translateY(-30px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(30px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@keyframes pulse {
+0% {
+box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
+}
+70% {
+box-shadow: 0 0 0 15px rgba(67, 97, 238, 0);
+}
+100% {
+box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+}
+}
+
+@keyframes float {
+0% {
+transform: translateY(0) rotate(0deg);
+opacity: 0;
+}
+10% {
+opacity: 1;
+}
+100% {
+transform: translateY(-100vh) rotate(360deg);
+opacity: 0;
+}
+}
+
+@keyframes spin {
+0% {
+transform: rotate(0deg);
+}
+100% {
+transform: rotate(360deg);
+}
+}
+
+@keyframes rotate {
+0% {
+transform: rotate(0deg);
+}
+100% {
+transform: rotate(360deg);
+}
+}
+
+@keyframes ripple {
+to {
+transform: scale(4);
+opacity: 0;
+}
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+.sidebar {
+transform: translateX(-100%);
+}
+
+.sidebar.active {
+transform: translateX(0);
+}
+
+.main-content {
+margin-left: 0;
+padding: 20px;
+}
+
+.menu-toggle {
+display: flex;
+}
+
+.header {
+flex-direction: column;
+align-items: flex-start;
+gap: 15px;
+}
+
+#clock {
+align-self: flex-start;
+}
+}
+
+@media (max-width: 768px) {
+.card-container {
+grid-template-columns: 1fr;
+}
+
+.search-container {
+flex-direction: column;
+}
+
+.search-btn {
+justify-content: center;
+}
+
+.form-row {
+flex-direction: column;
+gap: 0;
+}
+}
+</style>
 </head>
 <body>
-    <!-- Login Page -->
-    <div class="login-container" id="loginPage">
-        <div class="login-card">
-            <div class="login-header">
-                <h1>DataApp</h1>
-                <p>Aplikasi Penyimpanan Data</p>
-            </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="userId">ID Pengguna</label>
-                    <input type="text" id="userId" placeholder="Masukkan ID pengguna" required>
-                </div>
-                <div class="form-group">
-                    <label for="userPassword">Password</label>
-                    <input type="password" id="userPassword" placeholder="Masukkan password" required>
-                </div>
-                <button type="submit" class="login-btn">Login</button>
-                <div class="error-message" id="loginError">ID atau password salah!</div>
-            </form>
-        </div>
-    </div>
+<div class="particles" id="particles"></div>
 
-    <!-- Main App -->
-    <div class="app-container" id="appContainer">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="logo">
-                <h2>DataApp</h2>
-                <p>Penyimpanan Data</p>
-            </div>
-            <div class="user-info">
-                <p id="currentUserId">User ID</p>
-                <p class="user-role" id="currentUserRole">Role</p>
-            </div>
-            <div class="menu">
-                <div class="menu-item active" id="inputMenu">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Input</span>
-                </div>
-                <div class="menu-item" id="searchMenu">
-                    <i class="fas fa-search"></i>
-                    <span>Cari</span>
-                </div>
-                <div class="menu-item" id="adminMenu" style="display: none;">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Admin</span>
-                </div>
-            </div>
-            <div class="logout-btn" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </div>
-        </div>
+<div class="menu-toggle" id="menuToggle">
+<i class="fas fa-bars"></i>
+</div>
 
-        <!-- Content -->
-        <div class="content">
-            <!-- Input Data Page -->
-            <div id="inputPage" class="content-page">
-                <div class="content-header">
-                    <h1>Input Data</h1>
-                    <p>Simpan data penting Anda dengan aman di cloud</p>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Tambah Data Baru</h2>
-                    </div>
-                    <form id="dataForm">
-                        <div class="form-group">
-                            <label for="dataContent">Isi Data</label>
-                            <textarea id="dataContent" placeholder="Masukkan data yang ingin disimpan..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Simpan Data</button>
-                    </form>
-                </div>
-            </div>
+<div class="sidebar" id="sidebar">
+<div class="sidebar-header">
+<h2>Line Togel</h2>
+</div>
+<div class="sidebar-menu">
+<a href="#" class="menu-item active" id="dashboardMenu">
+<span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+<span class="menu-text">LINETOGEL.COM</span>
+</a>
+<a href="#" class="menu-item" id="dataRekeningMenu">
+<span class="menu-icon"><i class="fas fa-piggy-bank"></i></span>
+<span class="menu-text">Data Rekening</span>
+</a>
+<a href="#" class="menu-item" id="inputDataMenu">
+<span class="menu-icon"><i class="fas fa-plus-circle"></i></span>
+<span class="menu-text">Input Data</span>
+</a>
+<a href="#" class="menu-item" id="reportMenu">
+<span class="menu-icon"><i class="fas fa-file-alt"></i></span>
+<span class="menu-text">Report</span>
+</a>
+<a href="http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL" class="menu-item" target="_blank">
+<span class="menu-icon"><i class="fas fa-headset"></i></span>
+<span class="menu-text">Admin Line</span>
+</a>
+<a href="https://bk.bksmb.com/linetogel/dashboard/dashboard/about" class="menu-item" target="_blank">
+<span class="menu-icon"><i class="fas fa-book"></i></span>
+<span class="menu-text">BK Line</span>
+</a>
+<a href="https://linetogel.hokibgs.com/modules/kapten/dashboard.php" class="menu-item" target="_blank">
+<span class="menu-icon"><i class="fas fa-desktop"></i></span>
+<span class="menu-text">Dashboard</span>
+</a>
+<a href="https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec" class="menu-item" target="_blank">
+<span class="menu-icon"><i class="fas fa-door-open"></i></span>
+<span class="menu-text">Izin Keluar</span>
+</a>
+</div>
+</div>
 
-            <!-- Search Data Page -->
-            <div id="searchPage" class="content-page" style="display: none;">
-                <div class="content-header">
-                    <h1>Cari Data</h1>
-                    <p>Cari data yang tersimpan dengan cepat dan mudah</p>
-                </div>
-                <div class="card">
-                    <div class="search-container">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Ketik untuk mencari data...">
-                    </div>
-                    <div class="data-list" id="dataList">
-                        <!-- Data items will be dynamically added here -->
-                    </div>
-                </div>
-            </div>
+<div class="main-content">
+<div class="header">
+<h1>Daniel</h1>
+<div id="clock"></div>
+</div>
 
-            <!-- Admin Page -->
-            <div id="adminPage" class="content-page" style="display: none;">
-                <div class="content-header">
-                    <h1>Admin Panel</h1>
-                    <p>Kelola admin dan hak akses</p>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Tambah Admin Baru</h2>
-                    </div>
-                    <form id="adminForm" class="admin-form">
-                        <div class="form-group">
-                            <label for="adminId">ID Admin</label>
-                            <input type="text" id="adminId" placeholder="Masukkan ID admin" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="adminPassword">Password</label>
-                            <input type="password" id="adminPassword" placeholder="Masukkan password" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="adminAccess">Hak Akses</label>
-                            <select id="adminAccess">
-                                <option value="limited">Terbatas</option>
-                                <option value="full">Penuh</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Tambah Admin</button>
-                    </form>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Daftar Admin</h2>
-                    </div>
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>ID Admin</th>
-                                <th>Hak Akses</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminList">
-                            <!-- Admin items will be dynamically added here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="dashboardSection">
+<div class="card-container">
+<div class="card" onclick="showDataRekening()">
+<h3><i class="fas fa-piggy-bank"></i> Data Rekening</h3>
+<p>Informasi lengkap rekening bank yang terdaftar</p>
+<a href="#" class="card-btn" onclick="showDataRekening(); return false;">
+<i class="fas fa-search"></i> Lihat Data
+</a>
+</div>
+<div class="card" onclick="showInputData()">
+<h3><i class="fas fa-plus-circle"></i> Input Data</h3>
+<p>Formulir untuk memasukkan data baru</p>
+<a href="#" class="card-btn" onclick="showInputData(); return false;">
+<i class="fas fa-plus"></i> Input Data
+</a>
+</div>
+<div class="card" onclick="showReport()">
+<h3><i class="fas fa-file-alt"></i> Report</h3>
+<p>Laporan dan informasi penting terbaru</p>
+<a href="#" class="card-btn" onclick="showReport(); return false;">
+<i class="fas fa-book-open"></i> Buka Laporan
+</a>
+</div>
+<div class="card" onclick="window.open('http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL', '_blank')">
+<h3><i class="fas fa-headset"></i> Admin Line</h3>
+<p>Hubungi admin untuk bantuan dan informasi</p>
+<a href="http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL" class="card-btn" target="_blank">
+<i class="fas fa-comment-dots"></i> Chat Admin
+</a>
+</div>
+<div class="card" onclick="window.open('https://bk.bksmb.com/linetogel/dashboard/dashboard/about', '_blank')">
+<h3><i class="fas fa-book"></i> BK Line</h3>
+<p>Buku panduan dan informasi lengkap</p>
+<a href="https://bk.bksmb.com/linetogel/dashboard/dashboard/about" class="card-btn" target="_blank">
+<i class="fas fa-external-link-alt"></i> Buka BK
+</a>
+</div>
+<div class="card" onclick="window.open('https://linetogel.hokibgs.com/modules/kapten/dashboard.php', '_blank')">
+<h3><i class="fas fa-desktop"></i> Dashboard</h3>
+<p>Dashboard utama sistem</p>
+<a href="https://linetogel.hokibgs.com/modules/kapten/dashboard.php" class="card-btn" target="_blank">
+<i class="fas fa-external-link-alt"></i> Buka Dashboard
+</a>
+</div>
+<div class="card" onclick="window.open('https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec', '_blank')">
+<h3><i class="fas fa-door-open"></i> Izin Keluar</h3>
+<p>Formulir pengajuan izin keluar</p>
+<a href="https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec" class="card-btn" target="_blank">
+<i class="fas fa-external-link-alt"></i> Ajukan Izin
+</a>
+</div>
+</div>
+</div>
 
-    <!-- Notification -->
-    <div class="notification" id="notification"></div>
+<div class="data-container" id="dataRekeningContainer" style="display: none;">
+<h2><i class="fas fa-piggy-bank"></i> Data Rekening</h2>
+<p>Cari data rekening berdasarkan Bank, Nomor Rekening, atau Nama</p>
+<div class="search-container">
+<input type="text" id="searchRekening" class="search-input" placeholder="Cari rekening...">
+<button id="searchBtn" class="search-btn">
+<i class="fas fa-search"></i> Cari
+</button>
+</div>
+<div id="rekeningResults">
+<table class="data-table">
+<thead>
+<tr>
+<th>Bank</th>
+<th>Nomor Rekening</th>
+<th>Nama</th>
+<th>Aksi</th>
+</tr>
+</thead>
+<tbody id="rekeningData"></tbody>
+</table>
+<div id="loading" class="loading">
+<i class="fas fa-spinner"></i><br>
+Memuat data rekening...
+</div>
+<div id="noResults" class="no-results" style="display:none;">
+<i class="fas fa-info-circle"></i><br>
+Tidak ditemukan data yang sesuai
+</div>
+</div>
+</div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script>
-        // Initialize Firebase
-        const firebaseConfig = {
-            apiKey: "demo",
-            authDomain: "demo",
-            projectId: "demo",
-            storageBucket: "demo",
-            messagingSenderId: "demo",
-            appId: "demo"
-        };
-        
-        // Initialize Firebase
-        let db;
-        let useFirebase = false;
-        
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            useFirebase = true;
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.log("Firebase initialization failed, using localStorage instead");
-            useFirebase = false;
-        }
+<div class="data-container" id="inputDataContainer" style="display: none;">
+<h2><i class="fas fa-plus-circle"></i> Input Data</h2>
+<p>Masukkan data baru ke dalam sistem</p>
+<form id="inputDataForm">
+<div class="form-row">
+<div class="form-group">
+<label class="form-label" for="inputJudul">Judul</label>
+<input type="text" id="inputJudul" class="form-input" placeholder="Masukkan judul" required>
+</div>
+<div class="form-group">
+<label class="form-label" for="inputKategori">Kategori</label>
+<select id="inputKategori" class="form-input" required>
+<option value="">Pilih kategori</option>
+<option value="Keuangan">Keuangan</option>
+<option value="Operasional">Operasional</option>
+<option value="Lainnya">Lainnya</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="inputDeskripsi">Deskripsi</label>
+<textarea id="inputDeskripsi" class="form-textarea" placeholder="Masukkan deskripsi" required></textarea>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="form-label" for="inputTanggal">Tanggal</label>
+<input type="date" id="inputTanggal" class="form-input" required>
+</div>
+<div class="form-group">
+<label class="form-label" for="inputStatus">Status</label>
+<select id="inputStatus" class="form-input" required>
+<option value="">Pilih status</option>
+<option value="Pending">Pending</option>
+<option value="Proses">Proses</option>
+<option value="Selesai">Selesai</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<button type="submit" class="form-btn">
+<i class="fas fa-save"></i> Simpan Data
+</button>
+</div>
+</form>
+<div id="inputDataMessage" style="display: none; margin-top: 20px; padding: 15px; border-radius: 8px;"></div>
+</div>
 
-        // DOM Elements
-        const loginPage = document.getElementById('loginPage');
-        const appContainer = document.getElementById('appContainer');
-        const loginForm = document.getElementById('loginForm');
-        const loginError = document.getElementById('loginError');
-        const userIdInput = document.getElementById('userId');
-        const userPasswordInput = document.getElementById('userPassword');
-        const currentUserId = document.getElementById('currentUserId');
-        const currentUserRole = document.getElementById('currentUserRole');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const inputMenu = document.getElementById('inputMenu');
-        const searchMenu = document.getElementById('searchMenu');
-        const adminMenu = document.getElementById('adminMenu');
-        const inputPage = document.getElementById('inputPage');
-        const searchPage = document.getElementById('searchPage');
-        const adminPage = document.getElementById('adminPage');
-        const dataForm = document.getElementById('dataForm');
-        const dataContent = document.getElementById('dataContent');
-        const searchInput = document.getElementById('searchInput');
-        const dataList = document.getElementById('dataList');
-        const adminForm = document.getElementById('adminForm');
-        const adminId = document.getElementById('adminId');
-        const adminPassword = document.getElementById('adminPassword');
-        const adminAccess = document.getElementById('adminAccess');
-        const adminList = document.getElementById('adminList');
-        const notification = document.getElementById('notification');
+<div class="data-container" id="reportContainer" style="display: none;">
+<h2><i class="fas fa-file-alt"></i> Report</h2>
+<p>Cari laporan untuk melihat informasi terbaru</p>
+<div class="search-container">
+<input type="text" id="searchReport" class="search-input" placeholder="Cari laporan...">
+<button id="searchReportBtn" class="search-btn">
+<i class="fas fa-search"></i> Cari
+</button>
+</div>
+<div id="reportMenuList" style="margin-top: 20px;"></div>
+<div id="reportContent">
+<h3 id="reportTitle"></h3>
+<div id="reportInfo"></div>
+</div>
+</div>
+</div>
 
-        // Default admin credentials (in a real app, this should be handled securely)
-        const defaultAdmins = [
-            { id: 'admin', password: 'admin123', access: 'full' },
-            { id: 'user', password: 'user123', access: 'limited' }
-        ];
+<script>
+// Enhanced Live Clock Function with Date
+function updateClock() {
+const now = new Date();
+const options = {
+weekday: 'long',
+day: 'numeric',
+month: 'long',
+year: 'numeric',
+hour: '2-digit',
+minute: '2-digit',
+second: '2-digit',
+hour12: false
+};
+const clockElement = document.getElementById("clock");
+clockElement.textContent = now.toLocaleDateString("id-ID", options);
 
-        // Current user state
-        let currentUser = null;
+// Add smooth transition effect
+clockElement.style.opacity = 0;
+setTimeout(() => {
+clockElement.style.opacity = 1;
+}, 100);
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-        // Initialize app
-        function init() {
-            // Check if user is already logged in
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showApp();
-            }
+// Set active menu item with animation
+document.querySelectorAll('.menu-item').forEach(item => {
+item.addEventListener('click', function(e) {
+if(this.getAttribute('href') === '#') {
+e.preventDefault();
+}
 
-            // Add event listeners
-            loginForm.addEventListener('submit', handleLogin);
-            logoutBtn.addEventListener('click', handleLogout);
-            inputMenu.addEventListener('click', () => showPage('input'));
-            searchMenu.addEventListener('click', () => showPage('search'));
-            adminMenu.addEventListener('click', () => showPage('admin'));
-            dataForm.addEventListener('submit', handleDataSubmit);
-            searchInput.addEventListener('input', handleSearch);
-            adminForm.addEventListener('submit', handleAdminSubmit);
+document.querySelectorAll('.menu-item').forEach(i => {
+i.classList.remove('active');
+i.style.transform = '';
+});
 
-            // Load initial data
-            loadAdmins();
-            loadData();
-        }
+this.classList.add('active');
+this.style.transform = 'translateX(8px)';
 
-        // Handle login
-        function handleLogin(e) {
-            e.preventDefault();
-            const userId = userIdInput.value.trim();
-            const password = userPasswordInput.value.trim();
+setTimeout(() => {
+this.style.transform = 'translateX(0)';
+}, 300);
+});
+});
 
-            // Check if credentials match any admin
-            const admin = defaultAdmins.find(a => a.id === userId && a.password === password);
-            
-            if (admin) {
-                currentUser = {
-                    id: admin.id,
-                    role: admin.access === 'full' ? 'Admin Penuh' : 'Admin Terbatas',
-                    access: admin.access
-                };
-                
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                showApp();
-                showNotification('Login berhasil!');
-            } else {
-                loginError.style.display = 'block';
-                setTimeout(() => {
-                    loginError.style.display = 'none';
-                }, 3000);
-            }
-        }
+// Enhanced floating particles with gradient colors
+function createParticles() {
+const particlesContainer = document.getElementById('particles');
+particlesContainer.innerHTML = '';
 
-        // Handle logout
-        function handleLogout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            loginPage.style.display = 'flex';
-            appContainer.style.display = 'none';
-            userIdInput.value = '';
-            userPasswordInput.value = '';
-            showNotification('Anda telah logout!');
-        }
+const particleCount = window.innerWidth < 768 ? 15 : 30;
+const colors = [
+'rgba(67, 97, 238, 0.6)',
+'rgba(114, 9, 183, 0.6)',
+'rgba(247, 37, 133, 0.6)',
+'rgba(76, 201, 240, 0.6)'
+];
 
-        // Show app after login
-        function showApp() {
-            loginPage.style.display = 'none';
-            appContainer.style.display = 'flex';
-            currentUserId.textContent = currentUser.id;
-            currentUserRole.textContent = currentUser.role;
-            
-            // Show admin menu only for full access admin
-            if (currentUser.access === 'full') {
-                adminMenu.style.display = 'flex';
-            } else {
-                adminMenu.style.display = 'none';
-            }
-            
-            showPage('input');
-        }
+for(let i = 0; i < particleCount; i++) {
+const particle = document.createElement('div');
+particle.classList.add('particle');
 
-        // Show specific page
-        function showPage(page) {
-            // Hide all pages
-            inputPage.style.display = 'none';
-            searchPage.style.display = 'none';
-            adminPage.style.display = 'none';
-            
-            // Remove active class from all menu items
-            inputMenu.classList.remove('active');
-            searchMenu.classList.remove('active');
-            adminMenu.classList.remove('active');
-            
-            // Show selected page and set active menu
-            switch(page) {
-                case 'input':
-                    inputPage.style.display = 'block';
-                    inputMenu.classList.add('active');
-                    break;
-                case 'search':
-                    searchPage.style.display = 'block';
-                    searchMenu.classList.add('active');
-                    break;
-                case 'admin':
-                    adminPage.style.display = 'block';
-                    adminMenu.classList.add('active');
-                    loadAdmins();
-                    break;
-            }
-        }
+const size = Math.random() * 25 + 5;
+const posX = Math.random() * window.innerWidth;
+const posY = Math.random() * window.innerHeight * 1.5;
+const duration = Math.random() * 30 + 20;
+const delay = Math.random() * 10;
+const opacity = Math.random() * 0.7 + 0.1;
+const color1 = colors[Math.floor(Math.random() * colors.length)];
+const color2 = colors[Math.floor(Math.random() * colors.length)];
 
-        // Handle data submission
-        function handleDataSubmit(e) {
-            e.preventDefault();
-            const content = dataContent.value.trim();
-            
-            if (content) {
-                const newData = {
-                    content: content,
-                    createdBy: currentUser.id,
-                    createdAt: new Date().toISOString()
-                };
-                
-                if (useFirebase) {
-                    // Add data to Firestore
-                    db.collection('data').add(newData)
-                        .then(() => {
-                            dataContent.value = '';
-                            showNotification('Data berhasil disimpan!');
-                            loadData();
-                        })
-                        .catch(error => {
-                            console.error('Error adding document: ', error);
-                            showNotification('Gagal menyimpan data!', true);
-                        });
-                } else {
-                    // Fallback to localStorage
-                    let dataItems = JSON.parse(localStorage.getItem('dataItems') || '[]');
-                    newData.id = Date.now().toString();
-                    dataItems.push(newData);
-                    localStorage.setItem('dataItems', JSON.stringify(dataItems));
-                    
-                    dataContent.value = '';
-                    showNotification('Data berhasil disimpan!');
-                    loadData();
-                }
-            }
-        }
+particle.style.width = `${size}px`;
+particle.style.height = `${size}px`;
+particle.style.left = `${posX}px`;
+particle.style.top = `${posY}px`;
+particle.style.animationDuration = `${duration}s`;
+particle.style.animationDelay = `${delay}s`;
+particle.style.opacity = opacity;
+particle.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+particle.style.borderRadius = size % 2 === 0 ? '50%' : '30%';
+particle.style.boxShadow = `0 0 ${size/2}px ${color1}`;
 
-        // Load data from Firestore or localStorage
-        function loadData() {
-            if (useFirebase) {
-                db.collection('data').orderBy('createdAt', 'desc').get()
-                    .then(querySnapshot => {
-                        dataList.innerHTML = '';
-                        
-                        if (querySnapshot.empty) {
-                            dataList.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.6); grid-column: 1/-1;">Tidak ada data yang tersimpan</p>';
-                            return;
-                        }
-                        
-                        querySnapshot.forEach(doc => {
-                            const data = doc.data();
-                            data.id = doc.id;
-                            const dataItem = createDataItem(data);
-                            dataList.appendChild(dataItem);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error getting documents: ', error);
-                        dataList.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.6); grid-column: 1/-1;">Gagal memuat data</p>';
-                    });
-            } else {
-                // Fallback to localStorage
-                const dataItems = JSON.parse(localStorage.getItem('dataItems') || '[]');
-                dataList.innerHTML = '';
-                
-                if (dataItems.length === 0) {
-                    dataList.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.6); grid-column: 1/-1;">Tidak ada data yang tersimpan</p>';
-                    return;
-                }
-                
-                // Sort by createdAt descending
-                dataItems.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
-                dataItems.forEach(data => {
-                    const dataItem = createDataItem(data);
-                    dataList.appendChild(dataItem);
-                });
-            }
-        }
+particlesContainer.appendChild(particle);
+}
+}
 
-        // Create data item element
-        function createDataItem(data) {
-            const item = document.createElement('div');
-            item.className = 'data-item';
-            item.dataset.id = data.id;
-            
-            // Generate title from first 50 characters of content
-            let title = data.content.length > 50 
-                ? data.content.substring(0, 50) + '...' 
-                : data.content;
-            
-            // If content has newlines, use first line as title
-            if (data.content.includes('\n')) {
-                const firstLine = data.content.split('\n')[0];
-                title = firstLine.length > 50 
-                    ? firstLine.substring(0, 50) + '...' 
-                    : firstLine;
-            }
-            
-            const titleElement = document.createElement('div');
-            titleElement.className = 'data-title';
-            titleElement.textContent = title;
-            
-            const content = document.createElement('div');
-            content.className = 'data-content';
-            content.textContent = data.content;
-            
-            const meta = document.createElement('div');
-            meta.className = 'data-meta';
-            
-            const info = document.createElement('span');
-            const date = new Date(data.createdAt).toLocaleString('id-ID');
-            info.textContent = `Dibuat oleh ${data.createdBy} pada ${date}`;
-            
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'copy-btn';
-            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Salin';
-            copyBtn.addEventListener('click', () => copyToClipboard(data.content, copyBtn));
-            
-            meta.appendChild(info);
-            meta.appendChild(copyBtn);
-            
-            item.appendChild(titleElement);
-            item.appendChild(content);
-            item.appendChild(meta);
-            
-            return item;
-        }
+// Toggle sidebar on mobile with animation
+document.getElementById('menuToggle').addEventListener('click', function() {
+const sidebar = document.getElementById('sidebar');
+sidebar.classList.toggle('active');
 
-        // Copy text to clipboard
-        function copyToClipboard(text, button) {
-            navigator.clipboard.writeText(text)
-                .then(() => {
-                    button.classList.add('copied');
-                    button.innerHTML = '<i class="fas fa-check"></i> Tersalin';
-                    
-                    setTimeout(() => {
-                        button.classList.remove('copied');
-                        button.innerHTML = '<i class="fas fa-copy"></i> Salin';
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error('Failed to copy: ', err);
-                    showNotification('Gagal menyalin data!', true);
-                });
-        }
+this.style.transform = sidebar.classList.contains('active') ? 'rotate(90deg)' : 'rotate(0)';
+});
 
-        // Handle search
-        function handleSearch() {
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            const dataItems = dataList.querySelectorAll('.data-item');
-            
-            if (searchTerm === '') {
-                // If search is empty, show all items
-                dataItems.forEach(item => {
-                    item.style.display = 'block';
-                });
-                return;
-            }
-            
-            dataItems.forEach(item => {
-                const title = item.querySelector('.data-title').textContent.toLowerCase();
-                const content = item.querySelector('.data-content').textContent.toLowerCase();
-                
-                if (title.includes(searchTerm) || content.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
+// Initialize with animations
+window.addEventListener('load', function() {
+createParticles();
 
-        // Load admins
-        function loadAdmins() {
-            // For demo purposes, we'll use the default admins
-            // In a real app, this would come from Firestore
-            adminList.innerHTML = '';
-            
-            defaultAdmins.forEach(admin => {
-                const row = document.createElement('tr');
-                
-                const idCell = document.createElement('td');
-                idCell.textContent = admin.id;
-                
-                const accessCell = document.createElement('td');
-                const badge = document.createElement('span');
-                badge.className = `access-badge ${admin.access === 'full' ? 'access-full' : 'access-limited'}`;
-                badge.textContent = admin.access === 'full' ? 'Penuh' : 'Terbatas';
-                accessCell.appendChild(badge);
-                
-                const actionCell = document.createElement('td');
-                
-                // Only allow deletion of non-default admins
-                if (admin.id !== 'admin' && admin.id !== 'user') {
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'btn btn-danger';
-                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Hapus';
-                    deleteBtn.addEventListener('click', () => deleteAdmin(admin.id));
-                    actionCell.appendChild(deleteBtn);
-                }
-                
-                row.appendChild(idCell);
-                row.appendChild(accessCell);
-                row.appendChild(actionCell);
-                
-                adminList.appendChild(row);
-            });
-        }
+// Animate cards sequentially
+document.querySelectorAll('.card').forEach((card, index) => {
+card.style.animationDelay = `${index * 0.1}s`;
+});
 
-        // Handle admin submission
-        function handleAdminSubmit(e) {
-            e.preventDefault();
-            
-            if (currentUser.access !== 'full') {
-                showNotification('Anda tidak memiliki hak akses untuk ini!', true);
-                return;
-            }
-            
-            const id = adminId.value.trim();
-            const password = adminPassword.value.trim();
-            const access = adminAccess.value;
-            
-            if (id && password) {
-                // Check if admin already exists
-                if (defaultAdmins.find(a => a.id === id)) {
-                    showNotification('Admin dengan ID ini sudah ada!', true);
-                    return;
-                }
-                
-                // Add new admin
-                defaultAdmins.push({ id, password, access });
-                
-                // Reset form
-                adminId.value = '';
-                adminPassword.value = '';
-                adminAccess.value = 'limited';
-                
-                // Reload admin list
-                loadAdmins();
-                
-                showNotification('Admin berhasil ditambahkan!');
-            }
-        }
+// Add initial animation to header
+document.querySelector('.header').style.animation = 'fadeInDown 0.8s both';
+});
 
-        // Delete admin
-        function deleteAdmin(id) {
-            if (currentUser.access !== 'full') {
-                showNotification('Anda tidak memiliki hak akses untuk ini!', true);
-                return;
-            }
-            
-            const index = defaultAdmins.findIndex(a => a.id === id);
-            if (index !== -1) {
-                defaultAdmins.splice(index, 1);
-                loadAdmins();
-                showNotification('Admin berhasil dihapus!');
-            }
-        }
+window.addEventListener('resize', function() {
+createParticles();
+});
 
-        // Show notification
-        function showNotification(message, isError = false) {
-            notification.textContent = message;
-            notification.className = 'notification';
-            
-            if (isError) {
-                notification.classList.add('error');
-            }
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
+// Enhanced hover effect for cards
+document.querySelectorAll('.card').forEach(card => {
+card.addEventListener('mouseenter', function() {
+this.style.transform = 'translateY(-10px) scale(1.02)';
+this.style.boxShadow = '0 15px 40px rgba(67, 97, 238, 0.2)';
 
-        // Initialize the app
-        init();
-    </script>
+const icon = this.querySelector('h3 i');
+if (icon) {
+icon.style.transform = 'scale(1.2)';
+icon.style.color = 'var(--accent)';
+}
+
+const btn = this.querySelector('.card-btn');
+if (btn) {
+btn.style.transform = 'translateY(-3px)';
+}
+});
+
+card.addEventListener('mouseleave', function() {
+this.style.transform = '';
+this.style.boxShadow = 'var(--shadow)';
+
+const icon = this.querySelector('h3 i');
+if (icon) {
+icon.style.transform = '';
+icon.style.color = 'var(--secondary)';
+}
+
+const btn = this.querySelector('.card-btn');
+if (btn) {
+btn.style.transform = '';
+}
+});
+});
+
+// Show/Hide sections with smooth transitions
+function showDashboard() {
+document.getElementById('dashboardSection').style.display = 'grid';
+document.getElementById('dataRekeningContainer').style.display = 'none';
+document.getElementById('inputDataContainer').style.display = 'none';
+document.getElementById('reportContainer').style.display = 'none';
+
+// Animate cards when returning to dashboard
+document.querySelectorAll('.card').forEach((card, index) => {
+card.style.animation = `fadeInUp 0.6s both ${index * 0.1}s`;
+});
+}
+
+function showDataRekening() {
+document.getElementById('dashboardSection').style.display = 'none';
+document.getElementById('dataRekeningContainer').style.display = 'block';
+document.getElementById('inputDataContainer').style.display = 'none';
+document.getElementById('reportContainer').style.display = 'none';
+
+loadRekeningData();
+document.getElementById('dataRekeningContainer').scrollIntoView({
+behavior: 'smooth',
+block: 'start'
+});
+}
+
+function showInputData() {
+document.getElementById('dashboardSection').style.display = 'none';
+document.getElementById('dataRekeningContainer').style.display = 'none';
+document.getElementById('inputDataContainer').style.display = 'block';
+document.getElementById('reportContainer').style.display = 'none';
+
+// Set today's date as default
+document.getElementById('inputTanggal').valueAsDate = new Date();
+
+document.getElementById('inputDataContainer').scrollIntoView({
+behavior: 'smooth',
+block: 'start'
+});
+}
+
+function showReport() {
+document.getElementById('dashboardSection').style.display = 'none';
+document.getElementById('dataRekeningContainer').style.display = 'none';
+document.getElementById('inputDataContainer').style.display = 'none';
+document.getElementById('reportContainer').style.display = 'block';
+
+loadReportMenu();
+document.getElementById('reportContainer').scrollIntoView({
+behavior: 'smooth',
+block: 'start'
+});
+}
+
+// Menu click handlers with ripple effect
+document.getElementById('dashboardMenu').addEventListener('click', function(e) {
+e.preventDefault();
+createRippleEffect(e);
+showDashboard();
+});
+
+document.getElementById('dataRekeningMenu').addEventListener('click', function(e) {
+e.preventDefault();
+createRippleEffect(e);
+showDataRekening();
+});
+
+document.getElementById('inputDataMenu').addEventListener('click', function(e) {
+e.preventDefault();
+createRippleEffect(e);
+showInputData();
+});
+
+document.getElementById('reportMenu').addEventListener('click', function(e) {
+e.preventDefault();
+createRippleEffect(e);
+showReport();
+});
+
+// Ripple effect function with improved animation
+function createRippleEffect(event) {
+const button = event.currentTarget;
+const ripple = document.createElement('span');
+ripple.className = 'ripple';
+
+const rect = button.getBoundingClientRect();
+const size = Math.max(rect.width, rect.height);
+const x = event.clientX - rect.left - size/2;
+const y = event.clientY - rect.top - size/2;
+
+ripple.style.width = ripple.style.height = `${size}px`;
+ripple.style.left = `${x}px`;
+ripple.style.top = `${y}px`;
+ripple.style.background = 'rgba(255,255,255,0.4)';
+ripple.style.position = 'absolute';
+ripple.style.borderRadius = '50%';
+ripple.style.transform = 'scale(0)';
+ripple.style.animation = 'ripple 0.6s linear';
+ripple.style.pointerEvents = 'none';
+
+button.appendChild(ripple);
+
+setTimeout(() => {
+ripple.remove();
+}, 600);
+}
+
+// Data Rekening Functionality with enhanced UI
+function loadRekeningData() {
+const loading = document.getElementById('loading');
+const rekeningData = document.getElementById('rekeningData');
+const noResults = document.getElementById('noResults');
+
+loading.style.display = 'flex';
+rekeningData.innerHTML = '';
+noResults.style.display = 'none';
+
+// Simulate loading animation
+setTimeout(() => {
+google.script.run.withSuccessHandler(function(data) {
+loading.style.display = 'none';
+displayRekeningData(data);
+}).withFailureHandler(function(error) {
+loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i><br>Gagal memuat data: ${error.message}`;
+console.error('Error loading rekening data:', error);
+}).getRekeningData();
+}, 800);
+}
+
+function displayRekeningData(data) {
+const rekeningData = document.getElementById('rekeningData');
+const noResults = document.getElementById('noResults');
+
+rekeningData.innerHTML = '';
+
+if (!data || data.length === 0) {
+noResults.style.display = 'flex';
+return;
+}
+
+noResults.style.display = 'none';
+
+data.forEach((item, index) => {
+const row = document.createElement('tr');
+row.style.animation = `fadeInUp 0.4s both ${index * 0.05}s`;
+
+const rekeningText = `${item.nama || 'N/A'} - ${item.rekening || 'N/A'} (${item.bank || 'N/A'})`;
+row.innerHTML = `
+<td>${item.bank || 'N/A'}</td>
+<td>${item.rekening || 'N/A'}</td>
+<td>${item.nama || 'N/A'}</td>
+<td>
+<button class="copy-rekening-btn" onclick="copyToClipboard('${rekeningText.replace(/'/g, "\\'")}')">
+<i class="fas fa-copy"></i> Salin
+</button>
+</td>
+`;
+
+rekeningData.appendChild(row);
+});
+}
+
+function searchRekening() {
+const searchTerm = document.getElementById('searchRekening').value.trim();
+const loading = document.getElementById('loading');
+const rekeningData = document.getElementById('rekeningData');
+const noResults = document.getElementById('noResults');
+
+if (searchTerm === '') {
+loadRekeningData();
+return;
+}
+
+loading.style.display = 'flex';
+rekeningData.innerHTML = '';
+noResults.style.display = 'none';
+
+// Add search animation
+document.getElementById('searchBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari...';
+
+setTimeout(() => {
+google.script.run.withSuccessHandler(function(data) {
+document.getElementById('searchBtn').innerHTML = '<i class="fas fa-search"></i> Cari';
+loading.style.display = 'none';
+displayRekeningData(data);
+}).withFailureHandler(function(error) {
+document.getElementById('searchBtn').innerHTML = '<i class="fas fa-search"></i> Cari';
+loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i><br>Gagal mencari data: ${error.message}`;
+noResults.style.display = 'flex';
+}).searchRekening(searchTerm);
+}, 800);
+}
+
+// Input Data Functionality
+document.getElementById('inputDataForm').addEventListener('submit', function(e) {
+e.preventDefault();
+    
+const formData = {
+judul: document.getElementById('inputJudul').value,
+kategori: document.getElementById('inputKategori').value,
+deskripsi: document.getElementById('inputDeskripsi').value,
+tanggal: document.getElementById('inputTanggal').value,
+status: document.getElementById('inputStatus').value
+};
+
+const messageDiv = document.getElementById('inputDataMessage');
+messageDiv.style.display = 'block';
+messageDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan data...';
+messageDiv.style.background = 'rgba(67, 97, 238, 0.1)';
+messageDiv.style.color = 'var(--primary)';
+
+// Simulate saving data
+setTimeout(() => {
+google.script.run.withSuccessHandler(function(response) {
+messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Data berhasil disimpan!';
+messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
+messageDiv.style.color = 'var(--success)';
+    
+// Reset form
+document.getElementById('inputDataForm').reset();
+document.getElementById('inputTanggal').valueAsDate = new Date();
+    
+// Hide message after 3 seconds
+setTimeout(() => {
+messageDiv.style.display = 'none';
+}, 3000);
+}).withFailureHandler(function(error) {
+messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
+messageDiv.style.background = 'rgba(239, 35, 60, 0.1)';
+messageDiv.style.color = 'var(--danger)';
+console.error('Error saving data:', error);
+}).saveData(formData);
+}, 800);
+});
+
+// Enhanced Report Functionality
+function loadReportMenu() {
+const reportMenuList = document.getElementById('reportMenuList');
+const reportContent = document.getElementById('reportContent');
+
+reportContent.style.display = 'none';
+reportMenuList.innerHTML = `
+<div class="loading" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+<i class="fas fa-spinner fa-spin"></i> Memuat daftar laporan...
+</div>
+`;
+
+google.script.run.withSuccessHandler(function(data) {
+reportMenuList.innerHTML = '';
+
+if (!data || data.length === 0) {
+reportMenuList.innerHTML = `
+<div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
+<i class="fas fa-info-circle"></i> Tidak ada laporan tersedia
+</div>
+`;
+return;
+}
+
+data.forEach((item, index) => {
+const button = document.createElement('button');
+button.className = 'report-menu-btn';
+button.innerHTML = `
+<i class="fas fa-file-alt"></i>
+<span>${item.judul || 'Untitled Report'}</span>
+`;
+button.style.animation = `fadeInUp 0.4s both ${index * 0.1}s`;
+
+button.addEventListener('click', function() {
+// Add active state to button
+document.querySelectorAll('.report-menu-btn').forEach(btn => {
+btn.style.background = 'linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.05))';
+});
+this.style.background = 'linear-gradient(135deg, rgba(67, 97, 238, 0.3), rgba(114, 9, 183, 0.1))';
+
+showReportInfo(item);
+});
+
+reportMenuList.appendChild(button);
+});
+}).withFailureHandler(function(error) {
+reportMenuList.innerHTML = `
+<div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
+<i class="fas fa-exclamation-triangle"></i> Gagal memuat laporan: ${error.message}
+</div>
+`;
+console.error('Error loading report menu:', error);
+}).getReportMenu();
+}
+
+function showReportInfo(item) {
+const reportContent = document.getElementById('reportContent');
+const reportTitle = document.getElementById('reportTitle');
+const reportInfo = document.getElementById('reportInfo');
+
+reportContent.style.display = 'none';
+reportInfo.innerHTML = `
+<div class="loading" style="display: flex; justify-content: center; padding: 20px;">
+<i class="fas fa-spinner fa-spin"></i> Memuat informasi...
+</div>
+`;
+
+google.script.run.withSuccessHandler(function(info) {
+reportTitle.textContent = item.judul || 'Report';
+reportInfo.innerHTML = `
+<button class="copy-btn" onclick="copyToClipboard(document.getElementById('reportInfo').textContent)">
+<i class="fas fa-copy"></i> Salin Semua
+</button>
+<div style="margin-top: 20px;">
+<p><strong>Kategori:</strong> ${item.kategori || 'N/A'}</p>
+<p><strong>Tanggal:</strong> ${item.tanggal || 'N/A'}</p>
+<p><strong>Status:</strong> ${item.status || 'N/A'}</p>
+</div>
+<div style="margin-top: 20px;">
+<h4>Deskripsi:</h4>
+<p>${item.deskripsi || 'Tidak ada deskripsi'}</p>
+</div>
+`;
+
+reportContent.style.display = 'block';
+reportContent.style.animation = 'fadeInUp 0.4s both';
+
+// Highlight important information
+const infoElement = document.getElementById('reportInfo');
+const importantTexts = infoElement.querySelectorAll('strong, b');
+
+importantTexts.forEach(text => {
+text.style.color = 'var(--primary)';
+text.style.fontWeight = '600';
+});
+
+}).withFailureHandler(function(error) {
+reportInfo.innerHTML = `
+<div style="text-align: center; color: var(--danger); padding: 20px;">
+<i class="fas fa-exclamation-triangle"></i> Gagal memuat informasi: ${error.message}
+</div>
+`;
+reportContent.style.display = 'block';
+console.error('Error loading report info:', error);
+}).getReportInfo(item.id);
+}
+
+// Search Report Functionality
+function searchReport() {
+const searchTerm = document.getElementById('searchReport').value.trim();
+const reportMenuList = document.getElementById('reportMenuList');
+const reportContent = document.getElementById('reportContent');
+
+reportContent.style.display = 'none';
+reportMenuList.innerHTML = `
+<div class="loading" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+<i class="fas fa-spinner fa-spin"></i> Mencari laporan...
+</div>
+`;
+
+google.script.run.withSuccessHandler(function(data) {
+reportMenuList.innerHTML = '';
+
+if (!data || data.length === 0) {
+reportMenuList.innerHTML = `
+<div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
+<i class="fas fa-info-circle"></i> Tidak ditemukan laporan yang sesuai
+</div>
+`;
+return;
+}
+
+data.forEach((item, index) => {
+const button = document.createElement('button');
+button.className = 'report-menu-btn';
+button.innerHTML = `
+<i class="fas fa-file-alt"></i>
+<span>${item.judul || 'Untitled Report'}</span>
+`;
+button.style.animation = `fadeInUp 0.4s both ${index * 0.1}s`;
+
+button.addEventListener('click', function() {
+// Add active state to button
+document.querySelectorAll('.report-menu-btn').forEach(btn => {
+btn.style.background = 'linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.05))';
+});
+this.style.background = 'linear-gradient(135deg, rgba(67, 97, 238, 0.3), rgba(114, 9, 183, 0.1))';
+
+showReportInfo(item);
+});
+
+reportMenuList.appendChild(button);
+});
+}).withFailureHandler(function(error) {
+reportMenuList.innerHTML = `
+<div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
+<i class="fas fa-exclamation-triangle"></i> Gagal mencari laporan: ${error.message}
+</div>
+`;
+console.error('Error searching report:', error);
+}).searchReport(searchTerm);
+}
+
+// Enhanced Copy to clipboard function with better feedback
+function copyToClipboard(text) {
+const textarea = document.createElement('textarea');
+textarea.value = text;
+document.body.appendChild(textarea);
+textarea.select();
+
+try {
+document.execCommand('copy');
+
+// Enhanced notification
+const notification = document.createElement('div');
+notification.style.position = 'fixed';
+notification.style.bottom = '30px';
+notification.style.right = '30px';
+notification.style.backgroundColor = 'var(--success)';
+notification.style.color = 'white';
+notification.style.padding = '15px 25px';
+notification.style.borderRadius = '8px';
+notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+notification.style.zIndex = '1000';
+notification.style.display = 'flex';
+notification.style.alignItems = 'center';
+notification.style.gap = '10px';
+notification.style.transform = 'translateY(30px)';
+notification.style.opacity = '0';
+notification.style.transition = 'all 0.3s ease';
+notification.innerHTML = `
+<i class="fas fa-check-circle"></i>
+<span>Teks berhasil disalin ke clipboard!</span>
+`;
+
+document.body.appendChild(notification);
+
+setTimeout(() => {
+notification.style.transform = 'translateY(0)';
+notification.style.opacity = '1';
+}, 10);
+
+setTimeout(() => {
+notification.style.transform = 'translateY(30px)';
+notification.style.opacity = '0';
+setTimeout(() => {
+document.body.removeChild(notification);
+}, 300);
+}, 3000);
+
+} catch (err) {
+console.error('Failed to copy text: ', err);
+
+// Error notification
+const errorNotification = document.createElement('div');
+errorNotification.style.position = 'fixed';
+errorNotification.style.bottom = '30px';
+errorNotification.style.right = '30px';
+errorNotification.style.backgroundColor = 'var(--danger)';
+errorNotification.style.color = 'white';
+errorNotification.style.padding = '15px 25px';
+errorNotification.style.borderRadius = '8px';
+errorNotification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+errorNotification.style.zIndex = '1000';
+errorNotification.style.display = 'flex';
+errorNotification.style.alignItems = 'center';
+errorNotification.style.gap = '10px';
+errorNotification.innerHTML = `
+<i class="fas fa-exclamation-circle"></i>
+<span>Gagal menyalin teks!</span>
+`;
+
+document.body.appendChild(errorNotification);
+
+setTimeout(() => {
+document.body.removeChild(errorNotification);
+}, 3000);
+}
+
+document.body.removeChild(textarea);
+}
+
+// Event listeners with debounce for search
+document.getElementById('searchBtn').addEventListener('click', searchRekening);
+
+let searchTimeout;
+document.getElementById('searchRekening').addEventListener('keyup', function(e) {
+clearTimeout(searchTimeout);
+
+if (e.key === 'Enter') {
+searchRekening();
+} else if (this.value.trim().length > 2) {
+searchTimeout = setTimeout(() => {
+searchRekening();
+}, 500);
+}
+});
+
+// Report search event listeners
+document.getElementById('searchReportBtn').addEventListener('click', searchReport);
+
+document.getElementById('searchReport').addEventListener('keyup', function(e) {
+clearTimeout(searchTimeout);
+
+if (e.key === 'Enter') {
+searchReport();
+} else if (this.value.trim().length > 2) {
+searchTimeout = setTimeout(() => {
+searchReport();
+}, 500);
+}
+});
+
+// Add ripple effect to buttons
+document.querySelectorAll('button, .card-btn').forEach(button => {
+button.addEventListener('click', function(e) {
+createRippleEffect(e);
+});
+});
+
+// Add animation for page load
+document.addEventListener('DOMContentLoaded', function() {
+document.body.style.opacity = '0';
+setTimeout(() => {
+document.body.style.transition = 'opacity 0.6s ease';
+document.body.style.opacity = '1';
+}, 100);
+});
+</script>
 </body>
 </html>
