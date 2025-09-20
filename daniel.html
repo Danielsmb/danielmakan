@@ -4,683 +4,1075 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DataApp - Aplikasi Penyimpanan Data</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --maroon: #800000;
+            --dark-maroon: #5c0000;
+            --light-maroon: #a52a2a;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #333333;
+            --blue: #2196F3;
+            --green: #4CAF50;
+            --red: #f44336;
+            --orange: #ff9800;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background-color: #800020; /* Maron */
-            color: #fff;
+            background-color: var(--maroon);
+            color: var(--white);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
         }
-        
-        .sidebar {
-            width: 250px;
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 20px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .logo {
-            text-align: center;
-            padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 20px;
-        }
-        
-        .logo h2 {
-            color: #FFD700; /* Warna emas untuk judul */
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .logo p {
-            color: #f0f0f0;
-            font-size: 12px;
-        }
-        
-        .menu-item {
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
-        
-        .menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-left: 3px solid #FFD700;
-        }
-        
-        .menu-item.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-left: 3px solid #FFD700;
-        }
-        
-        .menu-item i {
-            margin-right: 10px;
-            color: #FFD700;
-        }
-        
-        .content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-        
+
+        /* Login Page Styles */
         .login-container {
-            max-width: 500px;
-            margin: 50px auto;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--maroon);
+            background-image: linear-gradient(135deg, var(--dark-maroon) 0%, var(--maroon) 100%);
         }
-        
-        .login-container h2 {
-            color: #FFD700;
-            margin-bottom: 20px;
+
+        .login-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .login-header {
             text-align: center;
+            margin-bottom: 30px;
         }
-        
+
+        .login-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--white), var(--light-gray));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #f0f0f0;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
         }
-        
-        .form-group input, .form-group select, .form-group textarea {
+
+        .form-group input {
             width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #333;
-        }
-        
-        .btn {
-            background-color: #FFD700;
-            color: #800020;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
-        
-        .btn:hover {
-            background-color: #FFC700;
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
         }
-        
-        .btn-block {
-            display: block;
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .login-btn {
             width: 100%;
+            padding: 12px;
+            background-color: var(--blue);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        
-        .data-container {
-            background-color: rgba(0, 0, 0, 0.4);
+
+        .login-btn:hover {
+            background-color: #0d8bf2;
+        }
+
+        .error-message {
+            color: var(--red);
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+
+        /* Main App Styles */
+        .app-container {
+            display: none;
+            flex: 1;
+            flex-direction: row;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark-maroon);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            padding: 0 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo h2 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            background: linear-gradient(45deg, var(--white), var(--light-gray));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .user-info {
             padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
         }
-        
-        .data-item {
+
+        .user-info p {
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .user-info .user-role {
+            font-size: 0.8rem;
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        .menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
             background-color: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 5px;
+            color: var(--white);
+        }
+
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border-left: 4px solid var(--blue);
+        }
+
+        .menu-item i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .logout-btn {
+            margin: 20px;
+            padding: 12px;
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--red);
+            border: 1px solid var(--red);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--red);
+            color: var(--white);
+        }
+
+        /* Content Styles */
+        .content {
+            flex: 1;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.05);
+            overflow-y: auto;
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+        }
+
+        .content-header h1 {
+            font-size: 2rem;
             margin-bottom: 10px;
+            color: var(--white);
+        }
+
+        .content-header p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        /* Input Data Styles */
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-size: 1rem;
+            min-height: 150px;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+        }
+
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #0d8bf2;
+        }
+
+        .btn-success {
+            background-color: var(--green);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background-color: #3d8b40;
+        }
+
+        .btn-danger {
+            background-color: var(--red);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Search Data Styles */
+        .search-container {
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .data-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .data-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--blue);
+            position: relative;
+        }
+
+        .data-content {
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+        }
+
+        .data-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
         }
-        
-        .data-item button {
-            background-color: #FFD700;
-            color: #800020;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
+
+        .copy-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
             cursor: pointer;
-            font-size: 12px;
+            transition: all 0.3s ease;
         }
-        
+
+        .copy-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn.copied {
+            background-color: var(--green);
+            border-color: var(--green);
+        }
+
+        /* Admin Styles */
         .admin-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        
-        .admin-table th, .admin-table td {
-            padding: 12px;
+
+        .admin-table th,
+        .admin-table td {
+            padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .admin-table th {
-            background-color: rgba(0, 0, 0, 0.3);
-            color: #FFD700;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-weight: 600;
         }
-        
-        .hidden {
-            display: none;
+
+        .admin-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
         }
-        
+
+        .admin-table td {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .access-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .access-full {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--green);
+        }
+
+        .access-limited {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: var(--orange);
+        }
+
+        .admin-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-form .form-group {
+            margin-bottom: 0;
+        }
+
+        .admin-form select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .admin-form select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+        }
+
+        .admin-form select option {
+            background-color: var(--dark-maroon);
+            color: var(--white);
+        }
+
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #4CAF50;
-            color: white;
             padding: 15px 20px;
-            border-radius: 5px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            background-color: var(--green);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
             z-index: 1000;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
         }
-        
+
         .notification.show {
-            opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
         }
-        
+
         .notification.error {
-            background-color: #f44336;
+            background-color: var(--red);
         }
-        
-        .user-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .user-info h2 {
-            color: #FFD700;
-        }
-        
-        .logout-btn {
-            background-color: transparent;
-            border: 1px solid #FFD700;
-            color: #FFD700;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .logout-btn:hover {
-            background-color: #FFD700;
-            color: #800020;
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .logo h2,
+            .logo p,
+            .user-info p,
+            .menu-item span {
+                display: none;
+            }
+
+            .menu-item {
+                justify-content: center;
+                padding: 15px 0;
+            }
+
+            .menu-item i {
+                margin-right: 0;
+                font-size: 1.5rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .admin-form {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
-        <div class="logo">
-            <h2>DataApp</h2>
-            <p>Penyimpanan Data Cloud</p>
-        </div>
-        <div class="menu-item active" id="menu-input">
-            <i class="fas fa-plus-circle"></i>
-            <span>Input Data</span>
-        </div>
-        <div class="menu-item" id="menu-search">
-            <i class="fas fa-search"></i>
-            <span>Cari Data</span>
-        </div>
-        <div class="menu-item" id="menu-admin" style="display: none;">
-            <i class="fas fa-user-shield"></i>
-            <span>Admin</span>
+    <!-- Login Page -->
+    <div class="login-container" id="loginPage">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>DataApp</h1>
+                <p>Aplikasi Penyimpanan Data</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="userId">ID Pengguna</label>
+                    <input type="text" id="userId" placeholder="Masukkan ID pengguna" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword">Password</label>
+                    <input type="password" id="userPassword" placeholder="Masukkan password" required>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+                <div class="error-message" id="loginError">ID atau password salah!</div>
+            </form>
         </div>
     </div>
 
-    <div class="content">
-        <!-- Login Form -->
-        <div class="login-container" id="login-form">
-            <h2>Login ke DataApp</h2>
-            <div class="form-group">
-                <label for="login-id">ID Admin</label>
-                <input type="text" id="login-id" placeholder="Masukkan ID Admin">
+    <!-- Main App -->
+    <div class="app-container" id="appContainer">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h2>DataApp</h2>
+                <p>Penyimpanan Data</p>
             </div>
-            <div class="form-group">
-                <label for="login-password">Password</label>
-                <input type="password" id="login-password" placeholder="Masukkan Password">
-            </div>
-            <button class="btn btn-block" onclick="login()">Login</button>
-            <p style="text-align: center; margin-top: 15px; font-size: 14px;">
-                Demo: ID: admin, Password: admin123
-            </p>
-        </div>
-
-        <!-- Input Data Section -->
-        <div class="hidden" id="input-section">
             <div class="user-info">
-                <h2>Input Data</h2>
-                <button class="logout-btn" onclick="logout()">Logout</button>
+                <p id="currentUserId">User ID</p>
+                <p class="user-role" id="currentUserRole">Role</p>
             </div>
-            <div class="data-container">
-                <div class="form-group">
-                    <label for="data-title">Judul Data</label>
-                    <input type="text" id="data-title" placeholder="Masukkan judul data">
+            <div class="menu">
+                <div class="menu-item active" id="inputMenu">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Input</span>
                 </div>
-                <div class="form-group">
-                    <label for="data-content">Isi Data</label>
-                    <textarea id="data-content" rows="5" placeholder="Masukkan isi data"></textarea>
+                <div class="menu-item" id="searchMenu">
+                    <i class="fas fa-search"></i>
+                    <span>Cari</span>
                 </div>
-                <button class="btn" onclick="saveData()">Simpan Data</button>
+                <div class="menu-item" id="adminMenu" style="display: none;">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin</span>
+                </div>
             </div>
-            <div class="data-container">
-                <h3 style="color: #FFD700; margin-bottom: 15px;">Data Tersimpan</h3>
-                <div id="saved-data-list">
-                    <!-- Data items will be displayed here -->
-                </div>
+            <div class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
             </div>
         </div>
 
-        <!-- Search Data Section -->
-        <div class="hidden" id="search-section">
-            <div class="user-info">
-                <h2>Cari Data</h2>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
-            <div class="data-container">
-                <div class="form-group">
-                    <label for="search-keyword">Kata Kunci</label>
-                    <input type="text" id="search-keyword" placeholder="Masukkan kata kunci pencarian">
+        <!-- Content -->
+        <div class="content">
+            <!-- Input Data Page -->
+            <div id="inputPage" class="content-page">
+                <div class="content-header">
+                    <h1>Input Data</h1>
+                    <p>Simpan data penting Anda dengan aman di cloud</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Tambah Data Baru</h2>
+                    </div>
+                    <form id="dataForm">
+                        <div class="form-group">
+                            <label for="dataContent">Isi Data</label>
+                            <textarea id="dataContent" placeholder="Masukkan data yang ingin disimpan..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Simpan Data</button>
+                    </form>
                 </div>
             </div>
-            <div class="data-container">
-                <h3 style="color: #FFD700; margin-bottom: 15px;">Hasil Pencarian</h3>
-                <div id="search-results">
-                    <!-- Search results will be displayed here -->
-                </div>
-            </div>
-        </div>
 
-        <!-- Admin Section -->
-        <div class="hidden" id="admin-section">
-            <div class="user-info">
-                <h2>Admin Panel</h2>
-                <button class="logout-btn" onclick="logout()">Logout</button>
+            <!-- Search Data Page -->
+            <div id="searchPage" class="content-page" style="display: none;">
+                <div class="content-header">
+                    <h1>Cari Data</h1>
+                    <p>Cari data yang tersimpan dengan cepat dan mudah</p>
+                </div>
+                <div class="card">
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Ketik untuk mencari data...">
+                    </div>
+                    <div class="data-list" id="dataList">
+                        <!-- Data items will be dynamically added here -->
+                    </div>
+                </div>
             </div>
-            <div class="data-container">
-                <h3 style="color: #FFD700; margin-bottom: 15px;">Tambah Admin Baru</h3>
-                <div class="form-group">
-                    <label for="admin-id">ID Admin</label>
-                    <input type="text" id="admin-id" placeholder="Masukkan ID Admin baru">
+
+            <!-- Admin Page -->
+            <div id="adminPage" class="content-page" style="display: none;">
+                <div class="content-header">
+                    <h1>Admin Panel</h1>
+                    <p>Kelola admin dan hak akses</p>
                 </div>
-                <div class="form-group">
-                    <label for="admin-password">Password</label>
-                    <input type="password" id="admin-password" placeholder="Masukkan password">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Tambah Admin Baru</h2>
+                    </div>
+                    <form id="adminForm" class="admin-form">
+                        <div class="form-group">
+                            <label for="adminId">ID Admin</label>
+                            <input type="text" id="adminId" placeholder="Masukkan ID admin" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPassword">Password</label>
+                            <input type="password" id="adminPassword" placeholder="Masukkan password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminAccess">Hak Akses</label>
+                            <select id="adminAccess">
+                                <option value="limited">Terbatas</option>
+                                <option value="full">Penuh</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Tambah Admin</button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="admin-access">Hak Akses</label>
-                    <select id="admin-access">
-                        <option value="limited">Terbatas</option>
-                        <option value="full">Penuh</option>
-                    </select>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Daftar Admin</h2>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID Admin</th>
+                                <th>Hak Akses</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminList">
+                            <!-- Admin items will be dynamically added here -->
+                        </tbody>
+                    </table>
                 </div>
-                <button class="btn" onclick="addAdmin()">Tambah Admin</button>
-            </div>
-            <div class="data-container">
-                <h3 style="color: #FFD700; margin-bottom: 15px;">Daftar Admin</h3>
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>ID Admin</th>
-                            <th>Hak Akses</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-list">
-                        <!-- Admin list will be displayed here -->
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 
+    <!-- Notification -->
     <div class="notification" id="notification"></div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script>
-        // In a real application, this would be replaced with Firebase integration
-        let currentUser = null;
-        let dataStorage = [];
-        let adminUsers = [
-            { id: 'admin', password: 'admin123', access: 'full' }
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // DOM Elements
+        const loginPage = document.getElementById('loginPage');
+        const appContainer = document.getElementById('appContainer');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const userIdInput = document.getElementById('userId');
+        const userPasswordInput = document.getElementById('userPassword');
+        const currentUserId = document.getElementById('currentUserId');
+        const currentUserRole = document.getElementById('currentUserRole');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const inputMenu = document.getElementById('inputMenu');
+        const searchMenu = document.getElementById('searchMenu');
+        const adminMenu = document.getElementById('adminMenu');
+        const inputPage = document.getElementById('inputPage');
+        const searchPage = document.getElementById('searchPage');
+        const adminPage = document.getElementById('adminPage');
+        const dataForm = document.getElementById('dataForm');
+        const dataContent = document.getElementById('dataContent');
+        const searchInput = document.getElementById('searchInput');
+        const dataList = document.getElementById('dataList');
+        const adminForm = document.getElementById('adminForm');
+        const adminId = document.getElementById('adminId');
+        const adminPassword = document.getElementById('adminPassword');
+        const adminAccess = document.getElementById('adminAccess');
+        const adminList = document.getElementById('adminList');
+        const notification = document.getElementById('notification');
+
+        // Default admin credentials (in a real app, this should be handled securely)
+        const defaultAdmins = [
+            { id: 'admin', password: 'admin123', access: 'full' },
+            { id: 'user', password: 'user123', access: 'limited' }
         ];
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load data from localStorage
-            const savedData = localStorage.getItem('dataStorage');
-            if (savedData) {
-                dataStorage = JSON.parse(savedData);
-            }
-            
-            const savedAdmins = localStorage.getItem('adminUsers');
-            if (savedAdmins) {
-                adminUsers = JSON.parse(savedAdmins);
-            }
-            
-            // Set up menu item click handlers
-            document.getElementById('menu-input').addEventListener('click', function() {
-                showSection('input-section');
-                setActiveMenuItem('menu-input');
-            });
-            
-            document.getElementById('menu-search').addEventListener('click', function() {
-                showSection('search-section');
-                setActiveMenuItem('menu-search');
-            });
-            
-            document.getElementById('menu-admin').addEventListener('click', function() {
-                showSection('admin-section');
-                setActiveMenuItem('menu-admin');
-            });
-            
-            // Set up real-time search
-            const searchInput = document.getElementById('search-keyword');
-            let searchTimeout;
-            
-            searchInput.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(function() {
-                    searchData();
-                }, 300); // Debounce untuk mencegah terlalu banyak pencarian saat mengetik cepat
-            });
-        });
+        // Current user state
+        let currentUser = null;
 
-        function login() {
-            const id = document.getElementById('login-id').value;
-            const password = document.getElementById('login-password').value;
-            
-            // Find admin user
-            const admin = adminUsers.find(user => user.id === id && user.password === password);
+        // Initialize app
+        function init() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showApp();
+            }
+
+            // Add event listeners
+            loginForm.addEventListener('submit', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+            inputMenu.addEventListener('click', () => showPage('input'));
+            searchMenu.addEventListener('click', () => showPage('search'));
+            adminMenu.addEventListener('click', () => showPage('admin'));
+            dataForm.addEventListener('submit', handleDataSubmit);
+            searchInput.addEventListener('input', handleSearch);
+            adminForm.addEventListener('submit', handleAdminSubmit);
+
+            // Load initial data
+            loadAdmins();
+            loadData();
+        }
+
+        // Handle login
+        function handleLogin(e) {
+            e.preventDefault();
+            const userId = userIdInput.value.trim();
+            const password = userPasswordInput.value.trim();
+
+            // Check if credentials match any admin
+            const admin = defaultAdmins.find(a => a.id === userId && a.password === password);
             
             if (admin) {
-                currentUser = admin;
-                document.getElementById('login-form').classList.add('hidden');
+                currentUser = {
+                    id: admin.id,
+                    role: admin.access === 'full' ? 'Admin Penuh' : 'Admin Terbatas',
+                    access: admin.access
+                };
                 
-                // Show admin menu only if user has full access
-                if (admin.access === 'full') {
-                    document.getElementById('menu-admin').style.display = 'flex';
-                }
-                
-                showSection('input-section');
-                setActiveMenuItem('menu-input');
-                showNotification('Login berhasil!', 'success');
-                
-                // Load saved data
-                displaySavedData();
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showApp();
+                showNotification('Login berhasil!');
             } else {
-                showNotification('ID atau password salah!', 'error');
+                loginError.style.display = 'block';
+                setTimeout(() => {
+                    loginError.style.display = 'none';
+                }, 3000);
             }
         }
 
-        function logout() {
+        // Handle logout
+        function handleLogout() {
             currentUser = null;
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('menu-admin').style.display = 'none';
-            
-            // Hide all sections
-            document.getElementById('input-section').classList.add('hidden');
-            document.getElementById('search-section').classList.add('hidden');
-            document.getElementById('admin-section').classList.add('hidden');
-            
-            // Reset active menu item
-            setActiveMenuItem('menu-input');
-            
-            showNotification('Anda telah logout', 'success');
+            localStorage.removeItem('currentUser');
+            loginPage.style.display = 'flex';
+            appContainer.style.display = 'none';
+            userIdInput.value = '';
+            userPasswordInput.value = '';
+            showNotification('Anda telah logout!');
         }
 
-        function showSection(sectionId) {
-            // Hide all sections
-            document.getElementById('input-section').classList.add('hidden');
-            document.getElementById('search-section').classList.add('hidden');
-            document.getElementById('admin-section').classList.add('hidden');
+        // Show app after login
+        function showApp() {
+            loginPage.style.display = 'none';
+            appContainer.style.display = 'flex';
+            currentUserId.textContent = currentUser.id;
+            currentUserRole.textContent = currentUser.role;
             
-            // Show selected section
-            document.getElementById(sectionId).classList.remove('hidden');
-            
-            // Load section-specific data
-            if (sectionId === 'input-section') {
-                displaySavedData();
-            } else if (sectionId === 'admin-section') {
-                displayAdminList();
-            } else if (sectionId === 'search-section') {
-                // Clear search input when switching to search section
-                document.getElementById('search-keyword').value = '';
-                document.getElementById('search-results').innerHTML = '<p>Masukkan kata kunci untuk mencari</p>';
+            // Show admin menu only for full access admin
+            if (currentUser.access === 'full') {
+                adminMenu.style.display = 'flex';
+            } else {
+                adminMenu.style.display = 'none';
             }
+            
+            showPage('input');
         }
 
-        function setActiveMenuItem(menuId) {
+        // Show specific page
+        function showPage(page) {
+            // Hide all pages
+            inputPage.style.display = 'none';
+            searchPage.style.display = 'none';
+            adminPage.style.display = 'none';
+            
             // Remove active class from all menu items
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
-            });
+            inputMenu.classList.remove('active');
+            searchMenu.classList.remove('active');
+            adminMenu.classList.remove('active');
             
-            // Add active class to selected menu item
-            document.getElementById(menuId).classList.add('active');
-        }
-
-        function saveData() {
-            const title = document.getElementById('data-title').value;
-            const content = document.getElementById('data-content').value;
-            
-            if (!title || !content) {
-                showNotification('Judul dan isi data harus diisi!', 'error');
-                return;
+            // Show selected page and set active menu
+            switch(page) {
+                case 'input':
+                    inputPage.style.display = 'block';
+                    inputMenu.classList.add('active');
+                    break;
+                case 'search':
+                    searchPage.style.display = 'block';
+                    searchMenu.classList.add('active');
+                    break;
+                case 'admin':
+                    adminPage.style.display = 'block';
+                    adminMenu.classList.add('active');
+                    loadAdmins();
+                    break;
             }
-            
-            const newData = {
-                id: Date.now(),
-                title,
-                content,
-                createdAt: new Date().toISOString()
-            };
-            
-            dataStorage.push(newData);
-            
-            // Save to localStorage
-            localStorage.setItem('dataStorage', JSON.stringify(dataStorage));
-            
-            // Clear form
-            document.getElementById('data-title').value = '';
-            document.getElementById('data-content').value = '';
-            
-            // Refresh data list
-            displaySavedData();
-            
-            showNotification('Data berhasil disimpan!', 'success');
         }
 
-        function displaySavedData() {
-            const dataList = document.getElementById('saved-data-list');
-            dataList.innerHTML = '';
+        // Handle data submission
+        function handleDataSubmit(e) {
+            e.preventDefault();
+            const content = dataContent.value.trim();
             
-            if (dataStorage.length === 0) {
-                dataList.innerHTML = '<p>Belum ada data tersimpan</p>';
-                return;
-            }
-            
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
-            dataStorage.forEach(data => {
-                const dataItem = document.createElement('div');
-                dataItem.className = 'data-item';
-                dataItem.innerHTML = `
-                    <div>
-                        <h4>${data.title}</h4>
-                        <p>${data.content.substring(0, 100)}${data.content.length > 100 ? '...' : ''}</p>
-                    </div>
-                    <button onclick="copyData('${data.id}')">Salin</button>
-                `;
-                fragment.appendChild(dataItem);
-            });
-            
-            dataList.appendChild(fragment);
-        }
-
-        function copyData(dataId) {
-            const data = dataStorage.find(item => item.id == dataId);
-            if (data) {
-                // Create a temporary textarea element
-                const textarea = document.createElement('textarea');
-                textarea.value = data.content; // Hanya menyalin konten asli tanpa tambahan
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
+            if (content) {
+                const newData = {
+                    content: content,
+                    createdBy: currentUser.id,
+                    createdAt: new Date().toISOString()
+                };
                 
-                showNotification('Data berhasil disalin!', 'success');
+                // Add data to Firestore
+                db.collection('data').add(newData)
+                    .then(() => {
+                        dataContent.value = '';
+                        showNotification('Data berhasil disimpan!');
+                        loadData();
+                    })
+                    .catch(error => {
+                        console.error('Error adding document: ', error);
+                        showNotification('Gagal menyimpan data!', true);
+                    });
             }
         }
 
-        function searchData() {
-            const keyword = document.getElementById('search-keyword').value.toLowerCase();
-            const resultsContainer = document.getElementById('search-results');
-            resultsContainer.innerHTML = '';
+        // Load data from Firestore
+        function loadData() {
+            db.collection('data').orderBy('createdAt', 'desc').get()
+                .then(querySnapshot => {
+                    dataList.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        dataList.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.6);">Tidak ada data yang tersimpan</p>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        const dataItem = createDataItem(doc.id, data);
+                        dataList.appendChild(dataItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error getting documents: ', error);
+                    dataList.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.6);">Gagal memuat data</p>';
+                });
+        }
+
+        // Create data item element
+        function createDataItem(id, data) {
+            const item = document.createElement('div');
+            item.className = 'data-item';
+            item.dataset.id = id;
             
-            if (!keyword) {
-                resultsContainer.innerHTML = '<p>Masukkan kata kunci untuk mencari</p>';
+            const content = document.createElement('div');
+            content.className = 'data-content';
+            content.textContent = data.content;
+            
+            const meta = document.createElement('div');
+            meta.className = 'data-meta';
+            
+            const info = document.createElement('span');
+            const date = new Date(data.createdAt).toLocaleString('id-ID');
+            info.textContent = `Dibuat oleh ${data.createdBy} pada ${date}`;
+            
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Salin';
+            copyBtn.addEventListener('click', () => copyToClipboard(data.content, copyBtn));
+            
+            meta.appendChild(info);
+            meta.appendChild(copyBtn);
+            
+            item.appendChild(content);
+            item.appendChild(meta);
+            
+            return item;
+        }
+
+        // Copy text to clipboard
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    button.classList.add('copied');
+                    button.innerHTML = '<i class="fas fa-check"></i> Tersalin';
+                    
+                    setTimeout(() => {
+                        button.classList.remove('copied');
+                        button.innerHTML = '<i class="fas fa-copy"></i> Salin';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showNotification('Gagal menyalin data!', true);
+                });
+        }
+
+        // Handle search
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const dataItems = dataList.querySelectorAll('.data-item');
+            
+            if (searchTerm === '') {
+                // If search is empty, show all items
+                dataItems.forEach(item => {
+                    item.style.display = 'block';
+                });
                 return;
             }
             
-            const results = dataStorage.filter(data => 
-                data.title.toLowerCase().includes(keyword) || 
-                data.content.toLowerCase().includes(keyword)
-            );
-            
-            if (results.length === 0) {
-                resultsContainer.innerHTML = '<p>Tidak ada data yang cocok dengan kata kunci</p>';
-                return;
-            }
-            
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
-            results.forEach(data => {
-                const dataItem = document.createElement('div');
-                dataItem.className = 'data-item';
-                dataItem.innerHTML = `
-                    <div>
-                        <h4>${data.title}</h4>
-                        <p>${data.content.substring(0, 100)}${data.content.length > 100 ? '...' : ''}</p>
-                    </div>
-                    <button onclick="copyData('${data.id}')">Salin</button>
-                `;
-                fragment.appendChild(dataItem);
+            dataItems.forEach(item => {
+                const content = item.querySelector('.data-content').textContent.toLowerCase();
+                if (content.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
             });
-            
-            resultsContainer.appendChild(fragment);
         }
 
-        function addAdmin() {
-            if (currentUser.access !== 'full') {
-                showNotification('Anda tidak memiliki hak akses untuk menambah admin!', 'error');
-                return;
-            }
-            
-            const id = document.getElementById('admin-id').value;
-            const password = document.getElementById('admin-password').value;
-            const access = document.getElementById('admin-access').value;
-            
-            if (!id || !password) {
-                showNotification('ID dan password harus diisi!', 'error');
-                return;
-            }
-            
-            // Check if admin ID already exists
-            if (adminUsers.find(user => user.id === id)) {
-                showNotification('ID admin sudah ada!', 'error');
-                return;
-            }
-            
-            const newAdmin = {
-                id,
-                password,
-                access
-            };
-            
-            adminUsers.push(newAdmin);
-            
-            // Save to localStorage
-            localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
-            
-            // Clear form
-            document.getElementById('admin-id').value = '';
-            document.getElementById('admin-password').value = '';
-            
-            // Refresh admin list
-            displayAdminList();
-            
-            showNotification('Admin berhasil ditambahkan!', 'success');
-        }
-
-        function displayAdminList() {
-            const adminList = document.getElementById('admin-list');
+        // Load admins
+        function loadAdmins() {
+            // For demo purposes, we'll use the default admins
+            // In a real app, this would come from Firestore
             adminList.innerHTML = '';
             
-            // Use document fragment for better performance
-            const fragment = document.createDocumentFragment();
-            
-            adminUsers.forEach(admin => {
+            defaultAdmins.forEach(admin => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${admin.id}</td>
-                    <td>${admin.access === 'full' ? 'Penuh' : 'Terbatas'}</td>
-                    <td>
-                        ${currentUser.access === 'full' && admin.id !== currentUser.id ? 
-                            `<button class="btn" onclick="deleteAdmin('${admin.id}')">Hapus</button>` : 
-                            '-'}
-                    </td>
-                `;
-                fragment.appendChild(row);
+                
+                const idCell = document.createElement('td');
+                idCell.textContent = admin.id;
+                
+                const accessCell = document.createElement('td');
+                const badge = document.createElement('span');
+                badge.className = `access-badge ${admin.access === 'full' ? 'access-full' : 'access-limited'}`;
+                badge.textContent = admin.access === 'full' ? 'Penuh' : 'Terbatas';
+                accessCell.appendChild(badge);
+                
+                const actionCell = document.createElement('td');
+                
+                // Only allow deletion of non-default admins
+                if (admin.id !== 'admin' && admin.id !== 'user') {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-danger';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Hapus';
+                    deleteBtn.addEventListener('click', () => deleteAdmin(admin.id));
+                    actionCell.appendChild(deleteBtn);
+                }
+                
+                row.appendChild(idCell);
+                row.appendChild(accessCell);
+                row.appendChild(actionCell);
+                
+                adminList.appendChild(row);
             });
-            
-            adminList.appendChild(fragment);
         }
 
-        function deleteAdmin(adminId) {
+        // Handle admin submission
+        function handleAdminSubmit(e) {
+            e.preventDefault();
+            
             if (currentUser.access !== 'full') {
-                showNotification('Anda tidak memiliki hak akses untuk menghapus admin!', 'error');
+                showNotification('Anda tidak memiliki hak akses untuk ini!', true);
                 return;
             }
             
-            adminUsers = adminUsers.filter(admin => admin.id !== adminId);
+            const id = adminId.value.trim();
+            const password = adminPassword.value.trim();
+            const access = adminAccess.value;
             
-            // Save to localStorage
-            localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
-            
-            // Refresh admin list
-            displayAdminList();
-            
-            showNotification('Admin berhasil dihapus!', 'success');
+            if (id && password) {
+                // Check if admin already exists
+                if (defaultAdmins.find(a => a.id === id)) {
+                    showNotification('Admin dengan ID ini sudah ada!', true);
+                    return;
+                }
+                
+                // Add new admin
+                defaultAdmins.push({ id, password, access });
+                
+                // Reset form
+                adminId.value = '';
+                adminPassword.value = '';
+                adminAccess.value = 'limited';
+                
+                // Reload admin list
+                loadAdmins();
+                
+                showNotification('Admin berhasil ditambahkan!');
+            }
         }
 
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
+        // Delete admin
+        function deleteAdmin(id) {
+            if (currentUser.access !== 'full') {
+                showNotification('Anda tidak memiliki hak akses untuk ini!', true);
+                return;
+            }
+            
+            const index = defaultAdmins.findIndex(a => a.id === id);
+            if (index !== -1) {
+                defaultAdmins.splice(index, 1);
+                loadAdmins();
+                showNotification('Admin berhasil dihapus!');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
             notification.textContent = message;
             notification.className = 'notification';
             
-            if (type === 'error') {
+            if (isError) {
                 notification.classList.add('error');
             }
             
@@ -690,6 +1082,9 @@
                 notification.classList.remove('show');
             }, 3000);
         }
+
+        // Initialize the app
+        init();
     </script>
 </body>
 </html>
