@@ -30,7 +30,7 @@
 --border: 1px solid rgba(255, 255, 255, 0.18);
 --border-radius: 12px;
 --border-radius-lg: 20px;
---transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+--transition: all 0.3s ease;
 }
 
 * {
@@ -746,6 +746,12 @@ box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
 background: linear-gradient(to right, var(--secondary), var(--primary));
 }
 
+.form-btn:disabled {
+opacity: 0.6;
+cursor: not-allowed;
+transform: none;
+}
+
 .form-row {
 display: flex;
 gap: 20px;
@@ -1126,7 +1132,7 @@ Tidak ditemukan data yang sesuai
 <input type="text" id="addNamaRekening" class="form-input" placeholder="Masukkan nama pemilik rekening" required>
 </div>
 <div class="form-group">
-<button type="submit" class="form-btn">
+<button type="submit" class="form-btn" id="addRekeningBtn">
 <i class="fas fa-save"></i> Simpan Data Rekening
 </button>
 </div>
@@ -1148,7 +1154,7 @@ Tidak ditemukan data yang sesuai
 <textarea id="inputDeskripsi" class="form-textarea" placeholder="Masukkan deskripsi" required></textarea>
 </div>
 <div class="form-group">
-<button type="submit" class="form-btn">
+<button type="submit" class="form-btn" id="inputDataBtn">
 <i class="fas fa-save"></i> Simpan Data
 </button>
 </div>
@@ -1189,12 +1195,6 @@ hour12: false
 };
 const clockElement = document.getElementById("clock");
 clockElement.textContent = now.toLocaleDateString("id-ID", options);
-
-// Add smooth transition effect
-clockElement.style.opacity = 0;
-setTimeout(() => {
-clockElement.style.opacity = 1;
-}, 100);
 }
 setInterval(updateClock, 1000);
 updateClock();
@@ -1225,7 +1225,7 @@ function createParticles() {
 const particlesContainer = document.getElementById('particles');
 particlesContainer.innerHTML = '';
 
-const particleCount = window.innerWidth < 768 ? 15 : 30;
+const particleCount = window.innerWidth < 768 ? 10 : 20;
 const colors = [
 'rgba(67, 97, 238, 0.6)',
 'rgba(114, 9, 183, 0.6)',
@@ -1458,8 +1458,7 @@ loading.style.display = 'flex';
 rekeningData.innerHTML = '';
 noResults.style.display = 'none';
 
-// Simulate loading animation
-setTimeout(() => {
+// Load data directly without timeout
 google.script.run.withSuccessHandler(function(data) {
 loading.style.display = 'none';
 displayRekeningData(data);
@@ -1467,7 +1466,6 @@ displayRekeningData(data);
 loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i><br>Gagal memuat data: ${error.message}`;
 console.error('Error loading rekening data:', error);
 }).getRekeningData();
-}, 800);
 }
 
 function displayRekeningData(data) {
@@ -1521,7 +1519,7 @@ noResults.style.display = 'none';
 // Add search animation
 document.getElementById('searchBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari...';
 
-setTimeout(() => {
+// Search directly without timeout
 google.script.run.withSuccessHandler(function(data) {
 document.getElementById('searchBtn').innerHTML = '<i class="fas fa-search"></i> Cari';
 loading.style.display = 'none';
@@ -1531,7 +1529,6 @@ document.getElementById('searchBtn').innerHTML = '<i class="fas fa-search"></i> 
 loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i><br>Gagal mencari data: ${error.message}`;
 noResults.style.display = 'flex';
 }).searchRekening(searchTerm);
-}, 800);
 }
 
 // Add Rekening Form Functionality
@@ -1545,13 +1542,16 @@ nama: document.getElementById('addNamaRekening').value
 };
 
 const messageDiv = document.getElementById('addRekeningMessage');
+const submitBtn = document.getElementById('addRekeningBtn');
+    
+// Show loading state
 messageDiv.style.display = 'block';
 messageDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan data rekening...';
 messageDiv.style.background = 'rgba(67, 97, 238, 0.1)';
 messageDiv.style.color = 'var(--primary)';
+submitBtn.disabled = true;
 
-// Simulate saving data
-setTimeout(() => {
+// Save data directly without timeout
 google.script.run.withSuccessHandler(function(response) {
 messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Data rekening berhasil disimpan!';
 messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
@@ -1563,6 +1563,7 @@ document.getElementById('addRekeningForm').reset();
 // Hide message after 3 seconds
 setTimeout(() => {
 messageDiv.style.display = 'none';
+submitBtn.disabled = false;
 }, 3000);
     
 // Switch to view tab and reload data
@@ -1572,9 +1573,9 @@ loadRekeningData();
 messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
 messageDiv.style.background = 'rgba(239, 35, 60, 0.1)';
 messageDiv.style.color = 'var(--danger)';
+submitBtn.disabled = false;
 console.error('Error saving rekening data:', error);
 }).saveRekeningData(formData);
-}, 800);
 });
 
 // Input Data Functionality
@@ -1587,13 +1588,16 @@ deskripsi: document.getElementById('inputDeskripsi').value
 };
 
 const messageDiv = document.getElementById('inputDataMessage');
+const submitBtn = document.getElementById('inputDataBtn');
+    
+// Show loading state
 messageDiv.style.display = 'block';
 messageDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan data...';
 messageDiv.style.background = 'rgba(67, 97, 238, 0.1)';
 messageDiv.style.color = 'var(--primary)';
+submitBtn.disabled = true;
 
-// Simulate saving data
-setTimeout(() => {
+// Save data directly without timeout
 google.script.run.withSuccessHandler(function(response) {
 messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Data berhasil disimpan!';
 messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
@@ -1605,14 +1609,15 @@ document.getElementById('inputDataForm').reset();
 // Hide message after 3 seconds
 setTimeout(() => {
 messageDiv.style.display = 'none';
+submitBtn.disabled = false;
 }, 3000);
 }).withFailureHandler(function(error) {
 messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
 messageDiv.style.background = 'rgba(239, 35, 60, 0.1)';
 messageDiv.style.color = 'var(--danger)';
+submitBtn.disabled = false;
 console.error('Error saving data:', error);
 }).saveData(formData);
-}, 800);
 });
 
 // Enhanced Report Functionality
@@ -1627,6 +1632,7 @@ reportMenuList.innerHTML = `
 </div>
 `;
 
+// Load data directly without timeout
 google.script.run.withSuccessHandler(function(data) {
 reportMenuList.innerHTML = '';
 
@@ -1682,6 +1688,7 @@ reportInfo.innerHTML = `
 </div>
 `;
 
+// Load data directly without timeout
 google.script.run.withSuccessHandler(function(info) {
 reportTitle.textContent = item.judul || 'Report';
 reportInfo.innerHTML = `
@@ -1735,6 +1742,7 @@ reportMenuList.innerHTML = `
 </div>
 `;
 
+// Search directly without timeout
 google.script.run.withSuccessHandler(function(data) {
 reportMenuList.innerHTML = '';
 
@@ -1780,6 +1788,16 @@ console.error('Error searching report:', error);
 
 // Enhanced Copy to clipboard function with better feedback
 function copyToClipboard(text) {
+// Use modern Clipboard API if available
+if (navigator.clipboard) {
+navigator.clipboard.writeText(text).then(function() {
+showCopyNotification('Teks berhasil disalin ke clipboard!', 'success');
+}).catch(function(err) {
+console.error('Failed to copy text: ', err);
+showCopyNotification('Gagal menyalin teks!', 'error');
+});
+} else {
+// Fallback for older browsers
 const textarea = document.createElement('textarea');
 textarea.value = text;
 document.body.appendChild(textarea);
@@ -1787,13 +1805,23 @@ textarea.select();
 
 try {
 document.execCommand('copy');
+showCopyNotification('Teks berhasil disalin ke clipboard!', 'success');
+} catch (err) {
+console.error('Failed to copy text: ', err);
+showCopyNotification('Gagal menyalin teks!', 'error');
+}
 
-// Enhanced notification
+document.body.removeChild(textarea);
+}
+}
+
+// Show copy notification
+function showCopyNotification(message, type) {
 const notification = document.createElement('div');
 notification.style.position = 'fixed';
 notification.style.bottom = '30px';
 notification.style.right = '30px';
-notification.style.backgroundColor = 'var(--success)';
+notification.style.backgroundColor = type === 'success' ? 'var(--success)' : 'var(--danger)';
 notification.style.color = 'white';
 notification.style.padding = '15px 25px';
 notification.style.borderRadius = '8px';
@@ -1806,8 +1834,8 @@ notification.style.transform = 'translateY(30px)';
 notification.style.opacity = '0';
 notification.style.transition = 'all 0.3s ease';
 notification.innerHTML = `
-<i class="fas fa-check-circle"></i>
-<span>Teks berhasil disalin ke clipboard!</span>
+<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+<span>${message}</span>
 `;
 
 document.body.appendChild(notification);
@@ -1824,37 +1852,6 @@ setTimeout(() => {
 document.body.removeChild(notification);
 }, 300);
 }, 3000);
-
-} catch (err) {
-console.error('Failed to copy text: ', err);
-
-// Error notification
-const errorNotification = document.createElement('div');
-errorNotification.style.position = 'fixed';
-errorNotification.style.bottom = '30px';
-errorNotification.style.right = '30px';
-errorNotification.style.backgroundColor = 'var(--danger)';
-errorNotification.style.color = 'white';
-errorNotification.style.padding = '15px 25px';
-errorNotification.style.borderRadius = '8px';
-errorNotification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
-errorNotification.style.zIndex = '1000';
-errorNotification.style.display = 'flex';
-errorNotification.style.alignItems = 'center';
-errorNotification.style.gap = '10px';
-errorNotification.innerHTML = `
-<i class="fas fa-exclamation-circle"></i>
-<span>Gagal menyalin teks!</span>
-`;
-
-document.body.appendChild(errorNotification);
-
-setTimeout(() => {
-document.body.removeChild(errorNotification);
-}, 3000);
-}
-
-document.body.removeChild(textarea);
 }
 
 // Event listeners with debounce for search
