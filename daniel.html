@@ -184,6 +184,38 @@ font-weight: 600;
 color: white;
 }
 
+/* Submenu styles */
+.submenu {
+max-height: 0;
+overflow: hidden;
+transition: max-height 0.3s ease;
+background: rgba(0, 0, 0, 0.1);
+margin-left: 15px;
+border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.submenu.active {
+max-height: 500px;
+}
+
+.submenu-item {
+display: flex;
+align-items: center;
+padding: 12px 25px 12px 40px;
+color: var(--light);
+text-decoration: none;
+transition: var(--transition);
+}
+
+.submenu-item:hover {
+background: rgba(255,255,255,0.1);
+}
+
+.submenu-item.active {
+background: rgba(67, 97, 238, 0.2);
+border-left: 3px solid var(--accent);
+}
+
 /* Main Content Area */
 .main-content {
 flex: 1;
@@ -1030,14 +1062,16 @@ flex-direction: column;
 <span class="menu-icon"><i class="fas fa-piggy-bank"></i></span>
 <span class="menu-text">Data Rekening</span>
 </a>
-<a href="#" class="menu-item" id="inputDataMenu">
-<span class="menu-icon"><i class="fas fa-plus-circle"></i></span>
-<span class="menu-text">Input Data</span>
-</a>
 <a href="#" class="menu-item" id="reportMenu">
 <span class="menu-icon"><i class="fas fa-file-alt"></i></span>
 <span class="menu-text">Report</span>
 </a>
+<div class="submenu" id="reportSubmenu">
+<a href="#" class="submenu-item" id="inputDataSubmenu">
+<span class="menu-icon"><i class="fas fa-plus-circle"></i></span>
+<span class="menu-text">Input Data</span>
+</a>
+</div>
 </div>
 </div>
 
@@ -1270,6 +1304,13 @@ sidebar.classList.toggle('active');
 this.style.transform = sidebar.classList.contains('active') ? 'rotate(90deg)' : 'rotate(0)';
 });
 
+// Toggle submenu for Report
+document.getElementById('reportMenu').addEventListener('click', function(e) {
+e.preventDefault();
+const submenu = document.getElementById('reportSubmenu');
+submenu.classList.toggle('active');
+});
+
 // Initialize with animations
 window.addEventListener('load', function() {
 createParticles();
@@ -1409,7 +1450,7 @@ createRippleEffect(e);
 showDataRekening();
 });
 
-document.getElementById('inputDataMenu').addEventListener('click', function(e) {
+document.getElementById('inputDataSubmenu').addEventListener('click', function(e) {
 e.preventDefault();
 createRippleEffect(e);
 showInputData();
@@ -1459,14 +1500,18 @@ loading.style.display = 'flex';
 rekeningData.innerHTML = '';
 noResults.style.display = 'none';
 
-// Load data directly without timeout
-google.script.run.withSuccessHandler(function(data) {
+// Simulate loading data with setTimeout
+setTimeout(() => {
+// Simulated data - in real implementation, this would come from a server
+const mockData = [
+{ bank: 'BCA', rekening: '1234567890', nama: 'John Doe' },
+{ bank: 'Mandiri', rekening: '9876543210', nama: 'Jane Smith' },
+{ bank: 'BNI', rekening: '5555666677', nama: 'Robert Johnson' }
+];
+
 loading.style.display = 'none';
-displayRekeningData(data);
-}).withFailureHandler(function(error) {
-loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i><br>Gagal memuat data: ${error.message}`;
-console.error('Error loading rekening data:', error);
-}).getRekeningData();
+displayRekeningData(mockData);
+}, 1000);
 }
 
 function displayRekeningData(data) {
@@ -1520,16 +1565,26 @@ noResults.style.display = 'none';
 // Add search animation
 document.getElementById('searchBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari...';
 
-// Search directly without timeout
-google.script.run.withSuccessHandler(function(data) {
+// Simulate search with setTimeout
+setTimeout(() => {
+// Simulated search results - in real implementation, this would come from a server
+const mockData = [
+{ bank: 'BCA', rekening: '1234567890', nama: 'John Doe' },
+{ bank: 'Mandiri', rekening: '9876543210', nama: 'Jane Smith' },
+{ bank: 'BNI', rekening: '5555666677', nama: 'Robert Johnson' }
+];
+
+// Filter data based on search term
+const filteredData = mockData.filter(item => 
+item.bank.toLowerCase().includes(searchTerm.toLowerCase()) ||
+item.rekening.includes(searchTerm) ||
+item.nama.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
 document.getElementById('searchBtn').innerHTML = '<i class="fas fa-search"></i> Cari';
 loading.style.display = 'none';
-displayRekeningData(data);
-}).withFailureHandler(function(error) {
-document.getElementById('searchBtn').innerHTML = '<i class="fas fa-search"></i> Cari';
-loading.innerHTML = `<i class="fas fa-exclamation-triangle"></i><br>Gagal mencari data: ${error.message}`;
-noResults.style.display = 'flex';
-}).searchRekening(searchTerm);
+displayRekeningData(filteredData);
+}, 1000);
 }
 
 // Add Rekening Form Functionality
@@ -1554,10 +1609,8 @@ submitBtn.disabled = true;
 
 console.log('Sending data:', formData);
 
-// Save data using google.script.run
-google.script.run.withSuccessHandler(function(response) {
-console.log('Response:', response);
-    
+// Simulate saving data with setTimeout
+setTimeout(() => {
 // Create success message with actions
 messageDiv.innerHTML = `
 <div class="success-message">
@@ -1592,13 +1645,7 @@ loadRekeningData();
 }
 }, 5000);
     
-}).withFailureHandler(function(error) {
-console.error('Error:', error);
-messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
-messageDiv.style.background = 'rgba(239, 35, 60, 0.1)';
-messageDiv.style.color = 'var(--danger)';
-submitBtn.disabled = false;
-}).saveRekeningData(formData);
+}, 1500);
 });
 
 // Input Data Functionality
@@ -1622,10 +1669,8 @@ submitBtn.disabled = true;
 
 console.log('Sending data:', formData);
 
-// Save data using google.script.run
-google.script.run.withSuccessHandler(function(response) {
-console.log('Response:', response);
-    
+// Simulate saving data with setTimeout
+setTimeout(() => {
 // Create success message with actions
 messageDiv.innerHTML = `
 <div class="success-message">
@@ -1652,13 +1697,7 @@ document.getElementById('inputDataForm').reset();
 // Enable button
 submitBtn.disabled = false;
     
-}).withFailureHandler(function(error) {
-console.error('Error:', error);
-messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
-messageDiv.style.background = 'rgba(239, 35, 60, 0.1)';
-messageDiv.style.color = 'var(--danger)';
-submitBtn.disabled = false;
-}).saveData(formData);
+}, 1500);
 });
 
 // Enhanced Report Functionality
@@ -1673,11 +1712,18 @@ reportMenuList.innerHTML = `
 </div>
 `;
 
-// Load data directly without timeout
-google.script.run.withSuccessHandler(function(data) {
+// Simulate loading data with setTimeout
+setTimeout(() => {
+// Simulated data - in real implementation, this would come from a server
+const mockData = [
+{ id: 1, judul: 'Laporan Harian', kategori: 'Harian', tanggal: '2023-06-15', status: 'Selesai', deskripsi: 'Ini adalah laporan harian yang berisi informasi penting.' },
+{ id: 2, judul: 'Laporan Mingguan', kategori: 'Mingguan', tanggal: '2023-06-10', status: 'Selesai', deskripsi: 'Ini adalah laporan mingguan yang berisi ringkasan aktivitas.' },
+{ id: 3, judul: 'Laporan Bulanan', kategori: 'Bulanan', tanggal: '2023-05-31', status: 'Selesai', deskripsi: 'Ini adalah laporan bulanan yang berisi analisis lengkap.' }
+];
+
 reportMenuList.innerHTML = '';
 
-if (!data || data.length === 0) {
+if (!mockData || mockData.length === 0) {
 reportMenuList.innerHTML = `
 <div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
 <i class="fas fa-info-circle"></i> Tidak ada laporan tersedia
@@ -1686,7 +1732,7 @@ reportMenuList.innerHTML = `
 return;
 }
 
-data.forEach((item, index) => {
+mockData.forEach((item, index) => {
 const button = document.createElement('button');
 button.className = 'report-menu-btn';
 button.innerHTML = `
@@ -1707,14 +1753,7 @@ showReportInfo(item);
 
 reportMenuList.appendChild(button);
 });
-}).withFailureHandler(function(error) {
-reportMenuList.innerHTML = `
-<div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
-<i class="fas fa-exclamation-triangle"></i> Gagal memuat laporan: ${error.message}
-</div>
-`;
-console.error('Error loading report menu:', error);
-}).getReportMenu();
+}, 1000);
 }
 
 function showReportInfo(item) {
@@ -1729,8 +1768,8 @@ reportInfo.innerHTML = `
 </div>
 `;
 
-// Load data directly without timeout
-google.script.run.withSuccessHandler(function(info) {
+// Simulate loading data with setTimeout
+setTimeout(() => {
 reportTitle.textContent = item.judul || 'Report';
 reportInfo.innerHTML = `
 <button class="copy-btn" onclick="copyToClipboard(document.getElementById('reportInfo').textContent)">
@@ -1756,18 +1795,10 @@ const importantTexts = infoElement.querySelectorAll('strong, b');
 
 importantTexts.forEach(text => {
 text.style.color = 'var(--primary)';
-text.style.font-weight = '600';
+text.style.fontWeight = '600';
 });
 
-}).withFailureHandler(function(error) {
-reportInfo.innerHTML = `
-<div style="text-align: center; color: var(--danger); padding: 20px;">
-<i class="fas fa-exclamation-triangle"></i> Gagal memuat informasi: ${error.message}
-</div>
-`;
-reportContent.style.display = 'block';
-console.error('Error loading report info:', error);
-}).getReportInfo(item.id);
+}, 1000);
 }
 
 // Search Report Functionality
@@ -1783,11 +1814,25 @@ reportMenuList.innerHTML = `
 </div>
 `;
 
-// Search directly without timeout
-google.script.run.withSuccessHandler(function(data) {
+// Simulate search with setTimeout
+setTimeout(() => {
+// Simulated data - in real implementation, this would come from a server
+const mockData = [
+{ id: 1, judul: 'Laporan Harian', kategori: 'Harian', tanggal: '2023-06-15', status: 'Selesai', deskripsi: 'Ini adalah laporan harian yang berisi informasi penting.' },
+{ id: 2, judul: 'Laporan Mingguan', kategori: 'Mingguan', tanggal: '2023-06-10', status: 'Selesai', deskripsi: 'Ini adalah laporan mingguan yang berisi ringkasan aktivitas.' },
+{ id: 3, judul: 'Laporan Bulanan', kategori: 'Bulanan', tanggal: '2023-05-31', status: 'Selesai', deskripsi: 'Ini adalah laporan bulanan yang berisi analisis lengkap.' }
+];
+
+// Filter data based on search term
+const filteredData = mockData.filter(item => 
+item.judul.toLowerCase().includes(searchTerm.toLowerCase()) ||
+item.kategori.toLowerCase().includes(searchTerm.toLowerCase()) ||
+item.deskripsi.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
 reportMenuList.innerHTML = '';
 
-if (!data || data.length === 0) {
+if (!filteredData || filteredData.length === 0) {
 reportMenuList.innerHTML = `
 <div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
 <i class="fas fa-info-circle"></i> Tidak ditemukan laporan yang sesuai
@@ -1796,7 +1841,7 @@ reportMenuList.innerHTML = `
 return;
 }
 
-data.forEach((item, index) => {
+filteredData.forEach((item, index) => {
 const button = document.createElement('button');
 button.className = 'report-menu-btn';
 button.innerHTML = `
@@ -1817,14 +1862,7 @@ showReportInfo(item);
 
 reportMenuList.appendChild(button);
 });
-}).withFailureHandler(function(error) {
-reportMenuList.innerHTML = `
-<div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
-<i class="fas fa-exclamation-triangle"></i> Gagal mencari laporan: ${error.message}
-</div>
-`;
-console.error('Error searching report:', error);
-}).searchReport(searchTerm);
+}, 1000);
 }
 
 // Enhanced Copy to clipboard function with better feedback
