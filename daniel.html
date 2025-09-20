@@ -1551,8 +1551,23 @@ messageDiv.style.background = 'rgba(67, 97, 238, 0.1)';
 messageDiv.style.color = 'var(--primary)';
 submitBtn.disabled = true;
 
-// Save data directly without timeout
-google.script.run.withSuccessHandler(function(response) {
+console.log('Sending data:', formData);
+
+// Save data using fetch API instead of google.script.run
+fetch('https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec', {
+method: 'POST',
+body: JSON.stringify({
+action: 'saveRekeningData',
+data: formData
+}),
+headers: {
+'Content-Type': 'application/json'
+}
+})
+.then(response => response.json())
+.then(data => {
+console.log('Response:', data);
+if (data.success) {
 messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Data rekening berhasil disimpan!';
 messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
 messageDiv.style.color = 'var(--success)';
@@ -1569,13 +1584,17 @@ submitBtn.disabled = false;
 // Switch to view tab and reload data
 switchTab('viewRekening');
 loadRekeningData();
-}).withFailureHandler(function(error) {
+} else {
+throw new Error(data.error || 'Unknown error occurred');
+}
+})
+.catch(error => {
+console.error('Error:', error);
 messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
 messageDiv.style.background = 'rgba(239, 35, 60, 0.1)';
 messageDiv.style.color = 'var(--danger)';
 submitBtn.disabled = false;
-console.error('Error saving rekening data:', error);
-}).saveRekeningData(formData);
+});
 });
 
 // Input Data Functionality
@@ -1597,8 +1616,23 @@ messageDiv.style.background = 'rgba(67, 97, 238, 0.1)';
 messageDiv.style.color = 'var(--primary)';
 submitBtn.disabled = true;
 
-// Save data directly without timeout
-google.script.run.withSuccessHandler(function(response) {
+console.log('Sending data:', formData);
+
+// Save data using fetch API instead of google.script.run
+fetch('https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec', {
+method: 'POST',
+body: JSON.stringify({
+action: 'saveData',
+data: formData
+}),
+headers: {
+'Content-Type': 'application/json'
+}
+})
+.then(response => response.json())
+.then(data => {
+console.log('Response:', data);
+if (data.success) {
 messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Data berhasil disimpan!';
 messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
 messageDiv.style.color = 'var(--success)';
@@ -1611,13 +1645,17 @@ setTimeout(() => {
 messageDiv.style.display = 'none';
 submitBtn.disabled = false;
 }, 3000);
-}).withFailureHandler(function(error) {
+} else {
+throw new Error(data.error || 'Unknown error occurred');
+}
+})
+.catch(error => {
+console.error('Error:', error);
 messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
 messageDiv.style.background = 'rgba(239, 35, 60, 0.1)';
 messageDiv.style.color = 'var(--danger)';
 submitBtn.disabled = false;
-console.error('Error saving data:', error);
-}).saveData(formData);
+});
 });
 
 // Enhanced Report Functionality
