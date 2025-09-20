@@ -800,6 +800,47 @@ display: block;
 animation: fadeInUp 0.4s both;
 }
 
+/* Success Message */
+.success-message {
+background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(76, 201, 240, 0.05));
+border: 1px solid rgba(76, 201, 240, 0.2);
+border-radius: var(--border-radius);
+padding: 15px;
+margin-top: 20px;
+color: var(--success);
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.success-message i {
+font-size: 1.2rem;
+}
+
+.success-actions {
+margin-top: 15px;
+display: flex;
+gap: 10px;
+}
+
+.success-btn {
+padding: 8px 15px;
+background: var(--primary);
+color: white;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+font-size: 0.9rem;
+transition: var(--transition);
+display: flex;
+align-items: center;
+gap: 5px;
+}
+
+.success-btn:hover {
+background: var(--primary-dark);
+}
+
 /* Mobile Toggle Button - Floating Action Button */
 .menu-toggle {
 position: fixed;
@@ -962,6 +1003,10 @@ text-align: left;
 .tab-btn.active {
 border-left-color: var(--primary);
 }
+
+.success-actions {
+flex-direction: column;
+}
 }
 </style>
 </head>
@@ -980,22 +1025,6 @@ border-left-color: var(--primary);
 <a href="#" class="menu-item active" id="dashboardMenu">
 <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
 <span class="menu-text">LINETOGEL.COM</span>
-</a>
-<a href="http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL" class="menu-item" target="_blank">
-<span class="menu-icon"><i class="fas fa-headset"></i></span>
-<span class="menu-text">Admin Line</span>
-</a>
-<a href="https://bk.bksmb.com/linetogel/dashboard/dashboard/about" class="menu-item" target="_blank">
-<span class="menu-icon"><i class="fas fa-book"></i></span>
-<span class="menu-text">BK Line</span>
-</a>
-<a href="https://linetogel.hokibgs.com/modules/kapten/dashboard.php" class="menu-item" target="_blank">
-<span class="menu-icon"><i class="fas fa-desktop"></i></span>
-<span class="menu-text">Dashboard</span>
-</a>
-<a href="https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec" class="menu-item" target="_blank">
-<span class="menu-icon"><i class="fas fa-door-open"></i></span>
-<span class="menu-text">Izin Keluar</span>
 </a>
 <a href="#" class="menu-item" id="dataRekeningMenu">
 <span class="menu-icon"><i class="fas fa-piggy-bank"></i></span>
@@ -1039,34 +1068,6 @@ border-left-color: var(--primary);
 <p>Laporan dan informasi penting terbaru</p>
 <a href="#" class="card-btn" onclick="showReport(); return false;">
 <i class="fas fa-book-open"></i> Buka Laporan
-</a>
-</div>
-<div class="card" onclick="window.open('http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL', '_blank')">
-<h3><i class="fas fa-headset"></i> Admin Line</h3>
-<p>Hubungi admin untuk bantuan dan informasi</p>
-<a href="http://agwl2.suksesbogil.com/?passkey=WH9eRDBqtriK4pL" class="card-btn" target="_blank">
-<i class="fas fa-comment-dots"></i> Chat Admin
-</a>
-</div>
-<div class="card" onclick="window.open('https://bk.bksmb.com/linetogel/dashboard/dashboard/about', '_blank')">
-<h3><i class="fas fa-book"></i> BK Line</h3>
-<p>Buku panduan dan informasi lengkap</p>
-<a href="https://bk.bksmb.com/linetogel/dashboard/dashboard/about" class="card-btn" target="_blank">
-<i class="fas fa-external-link-alt"></i> Buka BK
-</a>
-</div>
-<div class="card" onclick="window.open('https://linetogel.hokibgs.com/modules/kapten/dashboard.php', '_blank')">
-<h3><i class="fas fa-desktop"></i> Dashboard</h3>
-<p>Dashboard utama sistem</p>
-<a href="https://linetogel.hokibgs.com/modules/kapten/dashboard.php" class="card-btn" target="_blank">
-<i class="fas fa-external-link-alt"></i> Buka Dashboard
-</a>
-</div>
-<div class="card" onclick="window.open('https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec', '_blank')">
-<h3><i class="fas fa-door-open"></i> Izin Keluar</h3>
-<p>Formulir pengajuan izin keluar</p>
-<a href="https://script.google.com/macros/s/AKfycbx6fPKPx2mJ6qRT7iLqPJa4KPmeZu16GmAFvfszJ4a7zWloGhPIMBa_qn1d7nE7KVhBuA/exec" class="card-btn" target="_blank">
-<i class="fas fa-external-link-alt"></i> Ajukan Izin
 </a>
 </div>
 </div>
@@ -1556,22 +1557,41 @@ console.log('Sending data:', formData);
 // Save data using google.script.run
 google.script.run.withSuccessHandler(function(response) {
 console.log('Response:', response);
-messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Data rekening berhasil disimpan!';
+    
+// Create success message with actions
+messageDiv.innerHTML = `
+<div class="success-message">
+<i class="fas fa-check-circle"></i>
+<div>
+<strong>Data rekening berhasil disimpan!</strong>
+<p>Data telah ditambahkan ke daftar rekening.</p>
+<div class="success-actions">
+<button class="success-btn" onclick="switchTab('viewRekening'); loadRekeningData();">
+<i class="fas fa-eye"></i> Lihat Data
+</button>
+<button class="success-btn" onclick="document.getElementById('addRekeningForm').reset(); document.getElementById('addRekeningMessage').style.display='none';">
+<i class="fas fa-plus"></i> Tambah Lagi
+</button>
+</div>
+</div>
+</div>`;
 messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
 messageDiv.style.color = 'var(--success)';
     
 // Reset form
 document.getElementById('addRekeningForm').reset();
     
-// Hide message after 3 seconds
-setTimeout(() => {
-messageDiv.style.display = 'none';
+// Enable button
 submitBtn.disabled = false;
-}, 3000);
     
-// Switch to view tab and reload data
+// Auto switch to view tab after 3 seconds if user doesn't take action
+setTimeout(() => {
+if (messageDiv.style.display !== 'none') {
 switchTab('viewRekening');
 loadRekeningData();
+}
+}, 5000);
+    
 }).withFailureHandler(function(error) {
 console.error('Error:', error);
 messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
@@ -1605,18 +1625,33 @@ console.log('Sending data:', formData);
 // Save data using google.script.run
 google.script.run.withSuccessHandler(function(response) {
 console.log('Response:', response);
-messageDiv.innerHTML = '<i class="fas fa-check-circle"></i> Data berhasil disimpan!';
+    
+// Create success message with actions
+messageDiv.innerHTML = `
+<div class="success-message">
+<i class="fas fa-check-circle"></i>
+<div>
+<strong>Data berhasil disimpan!</strong>
+<p>Data telah ditambahkan ke menu Report.</p>
+<div class="success-actions">
+<button class="success-btn" onclick="showReport();">
+<i class="fas fa-file-alt"></i> Lihat Report
+</button>
+<button class="success-btn" onclick="document.getElementById('inputDataForm').reset(); document.getElementById('inputDataMessage').style.display='none';">
+<i class="fas fa-plus"></i> Input Lagi
+</button>
+</div>
+</div>
+</div>`;
 messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
 messageDiv.style.color = 'var(--success)';
     
 // Reset form
 document.getElementById('inputDataForm').reset();
     
-// Hide message after 3 seconds
-setTimeout(() => {
-messageDiv.style.display = 'none';
+// Enable button
 submitBtn.disabled = false;
-}, 3000);
+    
 }).withFailureHandler(function(error) {
 console.error('Error:', error);
 messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Gagal menyimpan data: ' + error.message;
@@ -1721,7 +1756,7 @@ const importantTexts = infoElement.querySelectorAll('strong, b');
 
 importantTexts.forEach(text => {
 text.style.color = 'var(--primary)';
-text.style.fontWeight = '600';
+text.style.font-weight = '600';
 });
 
 }).withFailureHandler(function(error) {
