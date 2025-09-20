@@ -281,15 +281,6 @@
                     <label for="data-content">Isi Data</label>
                     <textarea id="data-content" rows="5" placeholder="Masukkan isi data"></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="data-category">Kategori</label>
-                    <select id="data-category">
-                        <option value="pribadi">Pribadi</option>
-                        <option value="kerja">Kerja</option>
-                        <option value="penting">Penting</option>
-                        <option value="lainnya">Lainnya</option>
-                    </select>
-                </div>
                 <button class="btn" onclick="saveData()">Simpan Data</button>
             </div>
             <div class="data-container">
@@ -311,7 +302,6 @@
                     <label for="search-keyword">Kata Kunci</label>
                     <input type="text" id="search-keyword" placeholder="Masukkan kata kunci pencarian">
                 </div>
-                <button class="btn" onclick="searchData()">Cari</button>
             </div>
             <div class="data-container">
                 <h3 style="color: #FFD700; margin-bottom: 15px;">Hasil Pencarian</h3>
@@ -402,6 +392,17 @@
                 showSection('admin-section');
                 setActiveMenuItem('menu-admin');
             });
+            
+            // Set up real-time search
+            const searchInput = document.getElementById('search-keyword');
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    searchData();
+                }, 300); // Debounce untuk mencegah terlalu banyak pencarian saat mengetik cepat
+            });
         });
 
         function login() {
@@ -461,6 +462,10 @@
                 displaySavedData();
             } else if (sectionId === 'admin-section') {
                 displayAdminList();
+            } else if (sectionId === 'search-section') {
+                // Clear search input when switching to search section
+                document.getElementById('search-keyword').value = '';
+                document.getElementById('search-results').innerHTML = '<p>Masukkan kata kunci untuk mencari</p>';
             }
         }
 
@@ -477,7 +482,6 @@
         function saveData() {
             const title = document.getElementById('data-title').value;
             const content = document.getElementById('data-content').value;
-            const category = document.getElementById('data-category').value;
             
             if (!title || !content) {
                 showNotification('Judul dan isi data harus diisi!', 'error');
@@ -488,7 +492,6 @@
                 id: Date.now(),
                 title,
                 content,
-                category,
                 createdAt: new Date().toISOString()
             };
             
@@ -516,6 +519,9 @@
                 return;
             }
             
+            // Use document fragment for better performance
+            const fragment = document.createDocumentFragment();
+            
             dataStorage.forEach(data => {
                 const dataItem = document.createElement('div');
                 dataItem.className = 'data-item';
@@ -523,22 +529,21 @@
                     <div>
                         <h4>${data.title}</h4>
                         <p>${data.content.substring(0, 100)}${data.content.length > 100 ? '...' : ''}</p>
-                        <small>Kategori: ${data.category}</small>
                     </div>
                     <button onclick="copyData('${data.id}')">Salin</button>
                 `;
-                dataList.appendChild(dataItem);
+                fragment.appendChild(dataItem);
             });
+            
+            dataList.appendChild(fragment);
         }
 
         function copyData(dataId) {
             const data = dataStorage.find(item => item.id == dataId);
             if (data) {
-                const textToCopy = `Judul: ${data.title}\nIsi: ${data.content}\nKategori: ${data.category}`;
-                
                 // Create a temporary textarea element
                 const textarea = document.createElement('textarea');
-                textarea.value = textToCopy;
+                textarea.value = data.content; // Hanya menyalin konten asli tanpa tambahan
                 document.body.appendChild(textarea);
                 textarea.select();
                 document.execCommand('copy');
@@ -560,14 +565,16 @@
             
             const results = dataStorage.filter(data => 
                 data.title.toLowerCase().includes(keyword) || 
-                data.content.toLowerCase().includes(keyword) ||
-                data.category.toLowerCase().includes(keyword)
+                data.content.toLowerCase().includes(keyword)
             );
             
             if (results.length === 0) {
                 resultsContainer.innerHTML = '<p>Tidak ada data yang cocok dengan kata kunci</p>';
                 return;
             }
+            
+            // Use document fragment for better performance
+            const fragment = document.createDocumentFragment();
             
             results.forEach(data => {
                 const dataItem = document.createElement('div');
@@ -576,12 +583,13 @@
                     <div>
                         <h4>${data.title}</h4>
                         <p>${data.content.substring(0, 100)}${data.content.length > 100 ? '...' : ''}</p>
-                        <small>Kategori: ${data.category}</small>
                     </div>
                     <button onclick="copyData('${data.id}')">Salin</button>
                 `;
-                resultsContainer.appendChild(dataItem);
+                fragment.appendChild(dataItem);
             });
+            
+            resultsContainer.appendChild(fragment);
         }
 
         function addAdmin() {
@@ -630,6 +638,9 @@
             const adminList = document.getElementById('admin-list');
             adminList.innerHTML = '';
             
+            // Use document fragment for better performance
+            const fragment = document.createDocumentFragment();
+            
             adminUsers.forEach(admin => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -641,8 +652,10 @@
                             '-'}
                     </td>
                 `;
-                adminList.appendChild(row);
+                fragment.appendChild(row);
             });
+            
+            adminList.appendChild(fragment);
         }
 
         function deleteAdmin(adminId) {
