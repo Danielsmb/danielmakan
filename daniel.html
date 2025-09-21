@@ -414,6 +414,38 @@
         .account-details strong {
             color: var(--light-color);
         }
+
+        /* Sync Status */
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .sync-status i {
+            margin-right: 5px;
+        }
+
+        .sync-status.synced i {
+            color: var(--success-color);
+        }
+
+        .sync-status.syncing i {
+            color: var(--warning-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -587,10 +619,6 @@
                                 <label for="accountNumber">Nomor Rekening</label>
                                 <input type="text" class="form-control" id="accountNumber" placeholder="Masukkan nomor rekening" required>
                             </div>
-                            <div class="form-group">
-                                <label for="branchName">Cabang</label>
-                                <input type="text" class="form-control" id="branchName" placeholder="Masukkan nama cabang">
-                            </div>
                             <button type="submit" class="btn btn-success">Simpan Data Rekening</button>
                         </form>
                     </div>
@@ -685,6 +713,12 @@
         </div>
     </div>
 
+    <!-- Sync Status -->
+    <div class="sync-status synced" id="syncStatus">
+        <i class="fas fa-check-circle"></i>
+        <span>Tersinkron</span>
+    </div>
+
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
@@ -706,17 +740,6 @@
         // firebase.initializeApp(firebaseConfig);
         // const db = firebase.firestore();
 
-        // Simulated database
-        let database = {
-            data: [],
-            accounts: [],
-            admins: [
-                { id: 1, username: "admin", password: "admin123", access: "full" },
-                { id: 2, username: "user", password: "user123", access: "limited" }
-            ],
-            currentUser: null
-        };
-
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
         const toggleSidebar = document.getElementById('toggleSidebar');
@@ -727,6 +750,115 @@
         const pageContent = document.getElementById('pageContent');
         const loginForm = document.getElementById('loginForm');
         const notification = document.getElementById('notification');
+        const syncStatus = document.getElementById('syncStatus');
+
+        // Database Management with localStorage
+        const databaseManager = {
+            // Initialize database
+            init: function() {
+                // Check if data exists in localStorage
+                if (!localStorage.getItem('dataAppData')) {
+                    // Create initial data structure
+                    const initialData = {
+                        data: [],
+                        accounts: [],
+                        admins: [
+                            { id: 1, username: "admin", password: "admin123", access: "full" },
+                            { id: 2, username: "user", password: "user123", access: "limited" }
+                        ],
+                        lastSync: new Date().toISOString()
+                    };
+                    
+                    // Save to localStorage
+                    localStorage.setItem('dataAppData', JSON.stringify(initialData));
+                }
+                
+                // Load data from localStorage
+                this.loadData();
+                
+                // Setup storage event listener for cross-tab synchronization
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'dataAppData') {
+                        this.loadData();
+                        this.showSyncNotification();
+                        this.refreshCurrentPage();
+                    }
+                });
+            },
+            
+            // Load data from localStorage
+            loadData: function() {
+                const data = JSON.parse(localStorage.getItem('dataAppData'));
+                database.data = data.data || [];
+                database.accounts = data.accounts || [];
+                database.admins = data.admins || [];
+            },
+            
+            // Save data to localStorage
+            saveData: function() {
+                this.showSyncing();
+                
+                const dataToSave = {
+                    data: database.data,
+                    accounts: database.accounts,
+                    admins: database.admins,
+                    lastSync: new Date().toISOString()
+                };
+                
+                localStorage.setItem('dataAppData', JSON.stringify(dataToSave));
+                
+                // Simulate network delay for sync
+                setTimeout(() => {
+                    this.showSynced();
+                }, 500);
+            },
+            
+            // Show syncing status
+            showSyncing: function() {
+                syncStatus.className = 'sync-status syncing';
+                syncStatus.innerHTML = '<i class="fas fa-spinner"></i><span>Menyinkronkan...</span>';
+            },
+            
+            // Show synced status
+            showSynced: function() {
+                syncStatus.className = 'sync-status synced';
+                syncStatus.innerHTML = '<i class="fas fa-check-circle"></i><span>Tersinkron</span>';
+            },
+            
+            // Show sync notification
+            showSyncNotification: function() {
+                showNotification('Data telah diperbarui dari perangkat lain', 'success');
+            },
+            
+            // Refresh current page data
+            refreshCurrentPage: function() {
+                const activePage = document.querySelector('.menu-link.active').getAttribute('data-page');
+                
+                if (activePage === 'report') {
+                    loadReportData();
+                } else if (activePage === 'account') {
+                    loadAccountData();
+                } else if (activePage === 'admin') {
+                    loadAdminData();
+                } else if (activePage === 'dashboard') {
+                    updateDashboardStats();
+                } else if (activePage === 'search') {
+                    // Trigger search input event to refresh results
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput && searchInput.value) {
+                        searchInput.dispatchEvent(new Event('input'));
+                    }
+                }
+            }
+        };
+
+        // Simulated database
+        let database = {
+            data: [],
+            accounts: [],
+            admins: [],
+            currentUser: null
+        };
 
         // Toggle Sidebar
         toggleSidebar.addEventListener('click', () => {
@@ -837,6 +969,9 @@
                 };
                 
                 database.data.push(newData);
+                
+                // Save to localStorage
+                databaseManager.saveData();
                 
                 // Reset form
                 inputDataForm.reset();
@@ -991,7 +1126,6 @@
                 const bankName = document.getElementById('bankName').value;
                 const accountName = document.getElementById('accountName').value;
                 const accountNumber = document.getElementById('accountNumber').value;
-                const branchName = document.getElementById('branchName').value;
                 
                 // Add account to database
                 const newAccount = {
@@ -999,11 +1133,13 @@
                     bankName,
                     accountName,
                     accountNumber,
-                    branchName,
                     createdAt: new Date().toISOString()
                 };
                 
                 database.accounts.push(newAccount);
+                
+                // Save to localStorage
+                databaseManager.saveData();
                 
                 // Reset form
                 accountForm.reset();
@@ -1032,7 +1168,6 @@
                         <div class="account-details">
                             <p><strong>Nama Pemilik:</strong> ${account.accountName}</p>
                             <p><strong>Nomor Rekening:</strong> ${account.accountNumber}</p>
-                            <p><strong>Cabang:</strong> ${account.branchName || '-'}</p>
                         </div>
                         <div class="data-actions">
                             <button class="btn" onclick="copyData('${account.accountNumber}')">
@@ -1061,8 +1196,7 @@
                 const filteredAccounts = database.accounts.filter(account => 
                     account.bankName.toLowerCase().includes(query) || 
                     account.accountName.toLowerCase().includes(query) ||
-                    account.accountNumber.includes(query) ||
-                    (account.branchName && account.branchName.toLowerCase().includes(query))
+                    account.accountNumber.includes(query)
                 );
                 
                 const accountDataContainer = document.getElementById('accountDataContainer');
@@ -1081,7 +1215,6 @@
                             <div class="account-details">
                                 <p><strong>Nama Pemilik:</strong> ${account.accountName}</p>
                                 <p><strong>Nomor Rekening:</strong> ${account.accountNumber}</p>
-                                <p><strong>Cabang:</strong> ${account.branchName || '-'}</p>
                             </div>
                             <div class="data-actions">
                                 <button class="btn" onclick="copyData('${account.accountNumber}')">
@@ -1127,6 +1260,9 @@
                 };
                 
                 database.admins.push(newAdmin);
+                
+                // Save to localStorage
+                databaseManager.saveData();
                 
                 // Reset form
                 adminForm.reset();
@@ -1190,6 +1326,9 @@
             // Remove admin
             database.admins.splice(adminIndex, 1);
             
+            // Save to localStorage
+            databaseManager.saveData();
+            
             // Reload admin data
             loadAdminData();
             
@@ -1205,6 +1344,9 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize database manager
+            databaseManager.init();
+            
             // Hide page content initially, show login page
             pageContent.style.display = 'none';
             loginPage.style.display = 'block';
