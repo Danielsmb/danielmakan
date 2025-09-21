@@ -276,10 +276,16 @@
         .data-item {
             padding: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
 
         .data-item:last-child {
             border-bottom: none;
+        }
+
+        .data-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .data-item h4 {
@@ -290,11 +296,21 @@
         .data-item p {
             margin-bottom: 10px;
             color: #adb5bd;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .data-actions {
             display: flex;
             gap: 10px;
+        }
+
+        /* Double click hint */
+        .double-click-hint {
+            font-size: 12px;
+            color: #adb5bd;
+            font-style: italic;
+            margin-top: 5px;
         }
 
         /* Notification */
@@ -395,6 +411,12 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .account-card:hover {
+            background-color: rgba(255, 255, 255, 0.15);
         }
 
         .account-card h4 {
@@ -466,6 +488,26 @@
         .copy-confirmation.show {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Double click visual feedback */
+        .double-click-feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(40, 167, 69, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .double-click-feedback.show {
+            opacity: 1;
         }
     </style>
 </head>
@@ -616,6 +658,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        <p class="double-click-hint"><i class="fas fa-info-circle"></i> Klik dua kali pada deskripsi untuk menyalin data</p>
                     </div>
                 </div>
             </div>
@@ -657,6 +700,7 @@
                         <div class="account-data" id="accountDataContainer">
                             <p style="text-align: center; color: #adb5bd;">Tidak ada data rekening</p>
                         </div>
+                        <p class="double-click-hint"><i class="fas fa-info-circle"></i> Klik dua kali pada kartu rekening untuk menyalin nomor rekening</p>
                     </div>
                 </div>
             </div>
@@ -745,6 +789,11 @@
         <i class="fas fa-check"></i> Data berhasil disalin!
     </div>
 
+    <!-- Double Click Feedback -->
+    <div class="double-click-feedback" id="doubleClickFeedback">
+        <i class="fas fa-copy"></i> Disalin!
+    </div>
+
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
@@ -778,6 +827,7 @@
         const notification = document.getElementById('notification');
         const syncStatus = document.getElementById('syncStatus');
         const copyConfirmation = document.getElementById('copyConfirmation');
+        const doubleClickFeedback = document.getElementById('doubleClickFeedback');
 
         // Database Management with localStorage
         const databaseManager = {
@@ -1035,7 +1085,7 @@
                 let resultsHTML = '';
                 filteredData.forEach(item => {
                     resultsHTML += `
-                        <div class="data-item">
+                        <div class="data-item" ondblclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}', this)">
                             <h4>${item.title}</h4>
                             <p>${item.description}</p>
                             <div class="data-actions">
@@ -1052,12 +1102,29 @@
         }
 
         // Copy Data - Fungsi untuk menyalin data asli tanpa perubahan
-        function copyToClipboard(text) {
+        function copyToClipboard(text, element = null) {
+            // Show double-click feedback if element is provided
+            if (element) {
+                const feedback = document.createElement('div');
+                feedback.className = 'double-click-feedback show';
+                feedback.innerHTML = '<i class="fas fa-copy"></i> Disalin!';
+                feedback.style.position = 'absolute';
+                feedback.style.top = '50%';
+                feedback.style.left = '50%';
+                feedback.style.transform = 'translate(-50%, -50%)';
+                element.style.position = 'relative';
+                element.appendChild(feedback);
+                
+                setTimeout(() => {
+                    feedback.remove();
+                }, 1000);
+            }
+            
             // Fallback for older browsers
             if (!navigator.clipboard) {
                 // Create a temporary textarea element
                 const textarea = document.createElement('textarea');
-                textarea.value = text;
+                textarea.value = text; // Data asli tanpa perubahan
                 textarea.style.position = 'fixed'; // Prevent scrolling to bottom of page
                 document.body.appendChild(textarea);
                 textarea.select();
@@ -1113,7 +1180,7 @@
                     <tr>
                         <td>${index + 1}</td>
                         <td>${item.title}</td>
-                        <td>${item.description}</td>
+                        <td ondblclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}', this)" style="cursor: pointer;">${item.description}</td>
                         <td>
                             <button class="btn" onclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}')">
                                 <i class="fas fa-copy"></i> Salin
@@ -1157,7 +1224,7 @@
                         <tr>
                             <td>${index + 1}</td>
                             <td>${item.title}</td>
-                            <td>${item.description}</td>
+                            <td ondblclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}', this)" style="cursor: pointer;">${item.description}</td>
                             <td>
                                 <button class="btn" onclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}')">
                                     <i class="fas fa-copy"></i> Salin
@@ -1217,7 +1284,7 @@
             let accountsHTML = '';
             database.accounts.forEach(account => {
                 accountsHTML += `
-                    <div class="account-card">
+                    <div class="account-card" ondblclick="copyToClipboard('${account.accountNumber}', this)">
                         <h4>${account.bankName}</h4>
                         <div class="account-details">
                             <p><strong>Nama Pemilik:</strong> ${account.accountName}</p>
@@ -1264,7 +1331,7 @@
                 let accountsHTML = '';
                 filteredAccounts.forEach(account => {
                     accountsHTML += `
-                        <div class="account-card">
+                        <div class="account-card" ondblclick="copyToClipboard('${account.accountNumber}', this)">
                             <h4>${account.bankName}</h4>
                             <div class="account-details">
                                 <p><strong>Nama Pemilik:</strong> ${account.accountName}</p>
