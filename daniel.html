@@ -666,22 +666,22 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Login Page (Initially shown) -->
-            <div class="login-container" id="loginPage">
-                <h2>Login ke DataApp</h2>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="loginUsername">Username</label>
-                        <input type="text" class="form-control" id="loginUsername" placeholder="Masukkan username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" class="form-control" id="loginPassword" placeholder="Masukkan password" required>
-                    </div>
-                    <button type="submit" class="btn btn-block">Login</button>
-                </form>
-            </div>
+        <!-- Login Page (Initially shown) -->
+        <div class="login-container" id="loginPage">
+            <h2>Login ke DataApp</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" class="form-control" id="loginUsername" placeholder="Masukkan username" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Masukkan password" required>
+                </div>
+                <button type="submit" class="btn btn-block">Login</button>
+            </form>
         </div>
     </div>
 
@@ -889,15 +889,24 @@
             });
         }
 
-        // Copy Data
+        // Copy Data - Fungsi untuk menyalin data asli tanpa perubahan
         function copyData(text) {
-            navigator.clipboard.writeText(text)
-                .then(() => {
-                    showNotification('Data berhasil disalin!', 'success');
-                })
-                .catch(err => {
-                    showNotification('Gagal menyalin data', 'error');
-                });
+            // Membuat elemen textarea sementara untuk menyalin teks
+            const textarea = document.createElement('textarea');
+            textarea.value = text; // Data asli tanpa perubahan
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                // Menyalin teks ke clipboard
+                document.execCommand('copy');
+                showNotification('Data berhasil disalin!', 'success');
+            } catch (err) {
+                showNotification('Gagal menyalin data', 'error');
+            }
+            
+            // Menghapus elemen textarea sementara
+            document.body.removeChild(textarea);
         }
 
         // Load Report Data
@@ -1196,7 +1205,12 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if user is already logged in
+            // Hide page content initially, show login page
+            pageContent.style.display = 'none';
+            loginPage.style.display = 'block';
+            
+            // Check if user is already logged in (for demo purposes)
+            // In a real app, this would check for a valid session/token
             if (database.currentUser) {
                 document.getElementById('currentUser').textContent = database.currentUser.username;
                 loginPage.style.display = 'none';
