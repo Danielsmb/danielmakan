@@ -446,6 +446,27 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Copy Confirmation */
+        .copy-confirmation {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: var(--success-color);
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .copy-confirmation.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -719,6 +740,11 @@
         <span>Tersinkron</span>
     </div>
 
+    <!-- Copy Confirmation -->
+    <div class="copy-confirmation" id="copyConfirmation">
+        <i class="fas fa-check"></i> Data berhasil disalin!
+    </div>
+
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
@@ -751,6 +777,7 @@
         const loginForm = document.getElementById('loginForm');
         const notification = document.getElementById('notification');
         const syncStatus = document.getElementById('syncStatus');
+        const copyConfirmation = document.getElementById('copyConfirmation');
 
         // Database Management with localStorage
         const databaseManager = {
@@ -1012,7 +1039,7 @@
                             <h4>${item.title}</h4>
                             <p>${item.description}</p>
                             <div class="data-actions">
-                                <button class="btn" onclick="copyData('${item.description.replace(/'/g, "\\'")}')">
+                                <button class="btn" onclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}')">
                                     <i class="fas fa-copy"></i> Salin
                                 </button>
                             </div>
@@ -1025,23 +1052,50 @@
         }
 
         // Copy Data - Fungsi untuk menyalin data asli tanpa perubahan
-        function copyData(text) {
-            // Membuat elemen textarea sementara untuk menyalin teks
-            const textarea = document.createElement('textarea');
-            textarea.value = text; // Data asli tanpa perubahan
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                // Menyalin teks ke clipboard
-                document.execCommand('copy');
-                showNotification('Data berhasil disalin!', 'success');
-            } catch (err) {
-                showNotification('Gagal menyalin data', 'error');
+        function copyToClipboard(text) {
+            // Fallback for older browsers
+            if (!navigator.clipboard) {
+                // Create a temporary textarea element
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed'; // Prevent scrolling to bottom of page
+                document.body.appendChild(textarea);
+                textarea.select();
+                
+                try {
+                    // Execute the copy command
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        showCopyConfirmation();
+                    } else {
+                        showNotification('Gagal menyalin data', 'error');
+                    }
+                } catch (err) {
+                    showNotification('Gagal menyalin data', 'error');
+                }
+                
+                // Remove the temporary element
+                document.body.removeChild(textarea);
+                return;
             }
             
-            // Menghapus elemen textarea sementara
-            document.body.removeChild(textarea);
+            // Modern approach using Clipboard API
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    showCopyConfirmation();
+                })
+                .catch(err => {
+                    showNotification('Gagal menyalin data', 'error');
+                });
+        }
+
+        // Show copy confirmation
+        function showCopyConfirmation() {
+            copyConfirmation.classList.add('show');
+            
+            setTimeout(() => {
+                copyConfirmation.classList.remove('show');
+            }, 2000);
         }
 
         // Load Report Data
@@ -1061,7 +1115,7 @@
                         <td>${item.title}</td>
                         <td>${item.description}</td>
                         <td>
-                            <button class="btn" onclick="copyData('${item.description.replace(/'/g, "\\'")}')">
+                            <button class="btn" onclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}')">
                                 <i class="fas fa-copy"></i> Salin
                             </button>
                         </td>
@@ -1105,7 +1159,7 @@
                             <td>${item.title}</td>
                             <td>${item.description}</td>
                             <td>
-                                <button class="btn" onclick="copyData('${item.description.replace(/'/g, "\\'")}')">
+                                <button class="btn" onclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}')">
                                     <i class="fas fa-copy"></i> Salin
                                 </button>
                             </td>
@@ -1170,7 +1224,7 @@
                             <p><strong>Nomor Rekening:</strong> ${account.accountNumber}</p>
                         </div>
                         <div class="data-actions">
-                            <button class="btn" onclick="copyData('${account.accountNumber}')">
+                            <button class="btn" onclick="copyToClipboard('${account.accountNumber}')">
                                 <i class="fas fa-copy"></i> Salin No. Rekening
                             </button>
                         </div>
@@ -1217,7 +1271,7 @@
                                 <p><strong>Nomor Rekening:</strong> ${account.accountNumber}</p>
                             </div>
                             <div class="data-actions">
-                                <button class="btn" onclick="copyData('${account.accountNumber}')">
+                                <button class="btn" onclick="copyToClipboard('${account.accountNumber}')">
                                     <i class="fas fa-copy"></i> Salin No. Rekening
                                 </button>
                             </div>
