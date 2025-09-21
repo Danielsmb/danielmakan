@@ -1,1931 +1,1209 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Line Togel - Daniel</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-:root {
---primary: #4361ee;
---primary-dark: #3a56d4;
---primary-light: #4895ef;
---secondary: #7209b7;
---accent: #f72585;
---success: #4cc9f0;
---warning: #f8961e;
---danger: #ef233c;
---dark: #14213d;
---darker: #0a1128;
---light: #f8f9fa;
---lighter: #ffffff;
---text: #2b2d42;
---text-light: #8d99ae;
---card-bg: rgba(255, 255, 255, 0.95);
---glass: rgba(255, 255, 255, 0.15);
---glass-dark: rgba(21, 21, 21, 0.25);
---shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
---shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.2);
---border: 1px solid rgba(255, 255, 255, 0.18);
---border-radius: 12px;
---border-radius-lg: 20px;
---transition: all 0.3s ease;
-}
-
-* {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
-
-body {
-font-family: 'Poppins', sans-serif;
-background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-color: var(--text);
-min-height: 100vh;
-overflow-x: hidden;
-line-height: 1.6;
-}
-
-/* Neon Glass Sidebar */
-.sidebar {
-width: 280px;
-background: linear-gradient(135deg, var(--glass-dark), var(--glass));
-backdrop-filter: blur(16px);
--webkit-backdrop-filter: blur(16px);
-height: 100vh;
-position: fixed;
-box-shadow: var(--shadow);
-border-right: var(--border);
-z-index: 100;
-transform: translateX(0);
-transition: var(--transition);
-overflow: hidden;
-}
-
-.sidebar::before {
-content: '';
-position: absolute;
-top: -50%;
-left: -50%;
-width: 200%;
-height: 200%;
-background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, rgba(0,0,0,0) 70%);
-animation: rotate 20s linear infinite;
-z-index: -1;
-}
-
-.sidebar-header {
-padding: 25px;
-text-align: center;
-border-bottom: var(--border);
-position: relative;
-overflow: hidden;
-}
-
-.sidebar-header::after {
-content: '';
-position: absolute;
-bottom: 0;
-left: 25%;
-width: 50%;
-height: 2px;
-background: linear-gradient(to right, transparent, var(--accent), transparent);
-}
-
-.sidebar-header h2 {
-margin: 0;
-font-size: 1.8rem;
-font-weight: 700;
-color: white;
-text-shadow: 0 0 10px rgba(114, 9, 183, 0.5);
-letter-spacing: 1px;
-position: relative;
-}
-
-.sidebar-header h2::after {
-content: '';
-position: absolute;
-bottom: -5px;
-left: 0;
-width: 100%;
-height: 2px;
-background: linear-gradient(to right, var(--primary), var(--accent));
-border-radius: 2px;
-}
-
-.sidebar-menu {
-padding: 20px 0;
-}
-
-.menu-item {
-display: flex;
-align-items: center;
-padding: 16px 25px;
-color: var(--light);
-text-decoration: none;
-margin: 8px 15px;
-border-radius: var(--border-radius);
-position: relative;
-overflow: hidden;
-transition: var(--transition);
-background: rgba(255,255,255,0.05);
-backdrop-filter: blur(5px);
-}
-
-.menu-item::before {
-content: '';
-position: absolute;
-top: 0;
-left: -100%;
-width: 100%;
-height: 100%;
-background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-transition: 0.6s;
-}
-
-.menu-item:hover::before {
-left: 100%;
-}
-
-.menu-item:hover {
-background: rgba(255,255,255,0.15);
-transform: translateX(8px);
-box-shadow: 0 5px 15px rgba(114, 9, 183, 0.3);
-}
-
-.menu-item.active {
-background: linear-gradient(90deg, rgba(67, 97, 238, 0.3), rgba(114, 9, 183, 0.2));
-box-shadow: 0 5px 20px rgba(114, 9, 183, 0.4);
-border-left: 3px solid var(--accent);
-}
-
-.menu-icon {
-margin-right: 15px;
-font-size: 1.2rem;
-color: var(--accent);
-transition: var(--transition);
-text-shadow: 0 0 8px rgba(247, 37, 133, 0.5);
-}
-
-.menu-item:hover .menu-icon {
-transform: scale(1.2);
-color: white;
-}
-
-.menu-text {
-font-weight: 500;
-transition: var(--transition);
-}
-
-.menu-item:hover .menu-text {
-font-weight: 600;
-color: white;
-}
-
-/* Main Content Area */
-.main-content {
-flex: 1;
-margin-left: 280px;
-padding: 30px;
-min-height: 100vh;
-position: relative;
-z-index: 1;
-transition: var(--transition);
-}
-
-.header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 30px;
-animation: fadeInDown 0.8s both 0.2s;
-background: var(--lighter);
-padding: 20px 25px;
-border-radius: var(--border-radius);
-box-shadow: var(--shadow);
-}
-
-.header h1 {
-font-size: 2.2rem;
-font-weight: 700;
-background: linear-gradient(to right, var(--primary), var(--secondary));
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-letter-spacing: 1px;
-position: relative;
-display: inline-block;
-}
-
-.header h1::after {
-content: '';
-position: absolute;
-bottom: -5px;
-left: 0;
-width: 100%;
-height: 3px;
-background: linear-gradient(to right, var(--primary), var(--secondary));
-border-radius: 3px;
-}
-
-#clock {
-background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-backdrop-filter: blur(10px);
--webkit-backdrop-filter: blur(10px);
-color: white;
-padding: 12px 20px;
-border-radius: var(--border-radius);
-box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-border: none;
-font-weight: 500;
-animation: pulse 2s infinite;
-transition: var(--transition);
-text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-#clock:hover {
-transform: translateY(-3px);
-box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
-background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-}
-
-/* Card Grid - Modern Glass Cards */
-.card-container {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-gap: 25px;
-margin-top: 30px;
-}
-
-.card {
-background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-backdrop-filter: blur(10px);
--webkit-backdrop-filter: blur(10px);
-border-radius: var(--border-radius-lg);
-padding: 25px;
-box-shadow: var(--shadow);
-border: var(--border);
-transition: var(--transition);
-cursor: pointer;
-animation: fadeInUp 0.6s both;
-position: relative;
-overflow: hidden;
-border-top: 1px solid rgba(255,255,255,0.5);
-border-left: 1px solid rgba(255,255,255,0.5);
-}
-
-.card::before {
-content: '';
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 5px;
-background: linear-gradient(to right, var(--primary), var(--accent));
-transition: var(--transition);
-}
-
-.card::after {
-content: '';
-position: absolute;
-bottom: 0;
-right: 0;
-width: 100px;
-height: 100px;
-background: radial-gradient(circle, rgba(114,9,183,0.1) 0%, rgba(0,0,0,0) 70%);
-z-index: -1;
-}
-
-.card:hover {
-transform: translateY(-10px) scale(1.02);
-box-shadow: 0 15px 40px rgba(67, 97, 238, 0.2);
-}
-
-.card:hover::before {
-height: 8px;
-}
-
-.card h3 {
-color: var(--primary);
-margin-bottom: 15px;
-font-size: 1.3rem;
-display: flex;
-align-items: center;
-gap: 10px;
-position: relative;
-}
-
-.card h3::after {
-content: '';
-position: absolute;
-bottom: -5px;
-left: 0;
-width: 40px;
-height: 2px;
-background: var(--accent);
-border-radius: 2px;
-}
-
-.card h3 i {
-font-size: 1.5rem;
-color: var(--secondary);
-}
-
-.card p {
-color: var(--text-light);
-margin-bottom: 20px;
-font-size: 0.95rem;
-}
-
-.card-btn {
-display: inline-flex;
-align-items: center;
-gap: 8px;
-padding: 10px 22px;
-background: linear-gradient(to right, var(--primary), var(--secondary));
-color: white;
-border-radius: 8px;
-text-decoration: none;
-font-weight: 500;
-box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-transition: var(--transition);
-border: none;
-cursor: pointer;
-position: relative;
-overflow: hidden;
-z-index: 1;
-}
-
-.card-btn::before {
-content: '';
-position: absolute;
-top: 0;
-left: -100%;
-width: 100%;
-height: 100%;
-background: linear-gradient(to right, var(--secondary), var(--primary));
-transition: var(--transition);
-z-index: -1;
-}
-
-.card-btn:hover {
-transform: translateY(-3px);
-box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
-}
-
-.card-btn:hover::before {
-left: 0;
-}
-
-/* Floating Particles Background - Modern Design */
-.particles {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-z-index: -1;
-overflow: hidden;
-}
-
-.particle {
-position: absolute;
-border-radius: 50%;
-filter: blur(2px);
-animation: float linear infinite;
-opacity: 0.7;
-background: linear-gradient(135deg, var(--primary-light), var(--accent));
-box-shadow: 0 0 20px rgba(114, 9, 183, 0.3);
-}
-
-/* Data Containers - Glass Panel Design */
-.data-container {
-background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-backdrop-filter: blur(10px);
--webkit-backdrop-filter: blur(10px);
-border-radius: var(--border-radius-lg);
-padding: 30px;
-box-shadow: var(--shadow);
-border: var(--border);
-margin-top: 30px;
-animation: fadeInUp 0.6s both;
-transition: var(--transition);
-border-top: 1px solid rgba(255,255,255,0.5);
-border-left: 1px solid rgba(255,255,255,0.5);
-}
-
-.data-container:hover {
-box-shadow: 0 15px 40px rgba(67, 97, 238, 0.15);
-}
-
-.data-container h2 {
-color: var(--primary);
-margin-bottom: 15px;
-font-size: 1.8rem;
-display: flex;
-align-items: center;
-gap: 10px;
-position: relative;
-}
-
-.data-container h2::after {
-content: '';
-position: absolute;
-bottom: -5px;
-left: 0;
-width: 50px;
-height: 3px;
-background: var(--accent);
-border-radius: 3px;
-}
-
-.data-container h2 i {
-font-size: 1.5rem;
-color: var(--secondary);
-}
-
-.search-container {
-display: flex;
-margin-bottom: 20px;
-gap: 10px;
-}
-
-.search-input {
-flex: 1;
-padding: 14px 20px;
-border-radius: 8px;
-border: 1px solid rgba(67, 97, 238, 0.2);
-font-family: 'Poppins', sans-serif;
-font-size: 1rem;
-outline: none;
-transition: var(--transition);
-background: rgba(255,255,255,0.8);
-box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.search-input:focus {
-border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-background: white;
-}
-
-.search-btn {
-padding: 14px 25px;
-background: linear-gradient(to right, var(--primary), var(--secondary));
-color: white;
-border: none;
-border-radius: 8px;
-cursor: pointer;
-font-family: 'Poppins', sans-serif;
-font-weight: 500;
-transition: var(--transition);
-display: flex;
-align-items: center;
-gap: 8px;
-box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-}
-
-.search-btn:hover {
-transform: translateY(-3px);
-box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
-background: linear-gradient(to right, var(--secondary), var(--primary));
-}
-
-.data-table {
-width: 100%;
-border-collapse: separate;
-border-spacing: 0;
-margin-top: 20px;
-border-radius: var(--border-radius);
-overflow: hidden;
-}
-
-.data-table th {
-background: linear-gradient(to right, var(--primary), var(--primary-dark));
-padding: 15px;
-text-align: left;
-font-weight: 600;
-color: white;
-border-bottom: 2px solid rgba(255,255,255,0.1);
-}
-
-.data-table td {
-padding: 15px;
-border-bottom: 1px solid rgba(0,0,0,0.05);
-background: rgba(255,255,255,0.8);
-}
-
-.data-table tr:last-child td {
-border-bottom: none;
-}
-
-.data-table tr:hover td {
-background: rgba(67, 97, 238, 0.05);
-}
-
-.loading {
-text-align: center;
-padding: 30px;
-color: var(--text-light);
-font-size: 1.1rem;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-min-height: 200px;
-}
-
-.loading i {
-font-size: 2rem;
-margin-bottom: 15px;
-color: var(--primary);
-animation: spin 1s linear infinite;
-}
-
-.no-results {
-text-align: center;
-padding: 30px;
-color: var(--text-light);
-font-style: italic;
-background: rgba(255,255,255,0.8);
-border-radius: var(--border-radius);
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-min-height: 200px;
-}
-
-.no-results i {
-font-size: 2rem;
-margin-bottom: 15px;
-color: var(--text-light);
-}
-
-/* Report Section - Modern Design */
-.report-menu-btn {
-display: flex;
-align-items: center;
-width: 100%;
-padding: 16px 25px;
-margin-bottom: 12px;
-background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.05));
-border: 1px solid rgba(67, 97, 238, 0.2);
-border-radius: var(--border-radius);
-color: var(--text);
-font-family: 'Poppins', sans-serif;
-font-size: 1rem;
-cursor: pointer;
-text-align: left;
-transition: var(--transition);
-gap: 12px;
-backdrop-filter: blur(5px);
-}
-
-.report-menu-btn:hover {
-background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(114, 9, 183, 0.1));
-transform: translateX(8px);
-box-shadow: 0 5px 15px rgba(114, 9, 183, 0.1);
-border-color: rgba(114, 9, 183, 0.3);
-}
-
-.report-menu-btn i {
-color: var(--primary);
-transition: var(--transition);
-}
-
-.report-menu-btn:hover i {
-transform: scale(1.2);
-color: var(--accent);
-}
-
-#reportContent {
-margin-top: 20px;
-padding: 25px;
-background: rgba(255,255,255,0.8);
-border-radius: var(--border-radius-lg);
-display: none;
-box-shadow: var(--shadow);
-border: var(--border);
-position: relative;
-transition: var(--transition);
-border-top: 1px solid rgba(255,255,255,0.5);
-border-left: 1px solid rgba(255,255,255,0.5);
-}
-
-#reportContent:hover {
-box-shadow: 0 15px 40px rgba(67, 97, 238, 0.1);
-}
-
-#reportTitle {
-color: var(--primary);
-margin-bottom: 15px;
-font-size: 1.5rem;
-position: relative;
-}
-
-#reportTitle::after {
-content: '';
-position: absolute;
-bottom: -5px;
-left: 0;
-width: 40px;
-height: 2px;
-background: var(--accent);
-border-radius: 2px;
-}
-
-#reportInfo {
-white-space: pre-line;
-line-height: 1.8;
-position: relative;
-padding-top: 10px;
-}
-
-.copy-btn {
-position: absolute;
-top: 20px;
-right: 20px;
-background: linear-gradient(to right, var(--primary), var(--secondary));
-color: white;
-border: none;
-border-radius: 6px;
-padding: 8px 15px;
-cursor: pointer;
-font-size: 0.9rem;
-transition: var(--transition);
-display: flex;
-align-items: center;
-gap: 6px;
-box-shadow: 0 2px 10px rgba(67, 97, 238, 0.2);
-}
-
-.copy-btn:hover {
-background: linear-gradient(to right, var(--secondary), var(--primary));
-transform: translateY(-3px);
-box-shadow: 0 4px 15px rgba(114, 9, 183, 0.3);
-}
-
-.copy-rekening-btn {
-background: linear-gradient(to right, var(--primary), var(--secondary));
-color: white;
-border: none;
-border-radius: 6px;
-padding: 6px 12px;
-cursor: pointer;
-font-size: 0.8rem;
-transition: var(--transition);
-display: flex;
-align-items: center;
-gap: 5px;
-box-shadow: 0 2px 8px rgba(67, 97, 238, 0.2);
-}
-
-.copy-rekening-btn:hover {
-background: linear-gradient(to right, var(--secondary), var(--primary));
-transform: translateY(-2px);
-box-shadow: 0 4px 12px rgba(114, 9, 183, 0.3);
-}
-
-/* Input Data Form */
-.form-group {
-margin-bottom: 20px;
-}
-
-.form-label {
-display: block;
-margin-bottom: 8px;
-font-weight: 500;
-color: var(--primary);
-}
-
-.form-input, .form-textarea {
-width: 100%;
-padding: 12px 15px;
-border-radius: 8px;
-border: 1px solid rgba(67, 97, 238, 0.2);
-font-family: 'Poppins', sans-serif;
-font-size: 1rem;
-outline: none;
-transition: var(--transition);
-background: rgba(255,255,255,0.8);
-box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.form-textarea {
-min-height: 120px;
-resize: vertical;
-}
-
-.form-input:focus, .form-textarea:focus {
-border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-background: white;
-}
-
-.form-btn {
-padding: 14px 25px;
-background: linear-gradient(to right, var(--primary), var(--secondary));
-color: white;
-border: none;
-border-radius: 8px;
-cursor: pointer;
-font-family: 'Poppins', sans-serif;
-font-weight: 500;
-transition: var(--transition);
-display: inline-flex;
-align-items: center;
-gap: 8px;
-box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
-}
-
-.form-btn:hover {
-transform: translateY(-3px);
-box-shadow: 0 8px 25px rgba(114, 9, 183, 0.4);
-background: linear-gradient(to right, var(--secondary), var(--primary));
-}
-
-.form-btn:disabled {
-opacity: 0.6;
-cursor: not-allowed;
-transform: none;
-}
-
-.form-row {
-display: flex;
-gap: 20px;
-}
-
-.form-row .form-group {
-flex: 1;
-}
-
-/* Tab Navigation */
-.tab-nav {
-display: flex;
-margin-bottom: 20px;
-border-bottom: 1px solid rgba(67, 97, 238, 0.2);
-}
-
-.tab-btn {
-flex: 1;
-padding: 12px 20px;
-background: none;
-border: none;
-border-bottom: 3px solid transparent;
-color: var(--text-light);
-font-family: 'Poppins', sans-serif;
-font-weight: 500;
-cursor: pointer;
-transition: var(--transition);
-text-align: center;
-}
-
-.tab-btn.active {
-color: var(--primary);
-border-bottom-color: var(--primary);
-}
-
-.tab-btn:hover {
-color: var(--primary);
-}
-
-.tab-content {
-display: none;
-}
-
-.tab-content.active {
-display: block;
-animation: fadeInUp 0.4s both;
-}
-
-/* Success Message */
-.success-message {
-background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(76, 201, 240, 0.05));
-border: 1px solid rgba(76, 201, 240, 0.2);
-border-radius: var(--border-radius);
-padding: 15px;
-margin-top: 20px;
-color: var(--success);
-display: flex;
-align-items: center;
-gap: 10px;
-}
-
-.success-message i {
-font-size: 1.2rem;
-}
-
-.success-actions {
-margin-top: 15px;
-display: flex;
-gap: 10px;
-}
-
-.success-btn {
-padding: 8px 15px;
-background: var(--primary);
-color: white;
-border: none;
-border-radius: 6px;
-cursor: pointer;
-font-size: 0.9rem;
-transition: var(--transition);
-display: flex;
-align-items: center;
-gap: 5px;
-}
-
-.success-btn:hover {
-background: var(--primary-dark);
-}
-
-/* Mobile Toggle Button - Floating Action Button */
-.menu-toggle {
-position: fixed;
-top: 20px;
-left: 20px;
-z-index: 1000;
-background: linear-gradient(135deg, var(--primary), var(--secondary));
-color: white;
-width: 50px;
-height: 50px;
-border-radius: 50%;
-display: none;
-justify-content: center;
-align-items: center;
-font-size: 1.5rem;
-cursor: pointer;
-box-shadow: 0 4px 20px rgba(67, 97, 238, 0.4);
-transition: var(--transition);
-border: none;
-}
-
-.menu-toggle:hover {
-transform: scale(1.1);
-box-shadow: 0 6px 25px rgba(114, 9, 183, 0.5);
-background: linear-gradient(135deg, var(--secondary), var(--primary));
-}
-
-/* Animations */
-@keyframes fadeInDown {
-from {
-opacity: 0;
-transform: translateY(-30px);
-}
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
-
-@keyframes fadeInUp {
-from {
-opacity: 0;
-transform: translateY(30px);
-}
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
-
-@keyframes pulse {
-0% {
-box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
-}
-70% {
-box-shadow: 0 0 0 15px rgba(67, 97, 238, 0);
-}
-100% {
-box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
-}
-}
-
-@keyframes float {
-0% {
-transform: translateY(0) rotate(0deg);
-opacity: 0;
-}
-10% {
-opacity: 1;
-}
-100% {
-transform: translateY(-100vh) rotate(360deg);
-opacity: 0;
-}
-}
-
-@keyframes spin {
-0% {
-transform: rotate(0deg);
-}
-100% {
-transform: rotate(360deg);
-}
-}
-
-@keyframes rotate {
-0% {
-transform: rotate(0deg);
-}
-100% {
-transform: rotate(360deg);
-}
-}
-
-@keyframes ripple {
-to {
-transform: scale(4);
-opacity: 0;
-}
-}
-
-/* Responsive Design */
-@media (max-width: 992px) {
-.sidebar {
-transform: translateX(-100%);
-}
-
-.sidebar.active {
-transform: translateX(0);
-}
-
-.main-content {
-margin-left: 0;
-padding: 20px;
-}
-
-.menu-toggle {
-display: flex;
-}
-
-.header {
-flex-direction: column;
-align-items: flex-start;
-gap: 15px;
-}
-
-#clock {
-align-self: flex-start;
-}
-}
-
-@media (max-width: 768px) {
-.card-container {
-grid-template-columns: 1fr;
-}
-
-.search-container {
-flex-direction: column;
-}
-
-.search-btn {
-justify-content: center;
-}
-
-.form-row {
-flex-direction: column;
-gap: 0;
-}
-
-.tab-nav {
-flex-direction: column;
-}
-
-.tab-btn {
-border-bottom: none;
-border-left: 3px solid transparent;
-text-align: left;
-}
-
-.tab-btn.active {
-border-left-color: var(--primary);
-}
-
-.success-actions {
-flex-direction: column;
-}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataApp - Aplikasi Penyimpanan Data</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #800020; /* Maroon */
+            --secondary-color: #a52a2a;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--light-color);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark-color);
+            min-height: 100vh;
+            padding: 20px 0;
+            transition: all 0.3s;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            color: var(--light-color);
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #adb5bd;
+            font-size: 14px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #adb5bd;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: var(--light-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* Login Form */
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--light-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(165, 42, 42, 0.3);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        /* Cards */
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Search Box */
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #adb5bd;
+        }
+
+        /* Data Item */
+        .data-item {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        .data-item h4 {
+            margin-bottom: 8px;
+            color: var(--light-color);
+        }
+
+        .data-item p {
+            margin-bottom: 10px;
+            color: #adb5bd;
+        }
+
+        .data-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+
+        .notification.warning {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        /* Responsive */
+        .toggle-sidebar {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .toggle-sidebar {
+                display: block;
+            }
+        }
+
+        /* Admin Access Levels */
+        .access-level {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .access-level.full {
+            background-color: var(--success-color);
+        }
+
+        .access-level.limited {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .access-level.view {
+            background-color: #17a2b8;
+        }
+
+        /* Account Data Section */
+        .account-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .account-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .account-card h4 {
+            margin-bottom: 15px;
+            color: var(--light-color);
+        }
+
+        .account-details {
+            margin-bottom: 15px;
+        }
+
+        .account-details p {
+            margin-bottom: 8px;
+            color: #adb5bd;
+        }
+
+        .account-details strong {
+            color: var(--light-color);
+        }
+    </style>
 </head>
 <body>
-<div class="particles" id="particles"></div>
-
-<div class="menu-toggle" id="menuToggle">
-<i class="fas fa-bars"></i>
-</div>
-
-<div class="sidebar" id="sidebar">
-<div class="sidebar-header">
-<h2>Line Togel</h2>
-</div>
-<div class="sidebar-menu">
-<a href="#" class="menu-item active" id="dashboardMenu">
-<span class="menu-icon"><i class="fas fa-chart-line"></i></span>
-<span class="menu-text">LINETOGEL.COM</span>
-</a>
-<a href="#" class="menu-item" id="dataRekeningMenu">
-<span class="menu-icon"><i class="fas fa-piggy-bank"></i></span>
-<span class="menu-text">Data Rekening</span>
-</a>
-<a href="#" class="menu-item" id="inputDataMenu">
-<span class="menu-icon"><i class="fas fa-plus-circle"></i></span>
-<span class="menu-text">Input Data</span>
-</a>
-<a href="#" class="menu-item" id="reportMenu">
-<span class="menu-icon"><i class="fas fa-file-alt"></i></span>
-<span class="menu-text">Report</span>
-</a>
-</div>
-</div>
-
-<div class="main-content">
-<div class="header">
-<h1>Daniel</h1>
-<div id="clock"></div>
-</div>
-
-<div id="dashboardSection">
-<div class="card-container">
-<div class="card" onclick="showDataRekening()">
-<h3><i class="fas fa-piggy-bank"></i> Data Rekening</h3>
-<p>Informasi lengkap rekening bank yang terdaftar</p>
-<a href="#" class="card-btn" onclick="showDataRekening(); return false;">
-<i class="fas fa-search"></i> Lihat Data
-</a>
-</div>
-<div class="card" onclick="showInputData()">
-<h3><i class="fas fa-plus-circle"></i> Input Data</h3>
-<p>Formulir untuk memasukkan data baru</p>
-<a href="#" class="card-btn" onclick="showInputData(); return false;">
-<i class="fas fa-plus"></i> Input Data
-</a>
-</div>
-<div class="card" onclick="showReport()">
-<h3><i class="fas fa-file-alt"></i> Report</h3>
-<p>Laporan dan informasi penting terbaru</p>
-<a href="#" class="card-btn" onclick="showReport(); return false;">
-<i class="fas fa-book-open"></i> Buka Laporan
-</a>
-</div>
-</div>
-</div>
-
-<div class="data-container" id="dataRekeningContainer" style="display: none;">
-<h2><i class="fas fa-piggy-bank"></i> Data Rekening</h2>
-<div class="tab-nav">
-<button class="tab-btn active" id="viewRekeningTab" onclick="switchTab('viewRekening')">
-<i class="fas fa-table"></i> Lihat Data
-</button>
-<button class="tab-btn" id="addRekeningTab" onclick="switchTab('addRekening')">
-<i class="fas fa-plus-circle"></i> Tambah Data
-</button>
-</div>
-
-<div id="viewRekening" class="tab-content active">
-<p>Cari data rekening berdasarkan Bank, Nomor Rekening, atau Nama</p>
-<div class="search-container">
-<input type="text" id="searchRekening" class="search-input" placeholder="Cari rekening...">
-<button id="searchBtn" class="search-btn">
-<i class="fas fa-search"></i> Cari
-</button>
-</div>
-<div id="rekeningResults">
-<table class="data-table">
-<thead>
-<tr>
-<th>Bank</th>
-<th>Nomor Rekening</th>
-<th>Nama</th>
-<th>Aksi</th>
-</tr>
-</thead>
-<tbody id="rekeningData"></tbody>
-</table>
-<div id="loading" class="loading">
-<i class="fas fa-spinner"></i><br>
-Memuat data rekening...
-</div>
-<div id="noResults" class="no-results" style="display:none;">
-<i class="fas fa-info-circle"></i><br>
-Tidak ditemukan data yang sesuai
-</div>
-</div>
-</div>
-
-<div id="addRekening" class="tab-content">
-<p>Tambahkan data rekening baru ke dalam sistem</p>
-<form id="addRekeningForm">
-<div class="form-row">
-<div class="form-group">
-<label class="form-label" for="addBank">Bank</label>
-<input type="text" id="addBank" class="form-input" placeholder="Masukkan nama bank" required>
-</div>
-<div class="form-group">
-<label class="form-label" for="addNomorRekening">Nomor Rekening</label>
-<input type="text" id="addNomorRekening" class="form-input" placeholder="Masukkan nomor rekening" required>
-</div>
-</div>
-<div class="form-group">
-<label class="form-label" for="addNamaRekening">Nama Pemilik</label>
-<input type="text" id="addNamaRekening" class="form-input" placeholder="Masukkan nama pemilik rekening" required>
-</div>
-<div class="form-group">
-<button type="submit" class="form-btn" id="addRekeningBtn">
-<i class="fas fa-save"></i> Simpan Data Rekening
-</button>
-</div>
-</form>
-<div id="addRekeningMessage" style="display: none; margin-top: 20px; padding: 15px; border-radius: 8px;"></div>
-</div>
-</div>
-
-<div class="data-container" id="inputDataContainer" style="display: none;">
-<h2><i class="fas fa-plus-circle"></i> Input Data</h2>
-<p>Masukkan data baru ke dalam sistem</p>
-<form id="inputDataForm">
-<div class="form-group">
-<label class="form-label" for="inputJudul">Judul</label>
-<input type="text" id="inputJudul" class="form-input" placeholder="Masukkan judul" required>
-</div>
-<div class="form-group">
-<label class="form-label" for="inputDeskripsi">Deskripsi</label>
-<textarea id="inputDeskripsi" class="form-textarea" placeholder="Masukkan deskripsi" required></textarea>
-</div>
-<div class="form-group">
-<button type="submit" class="form-btn" id="inputDataBtn">
-<i class="fas fa-save"></i> Simpan Data
-</button>
-</div>
-</form>
-<div id="inputDataMessage" style="display: none; margin-top: 20px; padding: 15px; border-radius: 8px;"></div>
-</div>
-
-<div class="data-container" id="reportContainer" style="display: none;">
-<h2><i class="fas fa-file-alt"></i> Report</h2>
-<p>Cari laporan untuk melihat informasi terbaru</p>
-<div class="search-container">
-<input type="text" id="searchReport" class="search-input" placeholder="Cari laporan...">
-<button id="searchReportBtn" class="search-btn">
-<i class="fas fa-search"></i> Cari
-</button>
-</div>
-<div id="reportMenuList" style="margin-top: 20px;"></div>
-<div id="reportContent">
-<h3 id="reportTitle"></h3>
-<div id="reportInfo"></div>
-</div>
-</div>
-</div>
-
-<script>
-// Enhanced Live Clock Function with Date
-function updateClock() {
-const now = new Date();
-const options = {
-weekday: 'long',
-day: 'numeric',
-month: 'long',
-year: 'numeric',
-hour: '2-digit',
-minute: '2-digit',
-second: '2-digit',
-hour12: false
-};
-const clockElement = document.getElementById("clock");
-clockElement.textContent = now.toLocaleDateString("id-ID", options);
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-// Set active menu item with animation
-document.querySelectorAll('.menu-item').forEach(item => {
-item.addEventListener('click', function(e) {
-if(this.getAttribute('href') === '#') {
-e.preventDefault();
-}
-
-document.querySelectorAll('.menu-item').forEach(i => {
-i.classList.remove('active');
-i.style.transform = '';
-});
-
-this.classList.add('active');
-this.style.transform = 'translateX(8px)';
-
-setTimeout(() => {
-this.style.transform = 'translateX(0)';
-}, 300);
-});
-});
-
-// Enhanced floating particles with gradient colors
-function createParticles() {
-const particlesContainer = document.getElementById('particles');
-particlesContainer.innerHTML = '';
-
-const particleCount = window.innerWidth < 768 ? 10 : 20;
-const colors = [
-'rgba(67, 97, 238, 0.6)',
-'rgba(114, 9, 183, 0.6)',
-'rgba(247, 37, 133, 0.6)',
-'rgba(76, 201, 240, 0.6)'
-];
-
-for(let i = 0; i < particleCount; i++) {
-const particle = document.createElement('div');
-particle.classList.add('particle');
-
-const size = Math.random() * 25 + 5;
-const posX = Math.random() * window.innerWidth;
-const posY = Math.random() * window.innerHeight * 1.5;
-const duration = Math.random() * 30 + 20;
-const delay = Math.random() * 10;
-const opacity = Math.random() * 0.7 + 0.1;
-const color1 = colors[Math.floor(Math.random() * colors.length)];
-const color2 = colors[Math.floor(Math.random() * colors.length)];
-
-particle.style.width = `${size}px`;
-particle.style.height = `${size}px`;
-particle.style.left = `${posX}px`;
-particle.style.top = `${posY}px`;
-particle.style.animationDuration = `${duration}s`;
-particle.style.animationDelay = `${delay}s`;
-particle.style.opacity = opacity;
-particle.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
-particle.style.borderRadius = size % 2 === 0 ? '50%' : '30%';
-particle.style.boxShadow = `0 0 ${size/2}px ${color1}`;
-
-particlesContainer.appendChild(particle);
-}
-}
-
-// Toggle sidebar on mobile with animation
-document.getElementById('menuToggle').addEventListener('click', function() {
-const sidebar = document.getElementById('sidebar');
-sidebar.classList.toggle('active');
-
-this.style.transform = sidebar.classList.contains('active') ? 'rotate(90deg)' : 'rotate(0)';
-});
-
-// Initialize with animations
-window.addEventListener('load', function() {
-createParticles();
-
-// Animate cards sequentially
-document.querySelectorAll('.card').forEach((card, index) => {
-card.style.animationDelay = `${index * 0.1}s`;
-});
-
-// Add initial animation to header
-document.querySelector('.header').style.animation = 'fadeInDown 0.8s both';
-});
-
-window.addEventListener('resize', function() {
-createParticles();
-});
-
-// Enhanced hover effect for cards
-document.querySelectorAll('.card').forEach(card => {
-card.addEventListener('mouseenter', function() {
-this.style.transform = 'translateY(-10px) scale(1.02)';
-this.style.boxShadow = '0 15px 40px rgba(67, 97, 238, 0.2)';
-
-const icon = this.querySelector('h3 i');
-if (icon) {
-icon.style.transform = 'scale(1.2)';
-icon.style.color = 'var(--accent)';
-}
-
-const btn = this.querySelector('.card-btn');
-if (btn) {
-btn.style.transform = 'translateY(-3px)';
-}
-});
-
-card.addEventListener('mouseleave', function() {
-this.style.transform = '';
-this.style.boxShadow = 'var(--shadow)';
-
-const icon = this.querySelector('h3 i');
-if (icon) {
-icon.style.transform = '';
-icon.style.color = 'var(--secondary)';
-}
-
-const btn = this.querySelector('.card-btn');
-if (btn) {
-btn.style.transform = '';
-}
-});
-});
-
-// Show/Hide sections with smooth transitions
-function showDashboard() {
-document.getElementById('dashboardSection').style.display = 'grid';
-document.getElementById('dataRekeningContainer').style.display = 'none';
-document.getElementById('inputDataContainer').style.display = 'none';
-document.getElementById('reportContainer').style.display = 'none';
-
-// Animate cards when returning to dashboard
-document.querySelectorAll('.card').forEach((card, index) => {
-card.style.animation = `fadeInUp 0.6s both ${index * 0.1}s`;
-});
-}
-
-function showDataRekening() {
-document.getElementById('dashboardSection').style.display = 'none';
-document.getElementById('dataRekeningContainer').style.display = 'block';
-document.getElementById('inputDataContainer').style.display = 'none';
-document.getElementById('reportContainer').style.display = 'none';
-
-loadRekeningData();
-document.getElementById('dataRekeningContainer').scrollIntoView({
-behavior: 'smooth',
-block: 'start'
-});
-}
-
-function showInputData() {
-document.getElementById('dashboardSection').style.display = 'none';
-document.getElementById('dataRekeningContainer').style.display = 'none';
-document.getElementById('inputDataContainer').style.display = 'block';
-document.getElementById('reportContainer').style.display = 'none';
-
-document.getElementById('inputDataContainer').scrollIntoView({
-behavior: 'smooth',
-block: 'start'
-});
-}
-
-function showReport() {
-document.getElementById('dashboardSection').style.display = 'none';
-document.getElementById('dataRekeningContainer').style.display = 'none';
-document.getElementById('inputDataContainer').style.display = 'none';
-document.getElementById('reportContainer').style.display = 'block';
-
-loadReportMenu();
-document.getElementById('reportContainer').scrollIntoView({
-behavior: 'smooth',
-block: 'start'
-});
-}
-
-// Tab switching function
-function switchTab(tabName) {
-// Hide all tab contents
-document.querySelectorAll('.tab-content').forEach(tab => {
-tab.classList.remove('active');
-});
-
-// Remove active class from all tab buttons
-document.querySelectorAll('.tab-btn').forEach(btn => {
-btn.classList.remove('active');
-});
-
-// Show selected tab content
-document.getElementById(tabName).classList.add('active');
-
-// Add active class to the corresponding button
-if (tabName === 'viewRekening') {
-document.getElementById('viewRekeningTab').classList.add('active');
-} else if (tabName === 'addRekening') {
-document.getElementById('addRekeningTab').classList.add('active');
-}
-}
-
-// Menu click handlers with ripple effect
-document.getElementById('dashboardMenu').addEventListener('click', function(e) {
-e.preventDefault();
-createRippleEffect(e);
-showDashboard();
-});
-
-document.getElementById('dataRekeningMenu').addEventListener('click', function(e) {
-e.preventDefault();
-createRippleEffect(e);
-showDataRekening();
-});
-
-document.getElementById('inputDataMenu').addEventListener('click', function(e) {
-e.preventDefault();
-createRippleEffect(e);
-showInputData();
-});
-
-document.getElementById('reportMenu').addEventListener('click', function(e) {
-e.preventDefault();
-createRippleEffect(e);
-showReport();
-});
-
-// Ripple effect function with improved animation
-function createRippleEffect(event) {
-const button = event.currentTarget;
-const ripple = document.createElement('span');
-ripple.className = 'ripple';
-
-const rect = button.getBoundingClientRect();
-const size = Math.max(rect.width, rect.height);
-const x = event.clientX - rect.left - size/2;
-const y = event.clientY - rect.top - size/2;
-
-ripple.style.width = ripple.style.height = `${size}px`;
-ripple.style.left = `${x}px`;
-ripple.style.top = `${y}px`;
-ripple.style.background = 'rgba(255,255,255,0.4)';
-ripple.style.position = 'absolute';
-ripple.style.borderRadius = '50%';
-ripple.style.transform = 'scale(0)';
-ripple.style.animation = 'ripple 0.6s linear';
-ripple.style.pointerEvents = 'none';
-
-button.appendChild(ripple);
-
-setTimeout(() => {
-ripple.remove();
-}, 600);
-}
-
-// Data storage for rekening
-let rekeningData = [];
-
-// Data storage for reports
-let reportData = [];
-
-// Data Rekening Functionality with enhanced UI
-function loadRekeningData() {
-const loading = document.getElementById('loading');
-const rekeningDataTable = document.getElementById('rekeningData');
-const noResults = document.getElementById('noResults');
-
-loading.style.display = 'flex';
-rekeningDataTable.innerHTML = '';
-noResults.style.display = 'none';
-
-// Simulate loading data with setTimeout
-setTimeout(() => {
-loading.style.display = 'none';
-displayRekeningData(rekeningData);
-}, 500);
-}
-
-function displayRekeningData(data) {
-const rekeningDataTable = document.getElementById('rekeningData');
-const noResults = document.getElementById('noResults');
-
-rekeningDataTable.innerHTML = '';
-
-if (!data || data.length === 0) {
-noResults.style.display = 'flex';
-return;
-}
-
-noResults.style.display = 'none';
-
-data.forEach((item, index) => {
-const row = document.createElement('tr');
-row.style.animation = `fadeInUp 0.4s both ${index * 0.05}s`;
-
-const rekeningText = `${item.nama || 'N/A'} - ${item.rekening || 'N/A'} (${item.bank || 'N/A'})`;
-row.innerHTML = `
-<td>${item.bank || 'N/A'}</td>
-<td>${item.rekening || 'N/A'}</td>
-<td>${item.nama || 'N/A'}</td>
-<td>
-<button class="copy-rekening-btn" onclick="copyToClipboard('${rekeningText.replace(/'/g, "\\'")}')">
-<i class="fas fa-copy"></i> Salin
-</button>
-</td>
-`;
-
-rekeningDataTable.appendChild(row);
-});
-}
-
-function searchRekening() {
-const searchTerm = document.getElementById('searchRekening').value.trim();
-const loading = document.getElementById('loading');
-const rekeningDataTable = document.getElementById('rekeningData');
-const noResults = document.getElementById('noResults');
-
-if (searchTerm === '') {
-loadRekeningData();
-return;
-}
-
-loading.style.display = 'flex';
-rekeningDataTable.innerHTML = '';
-noResults.style.display = 'none';
-
-// Add search animation
-document.getElementById('searchBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari...';
-
-// Simulate search with setTimeout
-setTimeout(() => {
-// Filter data based on search term
-const filteredData = rekeningData.filter(item => 
-item.bank.toLowerCase().includes(searchTerm.toLowerCase()) ||
-item.rekening.includes(searchTerm) ||
-item.nama.toLowerCase().includes(searchTerm.toLowerCase())
-);
-
-document.getElementById('searchBtn').innerHTML = '<i class="fas fa-search"></i> Cari';
-loading.style.display = 'none';
-displayRekeningData(filteredData);
-}, 500);
-}
-
-// Add Rekening Form Functionality
-document.getElementById('addRekeningForm').addEventListener('submit', function(e) {
-e.preventDefault();
-    
-const formData = {
-bank: document.getElementById('addBank').value,
-rekening: document.getElementById('addNomorRekening').value,
-nama: document.getElementById('addNamaRekening').value
-};
-
-const messageDiv = document.getElementById('addRekeningMessage');
-const submitBtn = document.getElementById('addRekeningBtn');
-    
-// Show loading state
-messageDiv.style.display = 'block';
-messageDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan data rekening...';
-messageDiv.style.background = 'rgba(67, 97, 238, 0.1)';
-messageDiv.style.color = 'var(--primary)';
-submitBtn.disabled = true;
-
-console.log('Sending data:', formData);
-
-// Simulate saving data with setTimeout
-setTimeout(() => {
-// Add data to rekeningData array
-rekeningData.push(formData);
-    
-// Create success message with actions
-messageDiv.innerHTML = `
-<div class="success-message">
-<i class="fas fa-check-circle"></i>
-<div>
-<strong>Data rekening berhasil disimpan!</strong>
-<p>Data telah ditambahkan ke daftar rekening.</p>
-<div class="success-actions">
-<button class="success-btn" onclick="switchTab('viewRekening'); loadRekeningData();">
-<i class="fas fa-eye"></i> Lihat Data
-</button>
-<button class="success-btn" onclick="document.getElementById('addRekeningForm').reset(); document.getElementById('addRekeningMessage').style.display='none';">
-<i class="fas fa-plus"></i> Tambah Lagi
-</button>
-</div>
-</div>
-</div>`;
-messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
-messageDiv.style.color = 'var(--success)';
-    
-// Reset form
-document.getElementById('addRekeningForm').reset();
-    
-// Enable button
-submitBtn.disabled = false;
-    
-// Auto switch to view tab after 3 seconds if user doesn't take action
-setTimeout(() => {
-if (messageDiv.style.display !== 'none') {
-switchTab('viewRekening');
-loadRekeningData();
-}
-}, 5000);
-    
-}, 1000);
-});
-
-// Input Data Functionality
-document.getElementById('inputDataForm').addEventListener('submit', function(e) {
-e.preventDefault();
-    
-const formData = {
-id: Date.now(), // Simple ID generation
-judul: document.getElementById('inputJudul').value,
-deskripsi: document.getElementById('inputDeskripsi').value,
-tanggal: new Date().toISOString().split('T')[0], // Current date
-kategori: 'Umum',
-status: 'Selesai'
-};
-
-const messageDiv = document.getElementById('inputDataMessage');
-const submitBtn = document.getElementById('inputDataBtn');
-    
-// Show loading state
-messageDiv.style.display = 'block';
-messageDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan data...';
-messageDiv.style.background = 'rgba(67, 97, 238, 0.1)';
-messageDiv.style.color = 'var(--primary)';
-submitBtn.disabled = true;
-
-console.log('Sending data:', formData);
-
-// Simulate saving data with setTimeout
-setTimeout(() => {
-// Add data to reportData array
-reportData.push(formData);
-    
-// Create success message with actions
-messageDiv.innerHTML = `
-<div class="success-message">
-<i class="fas fa-check-circle"></i>
-<div>
-<strong>Data berhasil disimpan!</strong>
-<p>Data telah ditambahkan ke menu Report.</p>
-<div class="success-actions">
-<button class="success-btn" onclick="showReport();">
-<i class="fas fa-file-alt"></i> Lihat Report
-</button>
-<button class="success-btn" onclick="document.getElementById('inputDataForm').reset(); document.getElementById('inputDataMessage').style.display='none';">
-<i class="fas fa-plus"></i> Input Lagi
-</button>
-</div>
-</div>
-</div>`;
-messageDiv.style.background = 'rgba(76, 201, 240, 0.1)';
-messageDiv.style.color = 'var(--success)';
-    
-// Reset form
-document.getElementById('inputDataForm').reset();
-    
-// Enable button
-submitBtn.disabled = false;
-    
-}, 1000);
-});
-
-// Enhanced Report Functionality
-function loadReportMenu() {
-const reportMenuList = document.getElementById('reportMenuList');
-const reportContent = document.getElementById('reportContent');
-
-reportContent.style.display = 'none';
-reportMenuList.innerHTML = `
-<div class="loading" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-<i class="fas fa-spinner fa-spin"></i> Memuat daftar laporan...
-</div>
-`;
-
-// Simulate loading data with setTimeout
-setTimeout(() => {
-reportMenuList.innerHTML = '';
-
-if (!reportData || reportData.length === 0) {
-reportMenuList.innerHTML = `
-<div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
-<i class="fas fa-info-circle"></i> Tidak ada laporan tersedia
-</div>
-`;
-return;
-}
-
-reportData.forEach((item, index) => {
-const button = document.createElement('button');
-button.className = 'report-menu-btn';
-button.innerHTML = `
-<i class="fas fa-file-alt"></i>
-<span>${item.judul || 'Untitled Report'}</span>
-`;
-button.style.animation = `fadeInUp 0.4s both ${index * 0.1}s`;
-
-button.addEventListener('click', function() {
-// Add active state to button
-document.querySelectorAll('.report-menu-btn').forEach(btn => {
-btn.style.background = 'linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.05))';
-});
-this.style.background = 'linear-gradient(135deg, rgba(67, 97, 238, 0.3), rgba(114, 9, 183, 0.1))';
-
-showReportInfo(item);
-});
-
-reportMenuList.appendChild(button);
-});
-}, 500);
-}
-
-function showReportInfo(item) {
-const reportContent = document.getElementById('reportContent');
-const reportTitle = document.getElementById('reportTitle');
-const reportInfo = document.getElementById('reportInfo');
-
-reportContent.style.display = 'none';
-reportInfo.innerHTML = `
-<div class="loading" style="display: flex; justify-content: center; padding: 20px;">
-<i class="fas fa-spinner fa-spin"></i> Memuat informasi...
-</div>
-`;
-
-// Simulate loading data with setTimeout
-setTimeout(() => {
-reportTitle.textContent = item.judul || 'Report';
-reportInfo.innerHTML = `
-<button class="copy-btn" onclick="copyToClipboard(document.getElementById('reportInfo').textContent)">
-<i class="fas fa-copy"></i> Salin Semua
-</button>
-<div style="margin-top: 20px;">
-<p><strong>Kategori:</strong> ${item.kategori || 'N/A'}</p>
-<p><strong>Tanggal:</strong> ${item.tanggal || 'N/A'}</p>
-<p><strong>Status:</strong> ${item.status || 'N/A'}</p>
-</div>
-<div style="margin-top: 20px;">
-<h4>Deskripsi:</h4>
-<p>${item.deskripsi || 'Tidak ada deskripsi'}</p>
-</div>
-`;
-
-reportContent.style.display = 'block';
-reportContent.style.animation = 'fadeInUp 0.4s both';
-
-// Highlight important information
-const infoElement = document.getElementById('reportInfo');
-const importantTexts = infoElement.querySelectorAll('strong, b');
-
-importantTexts.forEach(text => {
-text.style.color = 'var(--primary)';
-text.style.fontWeight = '600';
-});
-
-}, 500);
-}
-
-// Search Report Functionality
-function searchReport() {
-const searchTerm = document.getElementById('searchReport').value.trim();
-const reportMenuList = document.getElementById('reportMenuList');
-const reportContent = document.getElementById('reportContent');
-
-reportContent.style.display = 'none';
-reportMenuList.innerHTML = `
-<div class="loading" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-<i class="fas fa-spinner fa-spin"></i> Mencari laporan...
-</div>
-`;
-
-// Simulate search with setTimeout
-setTimeout(() => {
-// Filter data based on search term
-const filteredData = reportData.filter(item => 
-item.judul.toLowerCase().includes(searchTerm.toLowerCase()) ||
-item.kategori.toLowerCase().includes(searchTerm.toLowerCase()) ||
-item.deskripsi.toLowerCase().includes(searchTerm.toLowerCase())
-);
-
-reportMenuList.innerHTML = '';
-
-if (!filteredData || filteredData.length === 0) {
-reportMenuList.innerHTML = `
-<div class="no-results" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100px;">
-<i class="fas fa-info-circle"></i> Tidak ditemukan laporan yang sesuai
-</div>
-`;
-return;
-}
-
-filteredData.forEach((item, index) => {
-const button = document.createElement('button');
-button.className = 'report-menu-btn';
-button.innerHTML = `
-<i class="fas fa-file-alt"></i>
-<span>${item.judul || 'Untitled Report'}</span>
-`;
-button.style.animation = `fadeInUp 0.4s both ${index * 0.1}s`;
-
-button.addEventListener('click', function() {
-// Add active state to button
-document.querySelectorAll('.report-menu-btn').forEach(btn => {
-btn.style.background = 'linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.05))';
-});
-this.style.background = 'linear-gradient(135deg, rgba(67, 97, 238, 0.3), rgba(114, 9, 183, 0.1))';
-
-showReportInfo(item);
-});
-
-reportMenuList.appendChild(button);
-});
-}, 500);
-}
-
-// Enhanced Copy to clipboard function with better feedback
-function copyToClipboard(text) {
-// Use modern Clipboard API if available
-if (navigator.clipboard) {
-navigator.clipboard.writeText(text).then(function() {
-showCopyNotification('Teks berhasil disalin ke clipboard!', 'success');
-}).catch(function(err) {
-console.error('Failed to copy text: ', err);
-showCopyNotification('Gagal menyalin teks!', 'error');
-});
-} else {
-// Fallback for older browsers
-const textarea = document.createElement('textarea');
-textarea.value = text;
-document.body.appendChild(textarea);
-textarea.select();
-
-try {
-document.execCommand('copy');
-showCopyNotification('Teks berhasil disalin ke clipboard!', 'success');
-} catch (err) {
-console.error('Failed to copy text: ', err);
-showCopyNotification('Gagal menyalin teks!', 'error');
-}
-
-document.body.removeChild(textarea);
-}
-}
-
-// Show copy notification
-function showCopyNotification(message, type) {
-const notification = document.createElement('div');
-notification.style.position = 'fixed';
-notification.style.bottom = '30px';
-notification.style.right = '30px';
-notification.style.backgroundColor = type === 'success' ? 'var(--success)' : 'var(--danger)';
-notification.style.color = 'white';
-notification.style.padding = '15px 25px';
-notification.style.borderRadius = '8px';
-notification.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
-notification.style.zIndex = '1000';
-notification.style.display = 'flex';
-notification.style.alignItems = 'center';
-notification.style.gap = '10px';
-notification.style.transform = 'translateY(30px)';
-notification.style.opacity = '0';
-notification.style.transition = 'all 0.3s ease';
-notification.innerHTML = `
-<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-<span>${message}</span>
-`;
-
-document.body.appendChild(notification);
-
-setTimeout(() => {
-notification.style.transform = 'translateY(0)';
-notification.style.opacity = '1';
-}, 10);
-
-setTimeout(() => {
-notification.style.transform = 'translateY(30px)';
-notification.style.opacity = '0';
-setTimeout(() => {
-document.body.removeChild(notification);
-}, 300);
-}, 3000);
-}
-
-// Event listeners with debounce for search
-document.getElementById('searchBtn').addEventListener('click', searchRekening);
-
-let searchTimeout;
-document.getElementById('searchRekening').addEventListener('keyup', function(e) {
-clearTimeout(searchTimeout);
-
-if (e.key === 'Enter') {
-searchRekening();
-} else if (this.value.trim().length > 2) {
-searchTimeout = setTimeout(() => {
-searchRekening();
-}, 500);
-}
-});
-
-// Report search event listeners
-document.getElementById('searchReportBtn').addEventListener('click', searchReport);
-
-document.getElementById('searchReport').addEventListener('keyup', function(e) {
-clearTimeout(searchTimeout);
-
-if (e.key === 'Enter') {
-searchReport();
-} else if (this.value.trim().length > 2) {
-searchTimeout = setTimeout(() => {
-searchReport();
-}, 500);
-}
-});
-
-// Add ripple effect to buttons
-document.querySelectorAll('button, .card-btn').forEach(button => {
-button.addEventListener('click', function(e) {
-createRippleEffect(e);
-});
-});
-
-// Add animation for page load
-document.addEventListener('DOMContentLoaded', function() {
-document.body.style.opacity = '0';
-setTimeout(() => {
-document.body.style.transition = 'opacity 0.6s ease';
-document.body.style.opacity = '1';
-}, 100);
-});
-</script>
+    <!-- Toggle Sidebar Button for Mobile -->
+    <button class="toggle-sidebar" id="toggleSidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>DataApp</h2>
+            <p>Aplikasi Penyimpanan Data</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="menu-link active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#" class="menu-link" data-page="input"><i class="fas fa-plus-circle"></i> Input Data</a></li>
+            <li><a href="#" class="menu-link" data-page="search"><i class="fas fa-search"></i> Cari Data</a></li>
+            <li><a href="#" class="menu-link" data-page="report"><i class="fas fa-file-alt"></i> Report</a></li>
+            <li><a href="#" class="menu-link" data-page="account"><i class="fas fa-university"></i> Data Rekening</a></li>
+            <li><a href="#" class="menu-link" data-page="admin"><i class="fas fa-user-shield"></i> Admin</a></li>
+            <li><a href="#" class="menu-link" data-page="logout"><i class="fas fa-sign-out-alt"></i> Keluar</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1 id="pageTitle">Dashboard</h1>
+            <div class="user-info">
+                <span id="currentUser">Admin</span>
+                <img src="https://picsum.photos/seed/user123/40/40.jpg" alt="User">
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div id="pageContent">
+            <!-- Dashboard Content -->
+            <div class="page" id="dashboard-page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Selamat Datang di DataApp</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>DataApp adalah aplikasi sederhana untuk menyimpan dan mengelola data penting. Dengan antarmuka yang modern dan mudah digunakan, Anda dapat dengan cepat menyimpan informasi dan menemukannya kembali saat dibutuhkan. Data disimpan di cloud sehingga dapat diakses oleh siapa saja yang menggunakan aplikasi ini.</p>
+                        <br>
+                        <h4>Fitur utama:</h4>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Penyimpanan data di cloud dengan Firebase</li>
+                            <li>Data dapat diakses oleh semua pengguna</li>
+                            <li>Pencarian data yang cepat dan mudah</li>
+                            <li>Tombol salin untuk mengambil data dengan tepat</li>
+                            <li>Antarmuka yang modern dan responsif</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Statistik Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                            <div style="background-color: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; text-align: center;">
+                                <h3 style="font-size: 32px; margin-bottom: 10px;" id="totalData">0</h3>
+                                <p>Total Data</p>
+                            </div>
+                            <div style="background-color: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; text-align: center;">
+                                <h3 style="font-size: 32px; margin-bottom: 10px;" id="totalAccounts">0</h3>
+                                <p>Data Rekening</p>
+                            </div>
+                            <div style="background-color: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; text-align: center;">
+                                <h3 style="font-size: 32px; margin-bottom: 10px;" id="totalAdmins">0</h3>
+                                <p>Total Admin</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Data Content -->
+            <div class="page" id="input-page" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Input Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="inputDataForm">
+                            <div class="form-group">
+                                <label for="dataTitle">Judul</label>
+                                <input type="text" class="form-control" id="dataTitle" placeholder="Masukkan judul data" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dataDescription">Deskripsi</label>
+                                <textarea class="form-control" id="dataDescription" rows="5" placeholder="Masukkan deskripsi data" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan Data</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Data Content -->
+            <div class="page" id="search-page" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Cari Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Ketik untuk mencari data...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div id="searchResults">
+                            <p style="text-align: center; color: #adb5bd;">Ketik untuk mencari data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Content -->
+            <div class="page" id="report-page" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Report Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-box">
+                            <input type="text" id="reportSearchInput" placeholder="Cari report...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Judul</th>
+                                        <th>Deskripsi</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportTableBody">
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Data Content -->
+            <div class="page" id="account-page" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Data Rekening</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="accountForm">
+                            <div class="form-group">
+                                <label for="bankName">Nama Bank</label>
+                                <input type="text" class="form-control" id="bankName" placeholder="Masukkan nama bank" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="accountName">Nama Pemilik</label>
+                                <input type="text" class="form-control" id="accountName" placeholder="Masukkan nama pemilik rekening" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="accountNumber">Nomor Rekening</label>
+                                <input type="text" class="form-control" id="accountNumber" placeholder="Masukkan nomor rekening" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="branchName">Cabang</label>
+                                <input type="text" class="form-control" id="branchName" placeholder="Masukkan nama cabang">
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan Data Rekening</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Daftar Rekening</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-box">
+                            <input type="text" id="accountSearchInput" placeholder="Cari rekening...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="account-data" id="accountDataContainer">
+                            <p style="text-align: center; color: #adb5bd;">Tidak ada data rekening</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Content -->
+            <div class="page" id="admin-page" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Manajemen Admin</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="adminForm">
+                            <div class="form-group">
+                                <label for="adminUsername">Username</label>
+                                <input type="text" class="form-control" id="adminUsername" placeholder="Masukkan username admin" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminPassword">Password</label>
+                                <input type="password" class="form-control" id="adminPassword" placeholder="Masukkan password admin" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminAccess">Level Akses</label>
+                                <select class="form-control" id="adminAccess" required>
+                                    <option value="view">View Only</option>
+                                    <option value="limited">Limited</option>
+                                    <option value="full">Full Access</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success">Tambah Admin</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Daftar Admin</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Username</th>
+                                        <th>Level Akses</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTableBody">
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data admin</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Page (Initially shown) -->
+            <div class="login-container" id="loginPage">
+                <h2>Login ke DataApp</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" class="form-control" id="loginUsername" placeholder="Masukkan username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" class="form-control" id="loginPassword" placeholder="Masukkan password" required>
+                    </div>
+                    <button type="submit" class="btn btn-block">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Firebase SDK (Simulated) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script>
+        // Simulated Firebase initialization
+        const firebaseConfig = {
+            apiKey: "demo-api-key",
+            authDomain: "demo-auth-domain",
+            projectId: "demo-project-id",
+            storageBucket: "demo-storage-bucket",
+            messagingSenderId: "demo-messaging-sender-id",
+            appId: "demo-app-id"
+        };
+
+        // Initialize Firebase (Simulated)
+        // firebase.initializeApp(firebaseConfig);
+        // const db = firebase.firestore();
+
+        // Simulated database
+        let database = {
+            data: [],
+            accounts: [],
+            admins: [
+                { id: 1, username: "admin", password: "admin123", access: "full" },
+                { id: 2, username: "user", password: "user123", access: "limited" }
+            ],
+            currentUser: null
+        };
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const menuLinks = document.querySelectorAll('.menu-link');
+        const pages = document.querySelectorAll('.page');
+        const pageTitle = document.getElementById('pageTitle');
+        const loginPage = document.getElementById('loginPage');
+        const pageContent = document.getElementById('pageContent');
+        const loginForm = document.getElementById('loginForm');
+        const notification = document.getElementById('notification');
+
+        // Toggle Sidebar
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Menu Navigation
+        menuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPage = link.getAttribute('data-page');
+                
+                if (targetPage === 'logout') {
+                    logout();
+                    return;
+                }
+                
+                // Update active menu
+                menuLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Show target page
+                showPage(targetPage);
+            });
+        });
+
+        // Show Page
+        function showPage(pageName) {
+            // Hide all pages
+            pages.forEach(page => {
+                page.style.display = 'none';
+            });
+            
+            // Show target page
+            const targetPage = document.getElementById(`${pageName}-page`);
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                pageTitle.textContent = targetPage.querySelector('.card-header h3').textContent;
+                
+                // Load data for specific pages
+                if (pageName === 'report') {
+                    loadReportData();
+                } else if (pageName === 'account') {
+                    loadAccountData();
+                } else if (pageName === 'admin') {
+                    loadAdminData();
+                } else if (pageName === 'dashboard') {
+                    updateDashboardStats();
+                }
+            }
+        }
+
+        // Login Form
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Check credentials
+            const admin = database.admins.find(a => a.username === username && a.password === password);
+            
+            if (admin) {
+                database.currentUser = admin;
+                document.getElementById('currentUser').textContent = admin.username;
+                loginPage.style.display = 'none';
+                pageContent.style.display = 'block';
+                showNotification('Login berhasil!', 'success');
+                showPage('dashboard');
+            } else {
+                showNotification('Username atau password salah!', 'error');
+            }
+        });
+
+        // Logout
+        function logout() {
+            database.currentUser = null;
+            loginPage.style.display = 'block';
+            pageContent.style.display = 'none';
+            showNotification('Anda telah logout', 'success');
+        }
+
+        // Show Notification
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Input Data Form
+        const inputDataForm = document.getElementById('inputDataForm');
+        if (inputDataForm) {
+            inputDataForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const title = document.getElementById('dataTitle').value;
+                const description = document.getElementById('dataDescription').value;
+                
+                // Add data to database
+                const newData = {
+                    id: Date.now(),
+                    title,
+                    description,
+                    createdAt: new Date().toISOString()
+                };
+                
+                database.data.push(newData);
+                
+                // Reset form
+                inputDataForm.reset();
+                
+                showNotification('Data berhasil disimpan!', 'success');
+            });
+        }
+
+        // Search Data
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase().trim();
+                
+                if (query === '') {
+                    searchResults.innerHTML = '<p style="text-align: center; color: #adb5bd;">Ketik untuk mencari data...</p>';
+                    return;
+                }
+                
+                // Filter data based on query
+                const filteredData = database.data.filter(item => 
+                    item.title.toLowerCase().includes(query) || 
+                    item.description.toLowerCase().includes(query)
+                );
+                
+                if (filteredData.length === 0) {
+                    searchResults.innerHTML = '<p style="text-align: center; color: #adb5bd;">Tidak ada data yang ditemukan</p>';
+                    return;
+                }
+                
+                // Display results
+                let resultsHTML = '';
+                filteredData.forEach(item => {
+                    resultsHTML += `
+                        <div class="data-item">
+                            <h4>${item.title}</h4>
+                            <p>${item.description}</p>
+                            <div class="data-actions">
+                                <button class="btn" onclick="copyData('${item.description.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-copy"></i> Salin
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                searchResults.innerHTML = resultsHTML;
+            });
+        }
+
+        // Copy Data
+        function copyData(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    showNotification('Data berhasil disalin!', 'success');
+                })
+                .catch(err => {
+                    showNotification('Gagal menyalin data', 'error');
+                });
+        }
+
+        // Load Report Data
+        function loadReportData() {
+            const reportTableBody = document.getElementById('reportTableBody');
+            
+            if (database.data.length === 0) {
+                reportTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data</td></tr>';
+                return;
+            }
+            
+            let tableHTML = '';
+            database.data.forEach((item, index) => {
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.title}</td>
+                        <td>${item.description}</td>
+                        <td>
+                            <button class="btn" onclick="copyData('${item.description.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-copy"></i> Salin
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            reportTableBody.innerHTML = tableHTML;
+        }
+
+        // Report Search
+        const reportSearchInput = document.getElementById('reportSearchInput');
+        if (reportSearchInput) {
+            reportSearchInput.addEventListener('input', () => {
+                const query = reportSearchInput.value.toLowerCase().trim();
+                
+                if (query === '') {
+                    loadReportData();
+                    return;
+                }
+                
+                // Filter data based on query
+                const filteredData = database.data.filter(item => 
+                    item.title.toLowerCase().includes(query) || 
+                    item.description.toLowerCase().includes(query)
+                );
+                
+                const reportTableBody = document.getElementById('reportTableBody');
+                
+                if (filteredData.length === 0) {
+                    reportTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data yang ditemukan</td></tr>';
+                    return;
+                }
+                
+                // Display results
+                let tableHTML = '';
+                filteredData.forEach((item, index) => {
+                    tableHTML += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.title}</td>
+                            <td>${item.description}</td>
+                            <td>
+                                <button class="btn" onclick="copyData('${item.description.replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-copy"></i> Salin
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                reportTableBody.innerHTML = tableHTML;
+            });
+        }
+
+        // Account Form
+        const accountForm = document.getElementById('accountForm');
+        if (accountForm) {
+            accountForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const bankName = document.getElementById('bankName').value;
+                const accountName = document.getElementById('accountName').value;
+                const accountNumber = document.getElementById('accountNumber').value;
+                const branchName = document.getElementById('branchName').value;
+                
+                // Add account to database
+                const newAccount = {
+                    id: Date.now(),
+                    bankName,
+                    accountName,
+                    accountNumber,
+                    branchName,
+                    createdAt: new Date().toISOString()
+                };
+                
+                database.accounts.push(newAccount);
+                
+                // Reset form
+                accountForm.reset();
+                
+                // Reload account data
+                loadAccountData();
+                
+                showNotification('Data rekening berhasil disimpan!', 'success');
+            });
+        }
+
+        // Load Account Data
+        function loadAccountData() {
+            const accountDataContainer = document.getElementById('accountDataContainer');
+            
+            if (database.accounts.length === 0) {
+                accountDataContainer.innerHTML = '<p style="text-align: center; color: #adb5bd;">Tidak ada data rekening</p>';
+                return;
+            }
+            
+            let accountsHTML = '';
+            database.accounts.forEach(account => {
+                accountsHTML += `
+                    <div class="account-card">
+                        <h4>${account.bankName}</h4>
+                        <div class="account-details">
+                            <p><strong>Nama Pemilik:</strong> ${account.accountName}</p>
+                            <p><strong>Nomor Rekening:</strong> ${account.accountNumber}</p>
+                            <p><strong>Cabang:</strong> ${account.branchName || '-'}</p>
+                        </div>
+                        <div class="data-actions">
+                            <button class="btn" onclick="copyData('${account.accountNumber}')">
+                                <i class="fas fa-copy"></i> Salin No. Rekening
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            accountDataContainer.innerHTML = accountsHTML;
+        }
+
+        // Account Search
+        const accountSearchInput = document.getElementById('accountSearchInput');
+        if (accountSearchInput) {
+            accountSearchInput.addEventListener('input', () => {
+                const query = accountSearchInput.value.toLowerCase().trim();
+                
+                if (query === '') {
+                    loadAccountData();
+                    return;
+                }
+                
+                // Filter accounts based on query
+                const filteredAccounts = database.accounts.filter(account => 
+                    account.bankName.toLowerCase().includes(query) || 
+                    account.accountName.toLowerCase().includes(query) ||
+                    account.accountNumber.includes(query) ||
+                    (account.branchName && account.branchName.toLowerCase().includes(query))
+                );
+                
+                const accountDataContainer = document.getElementById('accountDataContainer');
+                
+                if (filteredAccounts.length === 0) {
+                    accountDataContainer.innerHTML = '<p style="text-align: center; color: #adb5bd;">Tidak ada data rekening yang ditemukan</p>';
+                    return;
+                }
+                
+                // Display results
+                let accountsHTML = '';
+                filteredAccounts.forEach(account => {
+                    accountsHTML += `
+                        <div class="account-card">
+                            <h4>${account.bankName}</h4>
+                            <div class="account-details">
+                                <p><strong>Nama Pemilik:</strong> ${account.accountName}</p>
+                                <p><strong>Nomor Rekening:</strong> ${account.accountNumber}</p>
+                                <p><strong>Cabang:</strong> ${account.branchName || '-'}</p>
+                            </div>
+                            <div class="data-actions">
+                                <button class="btn" onclick="copyData('${account.accountNumber}')">
+                                    <i class="fas fa-copy"></i> Salin No. Rekening
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                accountDataContainer.innerHTML = accountsHTML;
+            });
+        }
+
+        // Admin Form
+        const adminForm = document.getElementById('adminForm');
+        if (adminForm) {
+            adminForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Check if current user has permission to add admin
+                if (database.currentUser.access !== 'full') {
+                    showNotification('Anda tidak memiliki izin untuk menambah admin!', 'error');
+                    return;
+                }
+                
+                const username = document.getElementById('adminUsername').value;
+                const password = document.getElementById('adminPassword').value;
+                const access = document.getElementById('adminAccess').value;
+                
+                // Check if username already exists
+                if (database.admins.some(a => a.username === username)) {
+                    showNotification('Username sudah digunakan!', 'error');
+                    return;
+                }
+                
+                // Add admin to database
+                const newAdmin = {
+                    id: Date.now(),
+                    username,
+                    password,
+                    access
+                };
+                
+                database.admins.push(newAdmin);
+                
+                // Reset form
+                adminForm.reset();
+                
+                // Reload admin data
+                loadAdminData();
+                
+                showNotification('Admin berhasil ditambahkan!', 'success');
+            });
+        }
+
+        // Load Admin Data
+        function loadAdminData() {
+            const adminTableBody = document.getElementById('adminTableBody');
+            
+            if (database.admins.length === 0) {
+                adminTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data admin</td></tr>';
+                return;
+            }
+            
+            let tableHTML = '';
+            database.admins.forEach((admin, index) => {
+                const accessClass = admin.access;
+                const accessText = admin.access === 'full' ? 'Full Access' : 
+                                  admin.access === 'limited' ? 'Limited' : 'View Only';
+                
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${admin.username}</td>
+                        <td><span class="access-level ${accessClass}">${accessText}</span></td>
+                        <td>
+                            ${database.currentUser.access === 'full' ? `
+                                <button class="btn btn-danger" onclick="deleteAdmin(${admin.id})">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            ` : '-'}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            adminTableBody.innerHTML = tableHTML;
+        }
+
+        // Delete Admin
+        function deleteAdmin(adminId) {
+            if (database.currentUser.access !== 'full') {
+                showNotification('Anda tidak memiliki izin untuk menghapus admin!', 'error');
+                return;
+            }
+            
+            // Find admin index
+            const adminIndex = database.admins.findIndex(a => a.id === adminId);
+            
+            if (adminIndex === -1) {
+                showNotification('Admin tidak ditemukan!', 'error');
+                return;
+            }
+            
+            // Remove admin
+            database.admins.splice(adminIndex, 1);
+            
+            // Reload admin data
+            loadAdminData();
+            
+            showNotification('Admin berhasil dihapus!', 'success');
+        }
+
+        // Update Dashboard Stats
+        function updateDashboardStats() {
+            document.getElementById('totalData').textContent = database.data.length;
+            document.getElementById('totalAccounts').textContent = database.accounts.length;
+            document.getElementById('totalAdmins').textContent = database.admins.length;
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is already logged in
+            if (database.currentUser) {
+                document.getElementById('currentUser').textContent = database.currentUser.username;
+                loginPage.style.display = 'none';
+                pageContent.style.display = 'block';
+                showPage('dashboard');
+            }
+        });
+    </script>
 </body>
 </html>
