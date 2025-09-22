@@ -179,16 +179,10 @@
             flex: 1;
             padding: 30px;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .content-header {
             margin-bottom: 30px;
-            text-align: center;
-            width: 100%;
-            max-width: 1000px;
         }
 
         .content-header h1 {
@@ -206,8 +200,6 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 1000px;
         }
 
         .card-header {
@@ -241,7 +233,7 @@
 
         .data-table th, .data-table td {
             padding: 12px 15px;
-            text-align: center;
+            text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
@@ -257,7 +249,6 @@
         .action-buttons {
             display: flex;
             gap: 10px;
-            justify-content: center;
         }
 
         .btn-small {
@@ -272,15 +263,6 @@
 
         .btn-danger:hover {
             background-color: #e74c3c;
-        }
-
-        .btn-edit {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background-color: #2980b9;
         }
 
         .notification {
@@ -324,48 +306,6 @@
 
         .access-limited {
             background-color: #95a5a6;
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background-color: var(--primary-color);
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            color: var(--accent-color);
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 24px;
-            cursor: pointer;
         }
 
         /* Responsive */
@@ -465,9 +405,22 @@
                     </div>
                     
                     <form id="dataForm">
-                        <div class="form-group">
-                            <label for="dataTitle">Judul Data</label>
-                            <input type="text" id="dataTitle" placeholder="Masukkan judul data">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="dataTitle">Judul Data</label>
+                                <input type="text" id="dataTitle" placeholder="Masukkan judul data">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="dataCategory">Kategori</label>
+                                <select id="dataCategory" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;">
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="personal">Pribadi</option>
+                                    <option value="work">Pekerjaan</option>
+                                    <option value="important">Penting</option>
+                                    <option value="other">Lainnya</option>
+                                </select>
+                            </div>
                         </div>
                         
                         <div class="form-group">
@@ -477,16 +430,6 @@
                         
                         <button type="button" class="btn" onclick="saveData()">Simpan Data</button>
                     </form>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Data Tersimpan</h3>
-                    </div>
-                    
-                    <div id="savedData">
-                        <p>Belum ada data yang disimpan.</p>
-                    </div>
                 </div>
             </div>
 
@@ -502,10 +445,25 @@
                         <h3>Pencarian Data</h3>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="searchKeyword">Kata Kunci</label>
-                        <input type="text" id="searchKeyword" placeholder="Masukkan kata kunci pencarian" oninput="searchDataRealtime()">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="searchKeyword">Kata Kunci</label>
+                            <input type="text" id="searchKeyword" placeholder="Masukkan kata kunci pencarian">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="searchCategory">Kategori</label>
+                            <select id="searchCategory" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;">
+                                <option value="">Semua Kategori</option>
+                                <option value="personal">Pribadi</option>
+                                <option value="work">Pekerjaan</option>
+                                <option value="important">Penting</option>
+                                <option value="other">Lainnya</option>
+                            </select>
+                        </div>
                     </div>
+                    
+                    <button type="button" class="btn" onclick="searchData()">Cari</button>
                 </div>
                 
                 <div class="card">
@@ -514,7 +472,7 @@
                     </div>
                     
                     <div id="searchResults">
-                        <p>Masukkan kata kunci untuk mencari data.</p>
+                        <p>Belum ada hasil pencarian. Silakan lakukan pencarian terlebih dahulu.</p>
                     </div>
                 </div>
             </div>
@@ -597,35 +555,6 @@
         </div>
     </div>
 
-    <!-- Edit Data Modal -->
-    <div id="editDataModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Data</h2>
-                <button class="close-modal" onclick="closeEditModal()">&times;</button>
-            </div>
-            
-            <form id="editDataForm">
-                <div class="form-group">
-                    <label for="editDataTitle">Judul Data</label>
-                    <input type="text" id="editDataTitle">
-                </div>
-                
-                <div class="form-group">
-                    <label for="editDataContent">Isi Data</label>
-                    <textarea id="editDataContent" rows="5" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;"></textarea>
-                </div>
-                
-                <input type="hidden" id="editDataId">
-                
-                <div class="action-buttons">
-                    <button type="button" class="btn" onclick="updateData()">Simpan Perubahan</button>
-                    <button type="button" class="btn" onclick="closeEditModal()">Batal</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
@@ -637,7 +566,7 @@
                     return {
                         push: function(data) {
                             const key = 'key_' + Math.random().toString(36).substr(2, 9);
-                            localStorage.setItem(path + '/' + key, JSON.stringify({...data, key}));
+                            localStorage.setItem(path + '/' + key, JSON.stringify(data));
                             return { key: key };
                         },
                         once: function(event, callback) {
@@ -649,19 +578,6 @@
                                 }
                             }
                             callback({ val: function() { return data; } });
-                        },
-                        set: function(data) {
-                            localStorage.setItem(path, JSON.stringify(data));
-                        },
-                        child: function(childPath) {
-                            return {
-                                set: function(data) {
-                                    localStorage.setItem(path + '/' + childPath, JSON.stringify(data));
-                                },
-                                remove: function() {
-                                    localStorage.removeItem(path + '/' + childPath);
-                                }
-                            };
                         },
                         orderByChild: function(child) {
                             return this;
@@ -755,53 +671,12 @@
             
             // Add active class to selected menu item
             event.target.classList.add('active');
-            
-            // Load data if input section
-            if (sectionName === 'input') {
-                loadSavedData();
-            }
-        }
-
-        // Load saved data
-        function loadSavedData() {
-            firebase.database().ref('data').once('value', function(snapshot) {
-                const data = snapshot.val();
-                displaySavedData(data);
-            });
-        }
-
-        // Display saved data
-        function displaySavedData(data) {
-            const container = document.getElementById('savedData');
-            
-            if (!data || data.length === 0) {
-                container.innerHTML = '<p>Belum ada data yang disimpan.</p>';
-                return;
-            }
-            
-            let html = '<table class="data-table"><thead><tr><th>Judul</th><th>Isi</th><th>Dibuat Oleh</th><th>Aksi</th></tr></thead><tbody>';
-            
-            data.forEach(item => {
-                html += `
-                    <tr>
-                        <td>${item.title}</td>
-                        <td>${item.content.substring(0, 50)}${item.content.length > 50 ? '...' : ''}</td>
-                        <td>${item.createdBy}</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-small btn-edit" onclick="editData('${item.key}')">Edit</button>
-                            <button class="btn btn-small btn-danger" onclick="deleteData('${item.key}')">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table>';
-            container.innerHTML = html;
         }
 
         // Save data
         function saveData() {
             const title = document.getElementById('dataTitle').value;
+            const category = document.getElementById('dataCategory').value;
             const content = document.getElementById('dataContent').value;
             
             if (!title || !content) {
@@ -811,6 +686,7 @@
             
             const data = {
                 title: title,
+                category: category,
                 content: content,
                 createdBy: currentUser.id,
                 createdAt: new Date().toISOString()
@@ -821,74 +697,13 @@
             // Reset form
             document.getElementById('dataForm').reset();
             
-            // Reload data
-            loadSavedData();
-            
             showNotification('Data berhasil disimpan!');
         }
 
-        // Edit data
-        function editData(key) {
-            firebase.database().ref('data').once('value', function(snapshot) {
-                const data = snapshot.val();
-                const item = data.find(d => d.key === key);
-                
-                if (item) {
-                    document.getElementById('editDataTitle').value = item.title;
-                    document.getElementById('editDataContent').value = item.content;
-                    document.getElementById('editDataId').value = key;
-                    
-                    document.getElementById('editDataModal').classList.remove('hidden');
-                }
-            });
-        }
-
-        // Update data
-        function updateData() {
-            const key = document.getElementById('editDataId').value;
-            const title = document.getElementById('editDataTitle').value;
-            const content = document.getElementById('editDataContent').value;
-            
-            if (!title || !content) {
-                showNotification('Judul dan isi data harus diisi!', 'error');
-                return;
-            }
-            
-            firebase.database().ref('data').child(key).set({
-                title: title,
-                content: content,
-                createdBy: currentUser.id,
-                updatedAt: new Date().toISOString()
-            });
-            
-            closeEditModal();
-            loadSavedData();
-            
-            showNotification('Data berhasil diperbarui!');
-        }
-
-        // Close edit modal
-        function closeEditModal() {
-            document.getElementById('editDataModal').classList.add('hidden');
-        }
-
-        // Delete data
-        function deleteData(key) {
-            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                firebase.database().ref('data').child(key).remove();
-                loadSavedData();
-                showNotification('Data berhasil dihapus!');
-            }
-        }
-
-        // Search data realtime
-        function searchDataRealtime() {
+        // Search data
+        function searchData() {
             const keyword = document.getElementById('searchKeyword').value.toLowerCase();
-            
-            if (!keyword) {
-                document.getElementById('searchResults').innerHTML = '<p>Masukkan kata kunci untuk mencari data.</p>';
-                return;
-            }
+            const category = document.getElementById('searchCategory').value;
             
             firebase.database().ref('data').once('value', function(snapshot) {
                 const data = snapshot.val();
@@ -896,8 +711,11 @@
                 
                 if (data) {
                     results = data.filter(item => {
-                        return item.title.toLowerCase().includes(keyword) || 
-                               item.content.toLowerCase().includes(keyword);
+                        const matchKeyword = !keyword || 
+                            item.title.toLowerCase().includes(keyword) || 
+                            item.content.toLowerCase().includes(keyword);
+                        const matchCategory = !category || item.category === category;
+                        return matchKeyword && matchCategory;
                     });
                 }
                 
@@ -914,17 +732,17 @@
                 return;
             }
             
-            let html = '<table class="data-table"><thead><tr><th>Judul</th><th>Isi</th><th>Dibuat Oleh</th><th>Aksi</th></tr></thead><tbody>';
+            let html = '<table class="data-table"><thead><tr><th>Judul</th><th>Kategori</th><th>Dibuat Oleh</th><th>Aksi</th></tr></thead><tbody>';
             
             results.forEach(item => {
                 html += `
                     <tr>
                         <td>${item.title}</td>
-                        <td>${item.content.substring(0, 50)}${item.content.length > 50 ? '...' : ''}</td>
+                        <td>${getCategoryText(item.category)}</td>
                         <td>${item.createdBy}</td>
                         <td class="action-buttons">
-                            <button class="btn btn-small btn-edit" onclick="editData('${item.key}')">Edit</button>
-                            <button class="btn btn-small btn-danger" onclick="deleteData('${item.key}')">Hapus</button>
+                            <button class="btn btn-small" onclick="viewData('${item.key}')">Lihat</button>
+                            <button class="btn btn-small" onclick="copyData('${item.key}')">Salin</button>
                         </td>
                     </tr>
                 `;
@@ -932,6 +750,29 @@
             
             html += '</tbody></table>';
             resultsContainer.innerHTML = html;
+        }
+
+        // Get category text
+        function getCategoryText(category) {
+            switch (category) {
+                case 'personal': return 'Pribadi';
+                case 'work': return 'Pekerjaan';
+                case 'important': return 'Penting';
+                case 'other': return 'Lainnya';
+                default: return category;
+            }
+        }
+
+        // View data
+        function viewData(key) {
+            // In a real app, this would show a modal with the data details
+            showNotification('Fitur lihat data akan segera tersedia');
+        }
+
+        // Copy data
+        function copyData(key) {
+            // In a real app, this would copy the data to clipboard
+            showNotification('Data berhasil disalin ke clipboard!');
         }
 
         // Add admin
@@ -964,9 +805,6 @@
             };
             
             users.push(newUser);
-            
-            // Save users to localStorage
-            localStorage.setItem('users', JSON.stringify(users));
             
             // Reset form
             document.getElementById('adminForm').reset();
@@ -1018,7 +856,6 @@
             const index = users.findIndex(u => u.id === id);
             if (index !== -1) {
                 users.splice(index, 1);
-                localStorage.setItem('users', JSON.stringify(users));
                 updateAdminList();
                 showNotification('Admin berhasil dihapus!');
             }
@@ -1041,22 +878,7 @@
             }, 3000);
         }
 
-        // Load users from localStorage
-        function loadUsers() {
-            const savedUsers = localStorage.getItem('users');
-            if (savedUsers) {
-                const parsedUsers = JSON.parse(savedUsers);
-                // Merge with default users, but don't overwrite defaults
-                parsedUsers.forEach(savedUser => {
-                    if (!users.find(u => u.id === savedUser.id)) {
-                        users.push(savedUser);
-                    }
-                });
-            }
-        }
-
         // Initialize app
-        loadUsers();
         checkLogin();
     </script>
 </body>
