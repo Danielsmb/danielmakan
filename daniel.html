@@ -929,6 +929,45 @@
             }
         };
 
+        // Session Management
+        const sessionManager = {
+            // Save user session to localStorage
+            saveSession: function(user) {
+                const sessionData = {
+                    userId: user.id,
+                    username: user.username,
+                    access: user.access,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('dataAppSession', JSON.stringify(sessionData));
+            },
+            
+            // Load user session from localStorage
+            loadSession: function() {
+                const sessionData = localStorage.getItem('dataAppSession');
+                if (sessionData) {
+                    const session = JSON.parse(sessionData);
+                    // Find user in database
+                    const user = database.admins.find(a => a.id === session.userId);
+                    if (user) {
+                        database.currentUser = user;
+                        return true;
+                    } else {
+                        // Session invalid, clear it
+                        this.clearSession();
+                        return false;
+                    }
+                }
+                return false;
+            },
+            
+            // Clear user session
+            clearSession: function() {
+                localStorage.removeItem('dataAppSession');
+                database.currentUser = null;
+            }
+        };
+
         // Simulated database
         let database = {
             data: [],
@@ -999,6 +1038,9 @@
             
             if (admin) {
                 database.currentUser = admin;
+                // Save session
+                sessionManager.saveSession(admin);
+                
                 document.getElementById('currentUser').textContent = admin.username;
                 loginPage.style.display = 'none';
                 pageContent.style.display = 'block';
@@ -1011,10 +1053,16 @@
 
         // Logout
         function logout() {
-            database.currentUser = null;
+            // Clear session
+            sessionManager.clearSession();
+            
             loginPage.style.display = 'block';
             pageContent.style.display = 'none';
             showNotification('Anda telah logout', 'success');
+            
+            // Reset form
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
         }
 
         // Show Notification
@@ -1101,7 +1149,7 @@
             });
         }
 
-        // Copy Data - Fungsi untuk menyalin data asli tanpa perubahan
+        // Copy Data - Perbaikan fungsi salin data
         function copyToClipboard(text, element = null) {
             // Show double-click feedback if element is provided
             if (element) {
@@ -1468,17 +1516,19 @@
             // Initialize database manager
             databaseManager.init();
             
-            // Hide page content initially, show login page
-            pageContent.style.display = 'none';
-            loginPage.style.display = 'block';
+            // Check for existing session
+            const hasSession = sessionManager.loadSession();
             
-            // Check if user is already logged in (for demo purposes)
-            // In a real app, this would check for a valid session/token
-            if (database.currentUser) {
+            if (hasSession) {
+                // User is already logged in
                 document.getElementById('currentUser').textContent = database.currentUser.username;
                 loginPage.style.display = 'none';
                 pageContent.style.display = 'block';
                 showPage('dashboard');
+            } else {
+                // Show login page
+                pageContent.style.display = 'none';
+                loginPage.style.display = 'block';
             }
         });
     </script>
