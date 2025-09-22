@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DataApp - Aplikasi Penyimpanan Data</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
-            --primary-color: #800020; /* Maroon */
+            --primary-color: #800000;
             --secondary-color: #a52a2a;
-            --light-color: #f8f9fa;
-            --dark-color: #343a40;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
+            --accent-color: #d4af37;
+            --text-color: #f5f5f5;
+            --sidebar-width: 250px;
         }
 
         * {
@@ -25,1512 +23,863 @@
 
         body {
             background-color: var(--primary-color);
-            color: var(--light-color);
-            min-height: 100vh;
+            color: var(--text-color);
             display: flex;
+            min-height: 100vh;
         }
 
-        /* Sidebar Styles */
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .login-form {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 350px;
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #e6c157;
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        /* Sidebar */
         .sidebar {
-            width: 250px;
-            background-color: var(--dark-color);
-            min-height: 100vh;
+            width: var(--sidebar-width);
+            background-color: rgba(0, 0, 0, 0.2);
             padding: 20px 0;
             transition: all 0.3s;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 1000;
         }
 
         .sidebar-header {
             padding: 0 20px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
         }
 
         .sidebar-header h2 {
-            color: var(--light-color);
+            color: var(--accent-color);
             font-size: 24px;
             margin-bottom: 5px;
         }
 
         .sidebar-header p {
-            color: #adb5bd;
             font-size: 14px;
+            opacity: 0.8;
         }
 
         .sidebar-menu {
-            list-style: none;
+            margin-top: 20px;
         }
 
-        .sidebar-menu li {
-            margin-bottom: 5px;
-        }
-
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: #adb5bd;
+        .menu-item {
+            display: block;
+            padding: 15px 20px;
+            color: var(--text-color);
             text-decoration: none;
             transition: all 0.3s;
+            border-left: 3px solid transparent;
         }
 
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--light-color);
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left-color: var(--accent-color);
         }
 
-        .sidebar-menu i {
+        .menu-item i {
             margin-right: 10px;
-            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .user-details h4 {
+            margin-bottom: 3px;
+            color: var(--accent-color);
+        }
+
+        .user-details p {
+            font-size: 12px;
+            opacity: 0.8;
         }
 
         /* Main Content */
         .main-content {
-            margin-left: 250px;
             flex: 1;
-            padding: 20px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .header h1 {
-            font-size: 28px;
-            color: var(--light-color);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        /* Login Form */
-        .login-container {
-            max-width: 400px;
-            margin: 50px auto;
-            background-color: rgba(255, 255, 255, 0.1);
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
         }
 
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: var(--light-color);
+        .content-header {
+            margin-bottom: 30px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .content-header h1 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
+        .content-header p {
+            opacity: 0.9;
         }
 
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--light-color);
-            font-size: 16px;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(165, 42, 42, 0.3);
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-color);
-        }
-
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-        .btn-success {
-            background-color: var(--success-color);
-        }
-
-        .btn-success:hover {
-            background-color: #218838;
-        }
-
-        /* Cards */
         .card {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 20px;
             margin-bottom: 20px;
-            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .card-header {
-            padding: 15px 20px;
-            background-color: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .card-header h3 {
-            margin: 0;
-            font-size: 18px;
+            color: var(--accent-color);
         }
 
-        .card-body {
-            padding: 20px;
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
+        .form-row .form-group {
+            flex: 1;
         }
 
-        table {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
 
-        th, td {
+        .data-table th, .data-table td {
             padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        th {
+        .data-table th {
             background-color: rgba(0, 0, 0, 0.2);
-            font-weight: 600;
+            color: var(--accent-color);
         }
 
-        tr:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+        .data-table tr:hover {
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
-        /* Search Box */
-        .search-box {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 40px 12px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--light-color);
-        }
-
-        .search-box i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #adb5bd;
-        }
-
-        /* Data Item */
-        .data-item {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .data-item:last-child {
-            border-bottom: none;
-        }
-
-        .data-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .data-item h4 {
-            margin-bottom: 8px;
-            color: var(--light-color);
-        }
-
-        .data-item p {
-            margin-bottom: 10px;
-            color: #adb5bd;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .data-actions {
+        .action-buttons {
             display: flex;
             gap: 10px;
         }
 
-        /* Double click hint */
-        .double-click-hint {
+        .btn-small {
+            padding: 5px 10px;
             font-size: 12px;
-            color: #adb5bd;
-            font-style: italic;
-            margin-top: 5px;
         }
 
-        /* Notification */
+        .btn-danger {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e74c3c;
+        }
+
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
             padding: 15px 20px;
-            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
             color: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            z-index: 2000;
-            transform: translateX(150%);
-            transition: transform 0.3s ease-in-out;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
-        .notification.success {
-            background-color: var(--success-color);
+        .hidden {
+            display: none;
         }
 
-        .notification.error {
-            background-color: var(--danger-color);
+        /* Admin Access Levels */
+        .access-level {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        .notification.warning {
-            background-color: var(--warning-color);
-            color: var(--dark-color);
+        .access-super {
+            background-color: #e74c3c;
+        }
+
+        .access-standard {
+            background-color: #3498db;
+        }
+
+        .access-limited {
+            background-color: #95a5a6;
         }
 
         /* Responsive */
-        .toggle-sidebar {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1001;
-            background-color: var(--dark-color);
-            color: var(--light-color);
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-100%);
+                position: fixed;
+                left: -250px;
+                height: 100%;
+                z-index: 100;
             }
 
-            .sidebar.active {
-                transform: translateX(0);
+            .sidebar.open {
+                left: 0;
             }
 
             .main-content {
                 margin-left: 0;
             }
 
-            .toggle-sidebar {
-                display: block;
+            .form-row {
+                flex-direction: column;
             }
-        }
-
-        /* Admin Access Levels */
-        .access-level {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .access-level.full {
-            background-color: var(--success-color);
-        }
-
-        .access-level.limited {
-            background-color: var(--warning-color);
-            color: var(--dark-color);
-        }
-
-        .access-level.view {
-            background-color: #17a2b8;
-        }
-
-        /* Account Data Section */
-        .account-data {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .account-card {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .account-card:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .account-card h4 {
-            margin-bottom: 15px;
-            color: var(--light-color);
-        }
-
-        .account-details {
-            margin-bottom: 15px;
-        }
-
-        .account-details p {
-            margin-bottom: 8px;
-            color: #adb5bd;
-        }
-
-        .account-details strong {
-            color: var(--light-color);
-        }
-
-        /* Sync Status */
-        .sync-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 15px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .sync-status i {
-            margin-right: 5px;
-        }
-
-        .sync-status.synced i {
-            color: var(--success-color);
-        }
-
-        .sync-status.syncing i {
-            color: var(--warning-color);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Copy Confirmation */
-        .copy-confirmation {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            padding: 10px 15px;
-            background-color: var(--success-color);
-            color: white;
-            border-radius: 5px;
-            font-size: 14px;
-            z-index: 1001;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-
-        .copy-confirmation.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Double click visual feedback */
-        .double-click-feedback {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(40, 167, 69, 0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .double-click-feedback.show {
-            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <!-- Toggle Sidebar Button for Mobile -->
-    <button class="toggle-sidebar" id="toggleSidebar">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2>DataApp</h2>
-            <p>Aplikasi Penyimpanan Data</p>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-form">
+            <h2><i class="fas fa-database"></i> DataApp</h2>
+            <p style="text-align: center; margin-bottom: 20px; opacity: 0.8;">Aplikasi Penyimpanan Data</p>
+            
+            <div class="form-group">
+                <label for="loginId">ID Pengguna</label>
+                <input type="text" id="loginId" placeholder="Masukkan ID Anda">
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">Kata Sandi</label>
+                <input type="password" id="loginPassword" placeholder="Masukkan kata sandi">
+            </div>
+            
+            <button class="btn btn-full" onclick="login()">Masuk</button>
+            
+            <div style="margin-top: 20px; text-align: center; font-size: 14px;">
+                <p>Akun Demo:</p>
+                <p>Admin: admin / admin123 (Akses Penuh)</p>
+                <p>Standard: user / user123 (Akses Terbatas)</p>
+            </div>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="#" class="menu-link active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="#" class="menu-link" data-page="input"><i class="fas fa-plus-circle"></i> Input Data</a></li>
-            <li><a href="#" class="menu-link" data-page="search"><i class="fas fa-search"></i> Cari Data</a></li>
-            <li><a href="#" class="menu-link" data-page="report"><i class="fas fa-file-alt"></i> Report</a></li>
-            <li><a href="#" class="menu-link" data-page="account"><i class="fas fa-university"></i> Data Rekening</a></li>
-            <li><a href="#" class="menu-link" data-page="admin"><i class="fas fa-user-shield"></i> Admin</a></li>
-            <li><a href="#" class="menu-link" data-page="logout"><i class="fas fa-sign-out-alt"></i> Keluar</a></li>
-        </ul>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header -->
-        <div class="header">
-            <h1 id="pageTitle">Dashboard</h1>
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-database"></i> DataApp</h2>
+                <p>Penyimpanan Data Cloud</p>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#" class="menu-item active" onclick="showSection('input')">
+                    <i class="fas fa-plus-circle"></i> Input
+                </a>
+                <a href="#" class="menu-item" onclick="showSection('search')">
+                    <i class="fas fa-search"></i> Cari
+                </a>
+                <a href="#" class="menu-item admin-only" onclick="showSection('admin')">
+                    <i class="fas fa-user-shield"></i> Admin
+                </a>
+            </div>
+            
             <div class="user-info">
-                <span id="currentUser">Admin</span>
-                <img src="https://picsum.photos/seed/user123/40/40.jpg" alt="User">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <h4 id="currentUser">-</h4>
+                    <p id="currentUserRole">-</p>
+                </div>
             </div>
         </div>
 
-        <!-- Page Content -->
-        <div id="pageContent">
-            <!-- Dashboard Content -->
-            <div class="page" id="dashboard-page">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Selamat Datang di DataApp</h3>
-                    </div>
-                    <div class="card-body">
-                        <p>DataApp adalah aplikasi sederhana untuk menyimpan dan mengelola data penting. Dengan antarmuka yang modern dan mudah digunakan, Anda dapat dengan cepat menyimpan informasi dan menemukannya kembali saat dibutuhkan. Data disimpan di cloud sehingga dapat diakses oleh siapa saja yang menggunakan aplikasi ini.</p>
-                        <br>
-                        <h4>Fitur utama:</h4>
-                        <ul style="margin-left: 20px; margin-top: 10px;">
-                            <li>Penyimpanan data di cloud dengan Firebase</li>
-                            <li>Data dapat diakses oleh semua pengguna</li>
-                            <li>Pencarian data yang cepat dan mudah</li>
-                            <li>Tombol salin untuk mengambil data dengan tepat</li>
-                            <li>Antarmuka yang modern dan responsif</li>
-                        </ul>
-                    </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Input Section -->
+            <div id="inputSection" class="content-section">
+                <div class="content-header">
+                    <h1>Input Data</h1>
+                    <p>Tambahkan data baru ke dalam sistem</p>
                 </div>
-
+                
                 <div class="card">
                     <div class="card-header">
-                        <h3>Statistik Data</h3>
+                        <h3>Form Input Data</h3>
                     </div>
-                    <div class="card-body">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
-                            <div style="background-color: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; text-align: center;">
-                                <h3 style="font-size: 32px; margin-bottom: 10px;" id="totalData">0</h3>
-                                <p>Total Data</p>
-                            </div>
-                            <div style="background-color: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; text-align: center;">
-                                <h3 style="font-size: 32px; margin-bottom: 10px;" id="totalAccounts">0</h3>
-                                <p>Data Rekening</p>
-                            </div>
-                            <div style="background-color: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; text-align: center;">
-                                <h3 style="font-size: 32px; margin-bottom: 10px;" id="totalAdmins">0</h3>
-                                <p>Total Admin</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Input Data Content -->
-            <div class="page" id="input-page" style="display: none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Input Data</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="inputDataForm">
+                    
+                    <form id="dataForm">
+                        <div class="form-row">
                             <div class="form-group">
-                                <label for="dataTitle">Judul</label>
-                                <input type="text" class="form-control" id="dataTitle" placeholder="Masukkan judul data" required>
+                                <label for="dataTitle">Judul Data</label>
+                                <input type="text" id="dataTitle" placeholder="Masukkan judul data">
                             </div>
+                            
                             <div class="form-group">
-                                <label for="dataDescription">Deskripsi</label>
-                                <textarea class="form-control" id="dataDescription" rows="5" placeholder="Masukkan deskripsi data" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success">Simpan Data</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Search Data Content -->
-            <div class="page" id="search-page" style="display: none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Cari Data</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="search-box">
-                            <input type="text" id="searchInput" placeholder="Ketik untuk mencari data...">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div id="searchResults">
-                            <p style="text-align: center; color: #adb5bd;">Ketik untuk mencari data...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Report Content -->
-            <div class="page" id="report-page" style="display: none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Report Data</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="search-box">
-                            <input type="text" id="reportSearchInput" placeholder="Cari report...">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Judul</th>
-                                        <th>Deskripsi</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="reportTableBody">
-                                    <tr>
-                                        <td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <p class="double-click-hint"><i class="fas fa-info-circle"></i> Klik dua kali pada deskripsi untuk menyalin data</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Account Data Content -->
-            <div class="page" id="account-page" style="display: none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Data Rekening</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="accountForm">
-                            <div class="form-group">
-                                <label for="bankName">Nama Bank</label>
-                                <input type="text" class="form-control" id="bankName" placeholder="Masukkan nama bank" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="accountName">Nama Pemilik</label>
-                                <input type="text" class="form-control" id="accountName" placeholder="Masukkan nama pemilik rekening" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="accountNumber">Nomor Rekening</label>
-                                <input type="text" class="form-control" id="accountNumber" placeholder="Masukkan nomor rekening" required>
-                            </div>
-                            <button type="submit" class="btn btn-success">Simpan Data Rekening</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Daftar Rekening</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="search-box">
-                            <input type="text" id="accountSearchInput" placeholder="Cari rekening...">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div class="account-data" id="accountDataContainer">
-                            <p style="text-align: center; color: #adb5bd;">Tidak ada data rekening</p>
-                        </div>
-                        <p class="double-click-hint"><i class="fas fa-info-circle"></i> Klik dua kali pada kartu rekening untuk menyalin nomor rekening</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Content -->
-            <div class="page" id="admin-page" style="display: none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Manajemen Admin</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="adminForm">
-                            <div class="form-group">
-                                <label for="adminUsername">Username</label>
-                                <input type="text" class="form-control" id="adminUsername" placeholder="Masukkan username admin" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="adminPassword">Password</label>
-                                <input type="password" class="form-control" id="adminPassword" placeholder="Masukkan password admin" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="adminAccess">Level Akses</label>
-                                <select class="form-control" id="adminAccess" required>
-                                    <option value="view">View Only</option>
-                                    <option value="limited">Limited</option>
-                                    <option value="full">Full Access</option>
+                                <label for="dataCategory">Kategori</label>
+                                <select id="dataCategory" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;">
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="personal">Pribadi</option>
+                                    <option value="work">Pekerjaan</option>
+                                    <option value="important">Penting</option>
+                                    <option value="other">Lainnya</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-success">Tambah Admin</button>
-                        </form>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dataContent">Isi Data</label>
+                            <textarea id="dataContent" rows="5" placeholder="Masukkan isi data" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;"></textarea>
+                        </div>
+                        
+                        <button type="button" class="btn" onclick="saveData()">Simpan Data</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div id="searchSection" class="content-section hidden">
+                <div class="content-header">
+                    <h1>Cari Data</h1>
+                    <p>Cari data yang tersimpan dalam sistem</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Pencarian Data</h3>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="searchKeyword">Kata Kunci</label>
+                            <input type="text" id="searchKeyword" placeholder="Masukkan kata kunci pencarian">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="searchCategory">Kategori</label>
+                            <select id="searchCategory" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;">
+                                <option value="">Semua Kategori</option>
+                                <option value="personal">Pribadi</option>
+                                <option value="work">Pekerjaan</option>
+                                <option value="important">Penting</option>
+                                <option value="other">Lainnya</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn" onclick="searchData()">Cari</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Hasil Pencarian</h3>
+                    </div>
+                    
+                    <div id="searchResults">
+                        <p>Belum ada hasil pencarian. Silakan lakukan pencarian terlebih dahulu.</p>
                     </div>
                 </div>
+            </div>
 
+            <!-- Admin Section -->
+            <div id="adminSection" class="content-section hidden">
+                <div class="content-header">
+                    <h1>Admin Panel</h1>
+                    <p>Kelola pengguna dan pengaturan sistem</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Tambah Admin Baru</h3>
+                    </div>
+                    
+                    <form id="adminForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="adminId">ID Admin</label>
+                                <input type="text" id="adminId" placeholder="Masukkan ID admin">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="adminPassword">Kata Sandi</label>
+                                <input type="password" id="adminPassword" placeholder="Masukkan kata sandi">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="adminAccess">Tingkat Akses</label>
+                            <select id="adminAccess" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;">
+                                <option value="limited">Terbatas</option>
+                                <option value="standard">Standar</option>
+                                <option value="super">Super Admin</option>
+                            </select>
+                        </div>
+                        
+                        <button type="button" class="btn" onclick="addAdmin()">Tambah Admin</button>
+                    </form>
+                </div>
+                
                 <div class="card">
                     <div class="card-header">
                         <h3>Daftar Admin</h3>
                     </div>
-                    <div class="card-body">
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Username</th>
-                                        <th>Level Akses</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminTableBody">
-                                    <tr>
-                                        <td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data admin</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tingkat Akses</th>
+                                <th>Tanggal Dibuat</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminList">
+                            <tr>
+                                <td>admin</td>
+                                <td><span class="access-level access-super">Super Admin</span></td>
+                                <td>01/01/2023</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-small" disabled>Edit</button>
+                                    <button class="btn btn-small btn-danger" disabled>Hapus</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>user</td>
+                                <td><span class="access-level access-standard">Standar</span></td>
+                                <td>15/01/2023</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-small" onclick="editAdmin('user')">Edit</button>
+                                    <button class="btn btn-small btn-danger" onclick="deleteAdmin('user')">Hapus</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <!-- Login Page (Initially shown) -->
-        <div class="login-container" id="loginPage">
-            <h2>Login ke DataApp</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginUsername">Username</label>
-                    <input type="text" class="form-control" id="loginUsername" placeholder="Masukkan username" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Masukkan password" required>
-                </div>
-                <button type="submit" class="btn btn-block">Login</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Sync Status -->
-    <div class="sync-status synced" id="syncStatus">
-        <i class="fas fa-check-circle"></i>
-        <span>Tersinkron</span>
-    </div>
-
-    <!-- Copy Confirmation -->
-    <div class="copy-confirmation" id="copyConfirmation">
-        <i class="fas fa-check"></i> Data berhasil disalin!
-    </div>
-
-    <!-- Double Click Feedback -->
-    <div class="double-click-feedback" id="doubleClickFeedback">
-        <i class="fas fa-copy"></i> Disalin!
     </div>
 
     <!-- Notification -->
-    <div class="notification" id="notification"></div>
+    <div id="notification" class="notification"></div>
 
-    <!-- Firebase SDK (Simulated) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script>
-        // Simulated Firebase initialization
-        const firebaseConfig = {
-            apiKey: "demo-api-key",
-            authDomain: "demo-auth-domain",
-            projectId: "demo-project-id",
-            storageBucket: "demo-storage-bucket",
-            messagingSenderId: "demo-messaging-sender-id",
-            appId: "demo-app-id"
-        };
-
-        // Initialize Firebase (Simulated)
-        // firebase.initializeApp(firebaseConfig);
-        // const db = firebase.firestore();
-
-        // DOM Elements
-        const sidebar = document.getElementById('sidebar');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const menuLinks = document.querySelectorAll('.menu-link');
-        const pages = document.querySelectorAll('.page');
-        const pageTitle = document.getElementById('pageTitle');
-        const loginPage = document.getElementById('loginPage');
-        const pageContent = document.getElementById('pageContent');
-        const loginForm = document.getElementById('loginForm');
-        const notification = document.getElementById('notification');
-        const syncStatus = document.getElementById('syncStatus');
-        const copyConfirmation = document.getElementById('copyConfirmation');
-        const doubleClickFeedback = document.getElementById('doubleClickFeedback');
-
-        // Database Management with localStorage
-        const databaseManager = {
-            // Initialize database
-            init: function() {
-                // Check if data exists in localStorage
-                if (!localStorage.getItem('dataAppData')) {
-                    // Create initial data structure
-                    const initialData = {
-                        data: [],
-                        accounts: [],
-                        admins: [
-                            { id: 1, username: "admin", password: "admin123", access: "full" },
-                            { id: 2, username: "user", password: "user123", access: "limited" }
-                        ],
-                        lastSync: new Date().toISOString()
+        // Initialize Firebase (simulated)
+        const firebase = {
+            database: {
+                ref: function(path) {
+                    return {
+                        push: function(data) {
+                            const key = 'key_' + Math.random().toString(36).substr(2, 9);
+                            localStorage.setItem(path + '/' + key, JSON.stringify(data));
+                            return { key: key };
+                        },
+                        once: function(event, callback) {
+                            const data = [];
+                            for (let i = 0; i < localStorage.length; i++) {
+                                const key = localStorage.key(i);
+                                if (key.startsWith(path + '/')) {
+                                    data.push(JSON.parse(localStorage.getItem(key)));
+                                }
+                            }
+                            callback({ val: function() { return data; } });
+                        },
+                        orderByChild: function(child) {
+                            return this;
+                        },
+                        equalTo: function(value) {
+                            return this;
+                        }
                     };
-                    
-                    // Save to localStorage
-                    localStorage.setItem('dataAppData', JSON.stringify(initialData));
-                }
-                
-                // Load data from localStorage
-                this.loadData();
-                
-                // Setup storage event listener for cross-tab synchronization
-                window.addEventListener('storage', (e) => {
-                    if (e.key === 'dataAppData') {
-                        this.loadData();
-                        this.showSyncNotification();
-                        this.refreshCurrentPage();
-                    }
-                });
-            },
-            
-            // Load data from localStorage
-            loadData: function() {
-                const data = JSON.parse(localStorage.getItem('dataAppData'));
-                database.data = data.data || [];
-                database.accounts = data.accounts || [];
-                database.admins = data.admins || [];
-            },
-            
-            // Save data to localStorage
-            saveData: function() {
-                this.showSyncing();
-                
-                const dataToSave = {
-                    data: database.data,
-                    accounts: database.accounts,
-                    admins: database.admins,
-                    lastSync: new Date().toISOString()
-                };
-                
-                localStorage.setItem('dataAppData', JSON.stringify(dataToSave));
-                
-                // Simulate network delay for sync
-                setTimeout(() => {
-                    this.showSynced();
-                }, 500);
-            },
-            
-            // Show syncing status
-            showSyncing: function() {
-                syncStatus.className = 'sync-status syncing';
-                syncStatus.innerHTML = '<i class="fas fa-spinner"></i><span>Menyinkronkan...</span>';
-            },
-            
-            // Show synced status
-            showSynced: function() {
-                syncStatus.className = 'sync-status synced';
-                syncStatus.innerHTML = '<i class="fas fa-check-circle"></i><span>Tersinkron</span>';
-            },
-            
-            // Show sync notification
-            showSyncNotification: function() {
-                showNotification('Data telah diperbarui dari perangkat lain', 'success');
-            },
-            
-            // Refresh current page data
-            refreshCurrentPage: function() {
-                const activePage = document.querySelector('.menu-link.active').getAttribute('data-page');
-                
-                if (activePage === 'report') {
-                    loadReportData();
-                } else if (activePage === 'account') {
-                    loadAccountData();
-                } else if (activePage === 'admin') {
-                    loadAdminData();
-                } else if (activePage === 'dashboard') {
-                    updateDashboardStats();
-                } else if (activePage === 'search') {
-                    // Trigger search input event to refresh results
-                    const searchInput = document.getElementById('searchInput');
-                    if (searchInput && searchInput.value) {
-                        searchInput.dispatchEvent(new Event('input'));
-                    }
                 }
             }
         };
 
-        // Session Management
-        const sessionManager = {
-            // Save user session to localStorage
-            saveSession: function(user) {
-                const sessionData = {
-                    userId: user.id,
-                    username: user.username,
-                    access: user.access,
-                    timestamp: new Date().toISOString()
-                };
-                localStorage.setItem('dataAppSession', JSON.stringify(sessionData));
-            },
-            
-            // Load user session from localStorage
-            loadSession: function() {
-                const sessionData = localStorage.getItem('dataAppSession');
-                if (sessionData) {
-                    const session = JSON.parse(sessionData);
-                    // Find user in database
-                    const user = database.admins.find(a => a.id === session.userId);
-                    if (user) {
-                        database.currentUser = user;
-                        return true;
-                    } else {
-                        // Session invalid, clear it
-                        this.clearSession();
-                        return false;
-                    }
-                }
-                return false;
-            },
-            
-            // Clear user session
-            clearSession: function() {
-                localStorage.removeItem('dataAppSession');
-                database.currentUser = null;
-            }
-        };
+        // User data
+        let currentUser = null;
+        const users = [
+            { id: 'admin', password: 'admin123', role: 'super', name: 'Administrator' },
+            { id: 'user', password: 'user123', role: 'standard', name: 'Standard User' }
+        ];
 
-        // Simulated database
-        let database = {
-            data: [],
-            accounts: [],
-            admins: [],
-            currentUser: null
-        };
-
-        // Toggle Sidebar
-        toggleSidebar.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-
-        // Menu Navigation
-        menuLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetPage = link.getAttribute('data-page');
-                
-                if (targetPage === 'logout') {
-                    logout();
-                    return;
-                }
-                
-                // Update active menu
-                menuLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                
-                // Show target page
-                showPage(targetPage);
-            });
-        });
-
-        // Show Page
-        function showPage(pageName) {
-            // Hide all pages
-            pages.forEach(page => {
-                page.style.display = 'none';
-            });
-            
-            // Show target page
-            const targetPage = document.getElementById(`${pageName}-page`);
-            if (targetPage) {
-                targetPage.style.display = 'block';
-                pageTitle.textContent = targetPage.querySelector('.card-header h3').textContent;
-                
-                // Load data for specific pages
-                if (pageName === 'report') {
-                    loadReportData();
-                } else if (pageName === 'account') {
-                    loadAccountData();
-                } else if (pageName === 'admin') {
-                    loadAdminData();
-                } else if (pageName === 'dashboard') {
-                    updateDashboardStats();
-                }
+        // Check if user is logged in
+        function checkLogin() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainApp();
             }
         }
 
-        // Login Form
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const username = document.getElementById('loginUsername').value;
+        // Login function
+        function login() {
+            const id = document.getElementById('loginId').value;
             const password = document.getElementById('loginPassword').value;
             
-            // Check credentials
-            const admin = database.admins.find(a => a.username === username && a.password === password);
+            const user = users.find(u => u.id === id && u.password === password);
             
-            if (admin) {
-                database.currentUser = admin;
-                // Save session
-                sessionManager.saveSession(admin);
-                
-                document.getElementById('currentUser').textContent = admin.username;
-                loginPage.style.display = 'none';
-                pageContent.style.display = 'block';
-                showNotification('Login berhasil!', 'success');
-                showPage('dashboard');
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                showMainApp();
+                showNotification('Login berhasil! Selamat datang, ' + user.name);
             } else {
-                showNotification('Username atau password salah!', 'error');
+                showNotification('ID atau kata sandi salah!', 'error');
             }
-        });
-
-        // Logout
-        function logout() {
-            // Clear session
-            sessionManager.clearSession();
-            
-            loginPage.style.display = 'block';
-            pageContent.style.display = 'none';
-            showNotification('Anda telah logout', 'success');
-            
-            // Reset form
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
         }
 
-        // Show Notification
-        function showNotification(message, type) {
+        // Show main app
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('currentUser').textContent = currentUser.name;
+            document.getElementById('currentUserRole').textContent = getRoleText(currentUser.role);
+            
+            // Show/hide admin menu based on role
+            const adminMenu = document.querySelector('.admin-only');
+            if (currentUser.role === 'limited') {
+                adminMenu.style.display = 'none';
+            } else {
+                adminMenu.style.display = 'block';
+            }
+            
+            // Show input section by default
+            showSection('input');
+        }
+
+        // Get role text
+        function getRoleText(role) {
+            switch (role) {
+                case 'super': return 'Super Admin';
+                case 'standard': return 'Admin Standar';
+                case 'limited': return 'Pengguna Terbatas';
+                default: return 'Pengguna';
+            }
+        }
+
+        // Show section
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Remove active class from all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+            
+            // Add active class to selected menu item
+            event.target.classList.add('active');
+        }
+
+        // Save data
+        function saveData() {
+            const title = document.getElementById('dataTitle').value;
+            const category = document.getElementById('dataCategory').value;
+            const content = document.getElementById('dataContent').value;
+            
+            if (!title || !content) {
+                showNotification('Judul dan isi data harus diisi!', 'error');
+                return;
+            }
+            
+            const data = {
+                title: title,
+                category: category,
+                content: content,
+                createdBy: currentUser.id,
+                createdAt: new Date().toISOString()
+            };
+            
+            firebase.database().ref('data').push(data);
+            
+            // Reset form
+            document.getElementById('dataForm').reset();
+            
+            showNotification('Data berhasil disimpan!');
+        }
+
+        // Search data
+        function searchData() {
+            const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+            const category = document.getElementById('searchCategory').value;
+            
+            firebase.database().ref('data').once('value', function(snapshot) {
+                const data = snapshot.val();
+                let results = [];
+                
+                if (data) {
+                    results = data.filter(item => {
+                        const matchKeyword = !keyword || 
+                            item.title.toLowerCase().includes(keyword) || 
+                            item.content.toLowerCase().includes(keyword);
+                        const matchCategory = !category || item.category === category;
+                        return matchKeyword && matchCategory;
+                    });
+                }
+                
+                displaySearchResults(results);
+            });
+        }
+
+        // Display search results
+        function displaySearchResults(results) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<p>Tidak ada data yang ditemukan.</p>';
+                return;
+            }
+            
+            let html = '<table class="data-table"><thead><tr><th>Judul</th><th>Kategori</th><th>Dibuat Oleh</th><th>Aksi</th></tr></thead><tbody>';
+            
+            results.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.title}</td>
+                        <td>${getCategoryText(item.category)}</td>
+                        <td>${item.createdBy}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-small" onclick="viewData('${item.key}')">Lihat</button>
+                            <button class="btn btn-small" onclick="copyData('${item.key}')">Salin</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            resultsContainer.innerHTML = html;
+        }
+
+        // Get category text
+        function getCategoryText(category) {
+            switch (category) {
+                case 'personal': return 'Pribadi';
+                case 'work': return 'Pekerjaan';
+                case 'important': return 'Penting';
+                case 'other': return 'Lainnya';
+                default: return category;
+            }
+        }
+
+        // View data
+        function viewData(key) {
+            // In a real app, this would show a modal with the data details
+            showNotification('Fitur lihat data akan segera tersedia');
+        }
+
+        // Copy data
+        function copyData(key) {
+            // In a real app, this would copy the data to clipboard
+            showNotification('Data berhasil disalin ke clipboard!');
+        }
+
+        // Add admin
+        function addAdmin() {
+            if (currentUser.role !== 'super') {
+                showNotification('Hanya super admin yang dapat menambah admin baru!', 'error');
+                return;
+            }
+            
+            const id = document.getElementById('adminId').value;
+            const password = document.getElementById('adminPassword').value;
+            const access = document.getElementById('adminAccess').value;
+            
+            if (!id || !password) {
+                showNotification('ID dan kata sandi harus diisi!', 'error');
+                return;
+            }
+            
+            // Check if user already exists
+            if (users.find(u => u.id === id)) {
+                showNotification('ID sudah digunakan!', 'error');
+                return;
+            }
+            
+            const newUser = {
+                id: id,
+                password: password,
+                role: access,
+                name: id.charAt(0).toUpperCase() + id.slice(1)
+            };
+            
+            users.push(newUser);
+            
+            // Reset form
+            document.getElementById('adminForm').reset();
+            
+            // Update admin list
+            updateAdminList();
+            
+            showNotification('Admin berhasil ditambahkan!');
+        }
+
+        // Update admin list
+        function updateAdminList() {
+            const adminList = document.getElementById('adminList');
+            let html = '';
+            
+            users.forEach(user => {
+                const canEdit = currentUser.role === 'super' && user.id !== 'admin';
+                const accessClass = user.role === 'super' ? 'access-super' : 
+                                   user.role === 'standard' ? 'access-standard' : 'access-limited';
+                
+                html += `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td><span class="access-level ${accessClass}">${getRoleText(user.role)}</span></td>
+                        <td>01/01/2023</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-small" ${!canEdit ? 'disabled' : ''} onclick="editAdmin('${user.id}')">Edit</button>
+                            <button class="btn btn-small btn-danger" ${!canEdit ? 'disabled' : ''} onclick="deleteAdmin('${user.id}')">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            adminList.innerHTML = html;
+        }
+
+        // Edit admin
+        function editAdmin(id) {
+            showNotification('Fitur edit admin akan segera tersedia');
+        }
+
+        // Delete admin
+        function deleteAdmin(id) {
+            if (currentUser.role !== 'super') {
+                showNotification('Hanya super admin yang dapat menghapus admin!', 'error');
+                return;
+            }
+            
+            const index = users.findIndex(u => u.id === id);
+            if (index !== -1) {
+                users.splice(index, 1);
+                updateAdminList();
+                showNotification('Admin berhasil dihapus!');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
             notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
+            notification.className = 'notification show';
+            
+            if (type === 'error') {
+                notification.style.backgroundColor = '#e74c3c';
+            } else {
+                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            }
             
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
 
-        // Input Data Form
-        const inputDataForm = document.getElementById('inputDataForm');
-        if (inputDataForm) {
-            inputDataForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const title = document.getElementById('dataTitle').value;
-                const description = document.getElementById('dataDescription').value;
-                
-                // Add data to database
-                const newData = {
-                    id: Date.now(),
-                    title,
-                    description,
-                    createdAt: new Date().toISOString()
-                };
-                
-                database.data.push(newData);
-                
-                // Save to localStorage
-                databaseManager.saveData();
-                
-                // Reset form
-                inputDataForm.reset();
-                
-                showNotification('Data berhasil disimpan!', 'success');
-            });
-        }
-
-        // Search Data
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
-        
-        if (searchInput) {
-            searchInput.addEventListener('input', () => {
-                const query = searchInput.value.toLowerCase().trim();
-                
-                if (query === '') {
-                    searchResults.innerHTML = '<p style="text-align: center; color: #adb5bd;">Ketik untuk mencari data...</p>';
-                    return;
-                }
-                
-                // Filter data based on query
-                const filteredData = database.data.filter(item => 
-                    item.title.toLowerCase().includes(query) || 
-                    item.description.toLowerCase().includes(query)
-                );
-                
-                if (filteredData.length === 0) {
-                    searchResults.innerHTML = '<p style="text-align: center; color: #adb5bd;">Tidak ada data yang ditemukan</p>';
-                    return;
-                }
-                
-                // Display results
-                let resultsHTML = '';
-                filteredData.forEach(item => {
-                    resultsHTML += `
-                        <div class="data-item" ondblclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}', this)">
-                            <h4>${item.title}</h4>
-                            <p>${item.description}</p>
-                            <div class="data-actions">
-                                <button class="btn" onclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}')">
-                                    <i class="fas fa-copy"></i> Salin
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                searchResults.innerHTML = resultsHTML;
-            });
-        }
-
-        // Copy Data - Perbaikan fungsi salin data
-        function copyToClipboard(text, element = null) {
-            // Show double-click feedback if element is provided
-            if (element) {
-                const feedback = document.createElement('div');
-                feedback.className = 'double-click-feedback show';
-                feedback.innerHTML = '<i class="fas fa-copy"></i> Disalin!';
-                feedback.style.position = 'absolute';
-                feedback.style.top = '50%';
-                feedback.style.left = '50%';
-                feedback.style.transform = 'translate(-50%, -50%)';
-                element.style.position = 'relative';
-                element.appendChild(feedback);
-                
-                setTimeout(() => {
-                    feedback.remove();
-                }, 1000);
-            }
-            
-            // Fallback for older browsers
-            if (!navigator.clipboard) {
-                // Create a temporary textarea element
-                const textarea = document.createElement('textarea');
-                textarea.value = text; // Data asli tanpa perubahan
-                textarea.style.position = 'fixed'; // Prevent scrolling to bottom of page
-                document.body.appendChild(textarea);
-                textarea.select();
-                
-                try {
-                    // Execute the copy command
-                    const successful = document.execCommand('copy');
-                    if (successful) {
-                        showCopyConfirmation();
-                    } else {
-                        showNotification('Gagal menyalin data', 'error');
-                    }
-                } catch (err) {
-                    showNotification('Gagal menyalin data', 'error');
-                }
-                
-                // Remove the temporary element
-                document.body.removeChild(textarea);
-                return;
-            }
-            
-            // Modern approach using Clipboard API
-            navigator.clipboard.writeText(text)
-                .then(() => {
-                    showCopyConfirmation();
-                })
-                .catch(err => {
-                    showNotification('Gagal menyalin data', 'error');
-                });
-        }
-
-        // Show copy confirmation
-        function showCopyConfirmation() {
-            copyConfirmation.classList.add('show');
-            
-            setTimeout(() => {
-                copyConfirmation.classList.remove('show');
-            }, 2000);
-        }
-
-        // Load Report Data
-        function loadReportData() {
-            const reportTableBody = document.getElementById('reportTableBody');
-            
-            if (database.data.length === 0) {
-                reportTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data</td></tr>';
-                return;
-            }
-            
-            let tableHTML = '';
-            database.data.forEach((item, index) => {
-                tableHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.title}</td>
-                        <td ondblclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}', this)" style="cursor: pointer;">${item.description}</td>
-                        <td>
-                            <button class="btn" onclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}')">
-                                <i class="fas fa-copy"></i> Salin
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            reportTableBody.innerHTML = tableHTML;
-        }
-
-        // Report Search
-        const reportSearchInput = document.getElementById('reportSearchInput');
-        if (reportSearchInput) {
-            reportSearchInput.addEventListener('input', () => {
-                const query = reportSearchInput.value.toLowerCase().trim();
-                
-                if (query === '') {
-                    loadReportData();
-                    return;
-                }
-                
-                // Filter data based on query
-                const filteredData = database.data.filter(item => 
-                    item.title.toLowerCase().includes(query) || 
-                    item.description.toLowerCase().includes(query)
-                );
-                
-                const reportTableBody = document.getElementById('reportTableBody');
-                
-                if (filteredData.length === 0) {
-                    reportTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data yang ditemukan</td></tr>';
-                    return;
-                }
-                
-                // Display results
-                let tableHTML = '';
-                filteredData.forEach((item, index) => {
-                    tableHTML += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${item.title}</td>
-                            <td ondblclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}', this)" style="cursor: pointer;">${item.description}</td>
-                            <td>
-                                <button class="btn" onclick="copyToClipboard('${item.description.replace(/'/g, "\\'")}')">
-                                    <i class="fas fa-copy"></i> Salin
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                reportTableBody.innerHTML = tableHTML;
-            });
-        }
-
-        // Account Form
-        const accountForm = document.getElementById('accountForm');
-        if (accountForm) {
-            accountForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const bankName = document.getElementById('bankName').value;
-                const accountName = document.getElementById('accountName').value;
-                const accountNumber = document.getElementById('accountNumber').value;
-                
-                // Add account to database
-                const newAccount = {
-                    id: Date.now(),
-                    bankName,
-                    accountName,
-                    accountNumber,
-                    createdAt: new Date().toISOString()
-                };
-                
-                database.accounts.push(newAccount);
-                
-                // Save to localStorage
-                databaseManager.saveData();
-                
-                // Reset form
-                accountForm.reset();
-                
-                // Reload account data
-                loadAccountData();
-                
-                showNotification('Data rekening berhasil disimpan!', 'success');
-            });
-        }
-
-        // Load Account Data
-        function loadAccountData() {
-            const accountDataContainer = document.getElementById('accountDataContainer');
-            
-            if (database.accounts.length === 0) {
-                accountDataContainer.innerHTML = '<p style="text-align: center; color: #adb5bd;">Tidak ada data rekening</p>';
-                return;
-            }
-            
-            let accountsHTML = '';
-            database.accounts.forEach(account => {
-                accountsHTML += `
-                    <div class="account-card" ondblclick="copyToClipboard('${account.accountNumber}', this)">
-                        <h4>${account.bankName}</h4>
-                        <div class="account-details">
-                            <p><strong>Nama Pemilik:</strong> ${account.accountName}</p>
-                            <p><strong>Nomor Rekening:</strong> ${account.accountNumber}</p>
-                        </div>
-                        <div class="data-actions">
-                            <button class="btn" onclick="copyToClipboard('${account.accountNumber}')">
-                                <i class="fas fa-copy"></i> Salin No. Rekening
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            accountDataContainer.innerHTML = accountsHTML;
-        }
-
-        // Account Search
-        const accountSearchInput = document.getElementById('accountSearchInput');
-        if (accountSearchInput) {
-            accountSearchInput.addEventListener('input', () => {
-                const query = accountSearchInput.value.toLowerCase().trim();
-                
-                if (query === '') {
-                    loadAccountData();
-                    return;
-                }
-                
-                // Filter accounts based on query
-                const filteredAccounts = database.accounts.filter(account => 
-                    account.bankName.toLowerCase().includes(query) || 
-                    account.accountName.toLowerCase().includes(query) ||
-                    account.accountNumber.includes(query)
-                );
-                
-                const accountDataContainer = document.getElementById('accountDataContainer');
-                
-                if (filteredAccounts.length === 0) {
-                    accountDataContainer.innerHTML = '<p style="text-align: center; color: #adb5bd;">Tidak ada data rekening yang ditemukan</p>';
-                    return;
-                }
-                
-                // Display results
-                let accountsHTML = '';
-                filteredAccounts.forEach(account => {
-                    accountsHTML += `
-                        <div class="account-card" ondblclick="copyToClipboard('${account.accountNumber}', this)">
-                            <h4>${account.bankName}</h4>
-                            <div class="account-details">
-                                <p><strong>Nama Pemilik:</strong> ${account.accountName}</p>
-                                <p><strong>Nomor Rekening:</strong> ${account.accountNumber}</p>
-                            </div>
-                            <div class="data-actions">
-                                <button class="btn" onclick="copyToClipboard('${account.accountNumber}')">
-                                    <i class="fas fa-copy"></i> Salin No. Rekening
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                accountDataContainer.innerHTML = accountsHTML;
-            });
-        }
-
-        // Admin Form
-        const adminForm = document.getElementById('adminForm');
-        if (adminForm) {
-            adminForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                // Check if current user has permission to add admin
-                if (database.currentUser.access !== 'full') {
-                    showNotification('Anda tidak memiliki izin untuk menambah admin!', 'error');
-                    return;
-                }
-                
-                const username = document.getElementById('adminUsername').value;
-                const password = document.getElementById('adminPassword').value;
-                const access = document.getElementById('adminAccess').value;
-                
-                // Check if username already exists
-                if (database.admins.some(a => a.username === username)) {
-                    showNotification('Username sudah digunakan!', 'error');
-                    return;
-                }
-                
-                // Add admin to database
-                const newAdmin = {
-                    id: Date.now(),
-                    username,
-                    password,
-                    access
-                };
-                
-                database.admins.push(newAdmin);
-                
-                // Save to localStorage
-                databaseManager.saveData();
-                
-                // Reset form
-                adminForm.reset();
-                
-                // Reload admin data
-                loadAdminData();
-                
-                showNotification('Admin berhasil ditambahkan!', 'success');
-            });
-        }
-
-        // Load Admin Data
-        function loadAdminData() {
-            const adminTableBody = document.getElementById('adminTableBody');
-            
-            if (database.admins.length === 0) {
-                adminTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #adb5bd;">Tidak ada data admin</td></tr>';
-                return;
-            }
-            
-            let tableHTML = '';
-            database.admins.forEach((admin, index) => {
-                const accessClass = admin.access;
-                const accessText = admin.access === 'full' ? 'Full Access' : 
-                                  admin.access === 'limited' ? 'Limited' : 'View Only';
-                
-                tableHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${admin.username}</td>
-                        <td><span class="access-level ${accessClass}">${accessText}</span></td>
-                        <td>
-                            ${database.currentUser.access === 'full' ? `
-                                <button class="btn btn-danger" onclick="deleteAdmin(${admin.id})">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            adminTableBody.innerHTML = tableHTML;
-        }
-
-        // Delete Admin
-        function deleteAdmin(adminId) {
-            if (database.currentUser.access !== 'full') {
-                showNotification('Anda tidak memiliki izin untuk menghapus admin!', 'error');
-                return;
-            }
-            
-            // Find admin index
-            const adminIndex = database.admins.findIndex(a => a.id === adminId);
-            
-            if (adminIndex === -1) {
-                showNotification('Admin tidak ditemukan!', 'error');
-                return;
-            }
-            
-            // Remove admin
-            database.admins.splice(adminIndex, 1);
-            
-            // Save to localStorage
-            databaseManager.saveData();
-            
-            // Reload admin data
-            loadAdminData();
-            
-            showNotification('Admin berhasil dihapus!', 'success');
-        }
-
-        // Update Dashboard Stats
-        function updateDashboardStats() {
-            document.getElementById('totalData').textContent = database.data.length;
-            document.getElementById('totalAccounts').textContent = database.accounts.length;
-            document.getElementById('totalAdmins').textContent = database.admins.length;
-        }
-
         // Initialize app
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize database manager
-            databaseManager.init();
-            
-            // Check for existing session
-            const hasSession = sessionManager.loadSession();
-            
-            if (hasSession) {
-                // User is already logged in
-                document.getElementById('currentUser').textContent = database.currentUser.username;
-                loginPage.style.display = 'none';
-                pageContent.style.display = 'block';
-                showPage('dashboard');
-            } else {
-                // Show login page
-                pageContent.style.display = 'none';
-                loginPage.style.display = 'block';
-            }
-        });
+        checkLogin();
     </script>
 </body>
 </html>
