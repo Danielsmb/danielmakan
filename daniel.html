@@ -4,16 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DataApp - Aplikasi Penyimpanan Data</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #800000;
-            --secondary-color: #a52a2a;
-            --accent-color: #d4af37;
-            --text-color: #f5f5f5;
-            --sidebar-width: 250px;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -21,303 +13,474 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --sidebar-width: 250px;
+            --transition-speed: 0.3s;
+        }
+
         body {
-            background-color: var(--primary-color);
-            color: var(--text-color);
             display: flex;
             min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
-        /* Login Screen */
-        .login-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        }
-
-        .login-form {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            width: 350px;
-        }
-
-        .login-form h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--accent-color);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text-color);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #333;
-        }
-
-        .btn {
-            background-color: var(--accent-color);
-            color: var(--primary-color);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .btn:hover {
-            background-color: #e6c157;
-        }
-
-        .btn-full {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-        }
-
-        /* Sidebar */
+        /* Sidebar Styles */
         .sidebar {
             width: var(--sidebar-width);
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 20px 0;
-            transition: all 0.3s;
+            background: linear-gradient(180deg, var(--primary-color) 0%, #3a5bd9 100%);
+            color: white;
+            transition: all var(--transition-speed);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1000;
         }
 
         .sidebar-header {
-            padding: 0 20px 20px;
+            padding: 20px;
+            text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .sidebar-header h2 {
-            color: var(--accent-color);
+        .app-logo {
             font-size: 24px;
+            font-weight: bold;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .sidebar-header p {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .sidebar-menu {
-            margin-top: 20px;
-        }
-
-        .menu-item {
-            display: block;
-            padding: 15px 20px;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-left-color: var(--accent-color);
-        }
-
-        .menu-item i {
+        .app-logo i {
             margin-right: 10px;
-            width: 20px;
-            text-align: center;
+            font-size: 28px;
+        }
+
+        .app-version {
+            font-size: 12px;
+            opacity: 0.8;
         }
 
         .user-info {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background-color: var(--accent-color);
+            margin: 0 auto 10px;
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin-right: 10px;
+            justify-content: center;
+            font-size: 30px;
         }
 
-        .user-details h4 {
-            margin-bottom: 3px;
-            color: var(--accent-color);
+        .user-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
         }
 
-        .user-details p {
+        .user-role {
             font-size: 12px;
             opacity: 0.8;
+        }
+
+        .nav-menu {
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all var(--transition-speed);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid white;
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 15px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
         }
 
         /* Main Content */
         .main-content {
             flex: 1;
-            padding: 30px;
+            padding: 20px;
             overflow-y: auto;
         }
 
         .content-header {
-            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
         }
 
-        .content-header h1 {
-            color: var(--accent-color);
+        .page-title {
+            font-size: 24px;
+            color: var(--dark-color);
             margin-bottom: 10px;
         }
 
-        .content-header p {
-            opacity: 0.9;
+        .page-description {
+            color: var(--secondary-color);
         }
 
-        .card {
-            background-color: rgba(0, 0, 0, 0.2);
+        /* Login Form */
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
             border-radius: 10px;
-            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .form-group {
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color var(--transition-speed);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: center;
         }
 
-        .card-header h3 {
-            color: var(--accent-color);
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a5bd9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 108, 247, 0.3);
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Data Input Form */
+        .data-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .form-row {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
         .form-row .form-group {
             flex: 1;
         }
 
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
+        /* Search Section */
+        .search-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding-left: 45px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+        }
+
+        .data-list {
             margin-top: 20px;
         }
 
-        .data-table th, .data-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background var(--transition-speed);
         }
 
-        .data-table th {
-            background-color: rgba(0, 0, 0, 0.2);
-            color: var(--accent-color);
+        .data-item:hover {
+            background: #f8f9fa;
         }
 
-        .data-table tr:hover {
-            background-color: rgba(0, 0, 0, 0.1);
+        .data-info h4 {
+            margin-bottom: 5px;
+            color: var(--dark-color);
         }
 
-        .action-buttons {
+        .data-info p {
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+
+        .data-actions {
             display: flex;
             gap: 10px;
         }
 
-        .btn-small {
-            padding: 5px 10px;
-            font-size: 12px;
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-color);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-speed);
         }
 
-        .btn-danger {
-            background-color: #c0392b;
+        .btn-icon:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-copy {
+            color: var(--primary-color);
+        }
+
+        .btn-copy:hover {
+            background: var(--primary-color);
             color: white;
         }
 
-        .btn-danger:hover {
-            background-color: #e74c3c;
+        .btn-delete {
+            color: var(--danger-color);
         }
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            background-color: rgba(0, 0, 0, 0.7);
+        .btn-delete:hover {
+            background: var(--danger-color);
             color: white;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
         }
 
-        .notification.show {
-            transform: translateX(0);
+        /* Admin Section */
+        .admin-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
-        .hidden {
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .admin-tab.active {
+            color: var(--primary-color);
+        }
+
+        .admin-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .admin-content {
             display: none;
         }
 
-        /* Admin Access Levels */
-        .access-level {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 12px;
+        .admin-content.active {
+            display: block;
+        }
+
+        .admin-list {
+            margin-top: 20px;
+        }
+
+        .admin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
         }
 
-        .access-super {
-            background-color: #e74c3c;
+        .admin-details h4 {
+            margin-bottom: 5px;
+            color: var(--dark-color);
         }
 
-        .access-standard {
-            background-color: #3498db;
+        .admin-details p {
+            color: var(--secondary-color);
+            font-size: 14px;
         }
 
-        .access-limited {
-            background-color: #95a5a6;
+        .admin-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Responsive */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-inactive {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        /* Responsive Design */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
         @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
             .sidebar {
                 position: fixed;
                 left: -250px;
                 height: 100%;
-                z-index: 100;
             }
 
-            .sidebar.open {
+            .sidebar.active {
                 left: 0;
             }
 
@@ -329,557 +492,600 @@
                 flex-direction: column;
             }
         }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all var(--transition-speed);
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-container">
-        <div class="login-form">
-            <h2><i class="fas fa-database"></i> DataApp</h2>
-            <p style="text-align: center; margin-bottom: 20px; opacity: 0.8;">Aplikasi Penyimpanan Data</p>
-            
-            <div class="form-group">
-                <label for="loginId">ID Pengguna</label>
-                <input type="text" id="loginId" placeholder="Masukkan ID Anda">
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="app-logo">
+                <i class="fas fa-database"></i>
+                DataApp
             </div>
-            
-            <div class="form-group">
-                <label for="loginPassword">Kata Sandi</label>
-                <input type="password" id="loginPassword" placeholder="Masukkan kata sandi">
-            </div>
-            
-            <button class="btn btn-full" onclick="login()">Masuk</button>
-            
-            <div style="margin-top: 20px; text-align: center; font-size: 14px;">
-                <p>Akun Demo:</p>
-                <p>Admin: admin / admin123 (Akses Penuh)</p>
-                <p>Standard: user / user123 (Akses Terbatas)</p>
-            </div>
+            <div class="app-version">v1.0.0</div>
         </div>
+
+        <div class="user-info" id="userInfo" style="display: none;">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-name" id="userName">Admin User</div>
+            <div class="user-role" id="userRole">Administrator</div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <a href="#" class="nav-link active" id="navHome">
+                    <i class="fas fa-home"></i>
+                    <span>Beranda</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" id="navInput">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Input Data</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" id="navSearch">
+                    <i class="fas fa-search"></i>
+                    <span>Cari Data</span>
+                    <span class="nav-badge">3</span>
+                </a>
+            </div>
+            <div class="nav-item" id="navAdminItem" style="display: none;">
+                <a href="#" class="nav-link" id="navAdmin">
+                    <i class="fas fa-cog"></i>
+                    <span>Admin</span>
+                </a>
+            </div>
+        </nav>
     </div>
 
-    <!-- Main App -->
-    <div id="mainApp" class="hidden">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Login Page -->
+        <div id="loginPage" class="login-container">
+            <div class="login-header">
                 <h2><i class="fas fa-database"></i> DataApp</h2>
-                <p>Penyimpanan Data Cloud</p>
+                <p>Silakan login untuk mengakses aplikasi</p>
             </div>
-            
-            <div class="sidebar-menu">
-                <a href="#" class="menu-item active" onclick="showSection('input')">
-                    <i class="fas fa-plus-circle"></i> Input
-                </a>
-                <a href="#" class="menu-item" onclick="showSection('search')">
-                    <i class="fas fa-search"></i> Cari
-                </a>
-                <a href="#" class="menu-item admin-only" onclick="showSection('admin')">
-                    <i class="fas fa-user-shield"></i> Admin
-                </a>
-            </div>
-            
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="loginId">ID Pengguna</label>
+                    <input type="text" class="form-control" id="loginId" placeholder="Masukkan ID pengguna" required>
                 </div>
-                <div class="user-details">
-                    <h4 id="currentUser">-</h4>
-                    <p id="currentUserRole">-</p>
+                <div class="form-group">
+                    <label class="form-label" for="loginPassword">Password</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Masukkan password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+        </div>
+
+        <!-- Home Page -->
+        <div id="homePage" style="display: none;">
+            <div class="content-header">
+                <h1 class="page-title">Selamat Datang di DataApp</h1>
+                <p class="page-description">Aplikasi sederhana untuk menyimpan dan mengelola data penting. Data disimpan di cloud sehingga dapat diakses oleh siapa saja yang menggunakan aplikasi ini.</p>
+            </div>
+
+            <div class="data-form">
+                <h2 style="margin-bottom: 20px;">Fitur Utama</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <h3><i class="fas fa-cloud"></i> Penyimpanan Data di Cloud</h3>
+                        <p>Data disimpan di Firebase dengan keamanan tinggi dan dapat diakses dari mana saja.</p>
+                    </div>
+                    <div class="form-group">
+                        <h3><i class="fas fa-users"></i> Akses Universal</h3>
+                        <p>Data dapat diakses oleh semua pengguna yang terdaftar dalam aplikasi.</p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <h3><i class="fas fa-search"></i> Pencarian Cepat</h3>
+                        <p>Temukan data dengan cepat menggunakan fitur pencarian yang mudah digunakan.</p>
+                    </div>
+                    <div class="form-group">
+                        <h3><i class="fas fa-copy"></i> Tombol Salin</h3>
+                        <p>Salin data dengan tepat menggunakan tombol salin yang telah disediakan.</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Input Section -->
-            <div id="inputSection" class="content-section">
-                <div class="content-header">
-                    <h1>Input Data</h1>
-                    <p>Tambahkan data baru ke dalam sistem</p>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Form Input Data</h3>
-                    </div>
-                    
-                    <form id="dataForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="dataTitle">Judul Data</label>
-                                <input type="text" id="dataTitle" placeholder="Masukkan judul data">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="dataCategory">Kategori</label>
-                                <select id="dataCategory" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;">
-                                    <option value="">Pilih Kategori</option>
-                                    <option value="personal">Pribadi</option>
-                                    <option value="work">Pekerjaan</option>
-                                    <option value="important">Penting</option>
-                                    <option value="other">Lainnya</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="dataContent">Isi Data</label>
-                            <textarea id="dataContent" rows="5" placeholder="Masukkan isi data" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;"></textarea>
-                        </div>
-                        
-                        <button type="button" class="btn" onclick="saveData()">Simpan Data</button>
-                    </form>
-                </div>
+        <!-- Input Data Page -->
+        <div id="inputPage" style="display: none;">
+            <div class="content-header">
+                <h1 class="page-title">Input Data</h1>
+                <p class="page-description">Masukkan data penting Anda ke dalam sistem</p>
             </div>
 
-            <!-- Search Section -->
-            <div id="searchSection" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Cari Data</h1>
-                    <p>Cari data yang tersimpan dalam sistem</p>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Pencarian Data</h3>
-                    </div>
-                    
+            <div class="data-form">
+                <form id="dataForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="searchKeyword">Kata Kunci</label>
-                            <input type="text" id="searchKeyword" placeholder="Masukkan kata kunci pencarian">
+                            <label class="form-label" for="dataTitle">Judul Data</label>
+                            <input type="text" class="form-control" id="dataTitle" placeholder="Masukkan judul data" required>
                         </div>
-                        
                         <div class="form-group">
-                            <label for="searchCategory">Kategori</label>
-                            <select id="searchCategory" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;">
-                                <option value="">Semua Kategori</option>
-                                <option value="personal">Pribadi</option>
-                                <option value="work">Pekerjaan</option>
-                                <option value="important">Penting</option>
-                                <option value="other">Lainnya</option>
+                            <label class="form-label" for="dataCategory">Kategori</label>
+                            <input type="text" class="form-control" id="dataCategory" placeholder="Masukkan kategori" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="dataContent">Isi Data</label>
+                        <textarea class="form-control" id="dataContent" rows="5" placeholder="Masukkan konten data" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="dataPriority">Prioritas</label>
+                            <select class="form-control" id="dataPriority">
+                                <option value="low">Rendah</option>
+                                <option value="medium" selected>Sedang</option>
+                                <option value="high">Tinggi</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataTags">Tag</label>
+                            <input type="text" class="form-control" id="dataTags" placeholder="Masukkan tag, dipisahkan koma">
+                        </div>
                     </div>
-                    
-                    <button type="button" class="btn" onclick="searchData()">Cari</button>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-save"></i> Simpan Data
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Search Data Page -->
+        <div id="searchPage" style="display: none;">
+            <div class="content-header">
+                <h1 class="page-title">Cari Data</h1>
+                <p class="page-description">Temukan data yang Anda butuhkan dengan cepat</p>
+            </div>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Cari data berdasarkan judul, kategori, atau tag...">
                 </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Hasil Pencarian</h3>
+
+                <div class="data-list" id="dataList">
+                    <div class="data-item">
+                        <div class="data-info">
+                            <h4>Proyek X</h4>
+                            <p>Kategori: Proyek | Tanggal: 12/05/2023</p>
+                        </div>
+                        <div class="data-actions">
+                            <button class="btn-icon btn-copy" title="Salin data">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="btn-icon btn-delete" title="Hapus data">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div id="searchResults">
-                        <p>Belum ada hasil pencarian. Silakan lakukan pencarian terlebih dahulu.</p>
+                    <div class="data-item">
+                        <div class="data-info">
+                            <h4>Meeting Tim</h4>
+                            <p>Kategori: Meeting | Tanggal: 10/05/2023</p>
+                        </div>
+                        <div class="data-actions">
+                            <button class="btn-icon btn-copy" title="Salin data">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="btn-icon btn-delete" title="Hapus data">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-info">
+                            <h4>Laporan Keuangan</h4>
+                            <p>Kategori: Keuangan | Tanggal: 08/05/2023</p>
+                        </div>
+                        <div class="data-actions">
+                            <button class="btn-icon btn-copy" title="Salin data">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="btn-icon btn-delete" title="Hapus data">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Admin Section -->
-            <div id="adminSection" class="content-section hidden">
-                <div class="content-header">
-                    <h1>Admin Panel</h1>
-                    <p>Kelola pengguna dan pengaturan sistem</p>
+        <!-- Admin Page -->
+        <div id="adminPage" style="display: none;">
+            <div class="content-header">
+                <h1 class="page-title">Panel Admin</h1>
+                <p class="page-description">Kelola pengguna dan atur akses aplikasi</p>
+            </div>
+
+            <div class="admin-container">
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="users">Pengguna</button>
+                    <button class="admin-tab" data-tab="permissions">Izin Akses</button>
+                    <button class="admin-tab" data-tab="settings">Pengaturan</button>
                 </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Tambah Admin Baru</h3>
-                    </div>
-                    
-                    <form id="adminForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="adminId">ID Admin</label>
-                                <input type="text" id="adminId" placeholder="Masukkan ID admin">
+
+                <div class="admin-content active" id="usersTab">
+                    <h3>Daftar Pengguna</h3>
+                    <div class="admin-list">
+                        <div class="admin-item">
+                            <div class="admin-info">
+                                <div class="admin-avatar">AD</div>
+                                <div class="admin-details">
+                                    <h4>Admin User</h4>
+                                    <p>admin@example.com | Super Admin</p>
+                                </div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="adminPassword">Kata Sandi</label>
-                                <input type="password" id="adminPassword" placeholder="Masukkan kata sandi">
+                            <div class="admin-status">
+                                <span class="status-badge status-active">Aktif</span>
                             </div>
                         </div>
-                        
+                        <div class="admin-item">
+                            <div class="admin-info">
+                                <div class="admin-avatar">JD</div>
+                                <div class="admin-details">
+                                    <h4>John Doe</h4>
+                                    <p>john@example.com | Editor</p>
+                                </div>
+                            </div>
+                            <div class="admin-status">
+                                <span class="status-badge status-active">Aktif</span>
+                            </div>
+                        </div>
+                        <div class="admin-item">
+                            <div class="admin-info">
+                                <div class="admin-avatar">JS</div>
+                                <div class="admin-details">
+                                    <h4>Jane Smith</h4>
+                                    <p>jane@example.com | Viewer</p>
+                                </div>
+                            </div>
+                            <div class="admin-status">
+                                <span class="status-badge status-inactive">Nonaktif</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-content" id="permissionsTab">
+                    <h3>Izin Akses</h3>
+                    <div class="admin-list">
+                        <div class="admin-item">
+                            <div class="admin-info">
+                                <div class="admin-avatar">AD</div>
+                                <div class="admin-details">
+                                    <h4>Admin User</h4>
+                                    <p>Akses ke semua fitur</p>
+                                </div>
+                            </div>
+                            <div class="admin-status">
+                                <span class="status-badge status-active">Full Access</span>
+                            </div>
+                        </div>
+                        <div class="admin-item">
+                            <div class="admin-info">
+                                <div class="admin-avatar">JD</div>
+                                <div class="admin-details">
+                                    <h4>John Doe</h4>
+                                    <p>Hanya bisa input dan cari data</p>
+                                </div>
+                            </div>
+                            <div class="admin-status">
+                                <span class="status-badge status-active">Limited Access</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-content" id="settingsTab">
+                    <h3>Pengaturan</h3>
+                    <form id="adminForm">
                         <div class="form-group">
-                            <label for="adminAccess">Tingkat Akses</label>
-                            <select id="adminAccess" style="width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: rgba(255, 255, 255, 0.9); color: #333;">
-                                <option value="limited">Terbatas</option>
-                                <option value="standard">Standar</option>
-                                <option value="super">Super Admin</option>
+                            <label class="form-label" for="newUserId">ID Pengguna Baru</label>
+                            <input type="text" class="form-control" id="newUserId" placeholder="Masukkan ID pengguna baru">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="newUserPassword">Password</label>
+                            <input type="password" class="form-control" id="newUserPassword" placeholder="Masukkan password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="newUserRole">Role</label>
+                            <select class="form-control" id="newUserRole">
+                                <option value="viewer">Viewer</option>
+                                <option value="editor">Editor</option>
+                                <option value="admin">Admin</option>
                             </select>
                         </div>
-                        
-                        <button type="button" class="btn" onclick="addAdmin()">Tambah Admin</button>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-user-plus"></i> Tambah Pengguna
+                        </button>
                     </form>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Daftar Admin</h3>
-                    </div>
-                    
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tingkat Akses</th>
-                                <th>Tanggal Dibuat</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminList">
-                            <tr>
-                                <td>admin</td>
-                                <td><span class="access-level access-super">Super Admin</span></td>
-                                <td>01/01/2023</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-small" disabled>Edit</button>
-                                    <button class="btn btn-small btn-danger" disabled>Hapus</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>user</td>
-                                <td><span class="access-level access-standard">Standar</span></td>
-                                <td>15/01/2023</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-small" onclick="editAdmin('user')">Edit</button>
-                                    <button class="btn btn-small btn-danger" onclick="deleteAdmin('user')">Hapus</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
 
     <script>
-        // Initialize Firebase (simulated)
-        const firebase = {
-            database: {
-                ref: function(path) {
-                    return {
-                        push: function(data) {
-                            const key = 'key_' + Math.random().toString(36).substr(2, 9);
-                            localStorage.setItem(path + '/' + key, JSON.stringify(data));
-                            return { key: key };
-                        },
-                        once: function(event, callback) {
-                            const data = [];
-                            for (let i = 0; i < localStorage.length; i++) {
-                                const key = localStorage.key(i);
-                                if (key.startsWith(path + '/')) {
-                                    data.push(JSON.parse(localStorage.getItem(key)));
-                                }
-                            }
-                            callback({ val: function() { return data; } });
-                        },
-                        orderByChild: function(child) {
-                            return this;
-                        },
-                        equalTo: function(value) {
-                            return this;
-                        }
-                    };
-                }
-            }
+        // Firebase Configuration (placeholder)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
-        // User data
-        let currentUser = null;
+        // Sample user data
         const users = [
-            { id: 'admin', password: 'admin123', role: 'super', name: 'Administrator' },
-            { id: 'user', password: 'user123', role: 'standard', name: 'Standard User' }
+            { id: 'admin', password: 'admin123', name: 'Admin User', role: 'super_admin', permissions: ['all'] },
+            { id: 'editor', password: 'editor123', name: 'John Doe', role: 'editor', permissions: ['input', 'search'] },
+            { id: 'viewer', password: 'viewer123', name: 'Jane Smith', role: 'viewer', permissions: ['search'] }
         ];
 
-        // Check if user is logged in
-        function checkLogin() {
-            const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showMainApp();
-            }
-        }
+        // Current user
+        let currentUser = null;
 
-        // Login function
-        function login() {
+        // DOM Elements
+        const loginPage = document.getElementById('loginPage');
+        const homePage = document.getElementById('homePage');
+        const inputPage = document.getElementById('inputPage');
+        const searchPage = document.getElementById('searchPage');
+        const adminPage = document.getElementById('adminPage');
+        const userInfo = document.getElementById('userInfo');
+        const navAdminItem = document.getElementById('navAdminItem');
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const toast = document.getElementById('toast');
+
+        // Navigation
+        document.getElementById('navHome').addEventListener('click', (e) => {
+            e.preventDefault();
+            showPage('home');
+            setActiveNav('navHome');
+        });
+
+        document.getElementById('navInput').addEventListener('click', (e) => {
+            e.preventDefault();
+            showPage('input');
+            setActiveNav('navInput');
+        });
+
+        document.getElementById('navSearch').addEventListener('click', (e) => {
+            e.preventDefault();
+            showPage('search');
+            setActiveNav('navSearch');
+        });
+
+        document.getElementById('navAdmin').addEventListener('click', (e) => {
+            e.preventDefault();
+            showPage('admin');
+            setActiveNav('navAdmin');
+        });
+
+        // Menu toggle for mobile
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
             const id = document.getElementById('loginId').value;
             const password = document.getElementById('loginPassword').value;
-            
+
             const user = users.find(u => u.id === id && u.password === password);
             
             if (user) {
                 currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                showMainApp();
-                showNotification('Login berhasil! Selamat datang, ' + user.name);
+                showToast('Login berhasil!', 'success');
+                
+                // Update user info
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userRole').textContent = user.role.replace('_', ' ');
+                
+                // Show user info and admin menu if applicable
+                userInfo.style.display = 'block';
+                if (user.permissions.includes('all') || user.role === 'super_admin') {
+                    navAdminItem.style.display = 'block';
+                }
+                
+                // Show home page
+                showPage('home');
+                setActiveNav('navHome');
+                
+                // Clear form
+                document.getElementById('loginForm').reset();
             } else {
-                showNotification('ID atau kata sandi salah!', 'error');
+                showToast('ID atau password salah!', 'error');
             }
-        }
+        });
 
-        // Show main app
-        function showMainApp() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
+        // Data form
+        document.getElementById('dataForm').addEventListener('submit', (e) => {
+            e.preventDefault();
             
-            // Update user info
-            document.getElementById('currentUser').textContent = currentUser.name;
-            document.getElementById('currentUserRole').textContent = getRoleText(currentUser.role);
-            
-            // Show/hide admin menu based on role
-            const adminMenu = document.querySelector('.admin-only');
-            if (currentUser.role === 'limited') {
-                adminMenu.style.display = 'none';
-            } else {
-                adminMenu.style.display = 'block';
+            // Check if user has permission to input data
+            if (!currentUser || !currentUser.permissions.includes('input')) {
+                showToast('Anda tidak memiliki izin untuk menginput data!', 'error');
+                return;
             }
             
-            // Show input section by default
-            showSection('input');
-        }
-
-        // Get role text
-        function getRoleText(role) {
-            switch (role) {
-                case 'super': return 'Super Admin';
-                case 'standard': return 'Admin Standar';
-                case 'limited': return 'Pengguna Terbatas';
-                default: return 'Pengguna';
-            }
-        }
-
-        // Show section
-        function showSection(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            
-            // Remove active class from all menu items
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionName + 'Section').classList.remove('hidden');
-            
-            // Add active class to selected menu item
-            event.target.classList.add('active');
-        }
-
-        // Save data
-        function saveData() {
             const title = document.getElementById('dataTitle').value;
             const category = document.getElementById('dataCategory').value;
             const content = document.getElementById('dataContent').value;
+            const priority = document.getElementById('dataPriority').value;
+            const tags = document.getElementById('dataTags').value;
             
-            if (!title || !content) {
-                showNotification('Judul dan isi data harus diisi!', 'error');
-                return;
-            }
+            // Here you would normally save to Firebase
+            console.log('Saving data:', { title, category, content, priority, tags });
             
-            const data = {
-                title: title,
-                category: category,
-                content: content,
-                createdBy: currentUser.id,
-                createdAt: new Date().toISOString()
-            };
-            
-            firebase.database().ref('data').push(data);
-            
-            // Reset form
+            showToast('Data berhasil disimpan!', 'success');
             document.getElementById('dataForm').reset();
-            
-            showNotification('Data berhasil disimpan!');
-        }
+        });
 
-        // Search data
-        function searchData() {
-            const keyword = document.getElementById('searchKeyword').value.toLowerCase();
-            const category = document.getElementById('searchCategory').value;
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const dataItems = document.querySelectorAll('.data-item');
             
-            firebase.database().ref('data').once('value', function(snapshot) {
-                const data = snapshot.val();
-                let results = [];
+            dataItems.forEach(item => {
+                const title = item.querySelector('h4').textContent.toLowerCase();
+                const category = item.querySelector('p').textContent.toLowerCase();
                 
-                if (data) {
-                    results = data.filter(item => {
-                        const matchKeyword = !keyword || 
-                            item.title.toLowerCase().includes(keyword) || 
-                            item.content.toLowerCase().includes(keyword);
-                        const matchCategory = !category || item.category === category;
-                        return matchKeyword && matchCategory;
-                    });
+                if (title.includes(searchTerm) || category.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
                 }
+            });
+        });
+
+        // Copy and delete buttons
+        document.querySelectorAll('.btn-copy').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showToast('Data disalin ke clipboard!', 'success');
+            });
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                    btn.closest('.data-item').remove();
+                    showToast('Data berhasil dihapus!', 'success');
+                }
+            });
+        });
+
+        // Admin tabs
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.getAttribute('data-tab');
                 
-                displaySearchResults(results);
+                // Set active tab
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabName + 'Tab').classList.add('active');
             });
-        }
+        });
 
-        // Display search results
-        function displaySearchResults(results) {
-            const resultsContainer = document.getElementById('searchResults');
+        // Admin form
+        document.getElementById('adminForm').addEventListener('submit', (e) => {
+            e.preventDefault();
             
-            if (results.length === 0) {
-                resultsContainer.innerHTML = '<p>Tidak ada data yang ditemukan.</p>';
+            // Check if user has admin permissions
+            if (!currentUser || !currentUser.permissions.includes('all')) {
+                showToast('Anda tidak memiliki izin untuk menambah pengguna!', 'error');
                 return;
             }
             
-            let html = '<table class="data-table"><thead><tr><th>Judul</th><th>Kategori</th><th>Dibuat Oleh</th><th>Aksi</th></tr></thead><tbody>';
+            const userId = document.getElementById('newUserId').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
             
-            results.forEach(item => {
-                html += `
-                    <tr>
-                        <td>${item.title}</td>
-                        <td>${getCategoryText(item.category)}</td>
-                        <td>${item.createdBy}</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-small" onclick="viewData('${item.key}')">Lihat</button>
-                            <button class="btn btn-small" onclick="copyData('${item.key}')">Salin</button>
-                        </td>
-                    </tr>
-                `;
-            });
+            // Here you would normally save to Firebase
+            console.log('Adding new user:', { userId, password, role });
             
-            html += '</tbody></table>';
-            resultsContainer.innerHTML = html;
-        }
-
-        // Get category text
-        function getCategoryText(category) {
-            switch (category) {
-                case 'personal': return 'Pribadi';
-                case 'work': return 'Pekerjaan';
-                case 'important': return 'Penting';
-                case 'other': return 'Lainnya';
-                default: return category;
-            }
-        }
-
-        // View data
-        function viewData(key) {
-            // In a real app, this would show a modal with the data details
-            showNotification('Fitur lihat data akan segera tersedia');
-        }
-
-        // Copy data
-        function copyData(key) {
-            // In a real app, this would copy the data to clipboard
-            showNotification('Data berhasil disalin ke clipboard!');
-        }
-
-        // Add admin
-        function addAdmin() {
-            if (currentUser.role !== 'super') {
-                showNotification('Hanya super admin yang dapat menambah admin baru!', 'error');
-                return;
-            }
-            
-            const id = document.getElementById('adminId').value;
-            const password = document.getElementById('adminPassword').value;
-            const access = document.getElementById('adminAccess').value;
-            
-            if (!id || !password) {
-                showNotification('ID dan kata sandi harus diisi!', 'error');
-                return;
-            }
-            
-            // Check if user already exists
-            if (users.find(u => u.id === id)) {
-                showNotification('ID sudah digunakan!', 'error');
-                return;
-            }
-            
-            const newUser = {
-                id: id,
-                password: password,
-                role: access,
-                name: id.charAt(0).toUpperCase() + id.slice(1)
-            };
-            
-            users.push(newUser);
-            
-            // Reset form
+            showToast('Pengguna berhasil ditambahkan!', 'success');
             document.getElementById('adminForm').reset();
-            
-            // Update admin list
-            updateAdminList();
-            
-            showNotification('Admin berhasil ditambahkan!');
-        }
+        });
 
-        // Update admin list
-        function updateAdminList() {
-            const adminList = document.getElementById('adminList');
-            let html = '';
+        // Helper functions
+        function showPage(page) {
+            // Hide all pages
+            loginPage.style.display = 'none';
+            homePage.style.display = 'none';
+            inputPage.style.display = 'none';
+            searchPage.style.display = 'none';
+            adminPage.style.display = 'none';
             
-            users.forEach(user => {
-                const canEdit = currentUser.role === 'super' && user.id !== 'admin';
-                const accessClass = user.role === 'super' ? 'access-super' : 
-                                   user.role === 'standard' ? 'access-standard' : 'access-limited';
-                
-                html += `
-                    <tr>
-                        <td>${user.id}</td>
-                        <td><span class="access-level ${accessClass}">${getRoleText(user.role)}</span></td>
-                        <td>01/01/2023</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-small" ${!canEdit ? 'disabled' : ''} onclick="editAdmin('${user.id}')">Edit</button>
-                            <button class="btn btn-small btn-danger" ${!canEdit ? 'disabled' : ''} onclick="deleteAdmin('${user.id}')">Hapus</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            adminList.innerHTML = html;
-        }
-
-        // Edit admin
-        function editAdmin(id) {
-            showNotification('Fitur edit admin akan segera tersedia');
-        }
-
-        // Delete admin
-        function deleteAdmin(id) {
-            if (currentUser.role !== 'super') {
-                showNotification('Hanya super admin yang dapat menghapus admin!', 'error');
-                return;
+            // Show selected page
+            if (page === 'login') {
+                loginPage.style.display = 'block';
+                userInfo.style.display = 'none';
+                navAdminItem.style.display = 'none';
+            } else if (page === 'home') {
+                homePage.style.display = 'block';
+            } else if (page === 'input') {
+                inputPage.style.display = 'block';
+            } else if (page === 'search') {
+                searchPage.style.display = 'block';
+            } else if (page === 'admin') {
+                adminPage.style.display = 'block';
             }
             
-            const index = users.findIndex(u => u.id === id);
-            if (index !== -1) {
-                users.splice(index, 1);
-                updateAdminList();
-                showNotification('Admin berhasil dihapus!');
+            // Close sidebar on mobile
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
             }
         }
 
-        // Show notification
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = 'notification show';
-            
-            if (type === 'error') {
-                notification.style.backgroundColor = '#e74c3c';
-            } else {
-                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            }
+        function setActiveNav(navId) {
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.getElementById(navId).classList.add('active');
+        }
+
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = 'toast show ' + type;
             
             setTimeout(() => {
-                notification.classList.remove('show');
+                toast.classList.remove('show');
             }, 3000);
         }
 
-        // Initialize app
-        checkLogin();
+        // Initialize
+        showPage('login');
     </script>
 </body>
 </html>
