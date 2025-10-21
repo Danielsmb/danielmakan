@@ -86,11 +86,48 @@
         .sidebar h2 {
             color: var(--white);
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-weight: 700;
             font-size: 24px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.2);
             letter-spacing: 1px;
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 12px 45px 12px 18px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            color: var(--white);
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        #search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-container:focus-within {
+            box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.5);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            fill: rgba(255, 255, 255, 0.8);
         }
 
         .menu-item {
@@ -316,6 +353,16 @@
     <div class="container">
         <aside class="sidebar">
             <h2>✨ Menu ✨</h2>
+            
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Cari menu...">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+
             <div id="menu-container">
                 <div class="loading">
                     <div class="spinner"></div>
@@ -339,7 +386,7 @@
                         </svg>
                     </button>
                     <div id="content-text" class="content-text">
-                        Silakan pilih menu dari sidebar untuk melihat konten yang menarik.
+                        Silakan pilih menu dari sidebar atau gunakan kolom pencarian untuk menemukan konten yang Anda inginkan.
                     </div>
                 </div>
             </div>
@@ -358,6 +405,7 @@
             let menuData = [];
             let activeMenuIndex = -1;
             
+            // Fetch data dari Google Sheets
             fetch(url)
                 .then(response => response.text())
                 .then(text => {
@@ -386,6 +434,7 @@
                     `;
                 });
             
+            // Render menu di sidebar
             function renderMenu() {
                 const menuContainer = document.getElementById('menu-container');
                 menuContainer.innerHTML = '';
@@ -412,20 +461,65 @@
                 });
             }
             
+            // Fungsi untuk memilih menu
             function selectMenu(index) {
                 if (index < 0 || index >= menuData.length) return;
                 
+                // Update active menu
                 document.querySelectorAll('.menu-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                document.querySelector(`.menu-item[data-index="${index}"]`).classList.add('active');
+                const selectedMenuItem = document.querySelector(`.menu-item[data-index="${index}"]`);
+                if (selectedMenuItem) {
+                    selectedMenuItem.classList.add('active');
+                    // Scroll to the selected menu item
+                    selectedMenuItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 
+                // Update content
                 document.getElementById('content-title').textContent = menuData[index].title;
                 document.getElementById('content-text').textContent = menuData[index].content;
                 
                 activeMenuIndex = index;
             }
             
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                let foundIndex = -1;
+
+                if (searchTerm === "") {
+                    // If search is empty, select the first menu item
+                    if (menuData.length > 0) {
+                        selectMenu(0);
+                    }
+                    return;
+                }
+
+                // Loop through menuData to find a match
+                for (let i = 0; i < menuData.length; i++) {
+                    // Check if the search term is included in the menu title
+                    if (menuData[i].title.toLowerCase().includes(searchTerm)) {
+                        foundIndex = i;
+                        break; // Stop after finding the first match
+                    }
+                }
+
+                if (foundIndex !== -1) {
+                    selectMenu(foundIndex);
+                } else {
+                    // If no match is found, display a not found message
+                    document.getElementById('content-title').textContent = 'Tidak Ditemukan';
+                    document.getElementById('content-text').textContent = `Tidak ada menu yang cocok dengan "${searchTerm}". Coba kata kunci lain.`;
+                    // Remove active class from all menu items
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                }
+            });
+            
+            // Fungsi untuk menyalin konten
             document.getElementById('copy-button').addEventListener('click', function() {
                 if (activeMenuIndex < 0) return;
                 
@@ -454,6 +548,7 @@
                     });
             });
             
+            // Fungsi untuk menampilkan notifikasi
             function showNotification(message) {
                 const notification = document.getElementById('notification');
                 notification.textContent = message;
