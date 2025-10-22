@@ -503,14 +503,22 @@
             align-self: flex-end;
             border-bottom-right-radius: 0.25rem;
         }
-        .bot-result-link {
+        .message .bot-result-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
             color: var(--accent);
             cursor: pointer;
-            text-decoration: underline;
-            font-weight: 500;
         }
-        .bot-result-link:hover {
-            color: var(--light);
+        .message .bot-result-title:hover {
+            text-decoration: underline;
+        }
+        .message .bot-result-content {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
         }
 
         .typing-indicator {
@@ -694,7 +702,7 @@
                 <button class="chatbot-close-btn" id="chatbot-close-btn"><i class="fas fa-times"></i></button>
             </div>
             <div class="chatbot-messages" id="chatbot-messages">
-                <div class="message bot">Halo! Saya asisten virtual Anda. Ada yang bisa saya bantu? Coba ketik "cari reportan keuangan" atau "cari informasi karyawan".</div>
+                <div class="message bot">Halo! Saya asisten virtual Anda. Tanyakan saja apa saja tentang reportan atau informasi. Contoh: "Apa kebijakan perusahaan?" atau "Bagaimana laporan keuangan Q1?"</div>
             </div>
             <div class="typing-indicator" id="typing-indicator">
                 <span></span><span></span><span></span>
@@ -1061,42 +1069,51 @@
                 typingIndicator.classList.remove('active');
             };
             
+            // NEW: Core logic for finding and providing answers
+            const findAndProvideAnswer = (userText) => {
+                const allData = [...reportanItems, ...informasiItems];
+                const lowerText = userText.toLowerCase();
+                
+                // Simple keyword extraction (removes common question words)
+                const keywords = lowerText.replace(/(apa|siapa|dimana|kapan|bagaimana|berapa|kenapa|adalah|tentang|cari|informasi|reportan|laporan|data|konten)/g, '').trim();
+
+                if (keywords === "") {
+                    return "Maaf, saya tidak yakin apa yang Anda tanyakan. Bisakah Anda lebih spesifik?";
+                }
+
+                const results = allData.filter(item => 
+                    item.title.toLowerCase().includes(keywords) || 
+                    item.content.toLowerCase().includes(keywords)
+                );
+
+                if (results.length > 0) {
+                    let responseText = `Saya menemukan ${results.length} informasi yang relevan:<br><br>`;
+                    results.forEach(item => {
+                        responseText += `<div class="bot-result-title" data-id="${item.id}">${item.title}</div>`;
+                        responseText += `<div class="bot-result-content">${item.content}</div><br>`;
+                    });
+                    return responseText;
+                } else {
+                    return `Maaf, saya tidak menemukan informasi tentang "<strong>${keywords}</strong>" di database. Coba gunakan kata kunci lain.`;
+                }
+            };
+
             const processBotResponse = (userText) => {
                 const lowerText = userText.toLowerCase();
-                let searchResults = [];
-                let searchType = '';
 
-                if (lowerText.includes('reportan') || lowerText.includes('laporan')) {
-                    searchType = 'reportan';
-                    const searchTerm = lowerText.replace(/cari|reportan|laporan/g, '').trim();
-                    searchResults = reportanItems.filter(item => 
-                        item.title.toLowerCase().includes(searchTerm) || 
-                        item.content.toLowerCase().includes(searchTerm)
-                    );
-                } else if (lowerText.includes('informasi') || lowerText.includes('info')) {
-                    searchType = 'informasi';
-                    const searchTerm = lowerText.replace(/cari|informasi|info/g, '').trim();
-                    searchResults = informasiItems.filter(item => 
-                        item.title.toLowerCase().includes(searchTerm) || 
-                        item.content.toLowerCase().includes(searchTerm)
-                    );
+                // Handle greetings and simple commands first
+                if (lowerText.includes('halo') || lowerText.includes('hai')) {
+                    return "Halo lagi! Ada yang bisa saya bantu hari ini?";
+                }
+                if (lowerText.includes('terima kasih') || lowerText.includes('makasih')) {
+                    return "Sama-sama! Senang bisa membantu Anda.";
+                }
+                if (lowerText.includes('bantuan') || lowerText.includes('help')) {
+                    return "Anda bisa menanyakan apa saja kepada saya. Saya akan mencari jawabannya dari data Reportan dan Informasi yang tersedia. Contoh: 'Apa kebijakan perusahaan?' atau 'Berapa laporan keuangan terakhir?'";
                 }
 
-                if (searchResults.length > 0) {
-                    let responseText = `Saya menemukan ${searchResults.length} ${searchType} yang cocok:<br><br>`;
-                    searchResults.forEach(item => {
-                        responseText += `<span class="bot-result-link" data-id="${item.id}">${item.title}</span><br>`;
-                    });
-                    addMessage(responseText, 'bot');
-                } else if (searchType !== '') {
-                    addMessage(`Maaf, saya tidak menemukan ${searchType} dengan kata kunci "${userText.replace(/cari|reportan|laporan|informasi|info/g, '').trim()}". Coba kata kunci lain.`, 'bot');
-                } else if (lowerText.includes('halo') || lowerText.includes('hai')) {
-                    addMessage('Halo lagi! Ada yang bisa saya bantu?', 'bot');
-                } else if (lowerText.includes('terima kasih') || lowerText.includes('makasih')) {
-                    addMessage('Sama-sama! Senang bisa membantu.', 'bot');
-                } else {
-                    addMessage('Maaf, saya belum mengerti. Anda bisa mencoba mengetik "cari reportan [judul]" atau "cari informasi [judul]".', 'bot');
-                }
+                // If not a simple command, try to find an answer
+                return findAndProvideAnswer(userText);
             };
 
             const handleUserInput = () => {
@@ -1109,7 +1126,8 @@
 
                 setTimeout(() => {
                     hideTypingIndicator();
-                    processBotResponse(userText);
+                    const botResponse = processBotResponse(userText);
+                    addMessage(botResponse, 'bot');
                 }, 1000 + Math.random() * 1000); // Simulate thinking time
             };
 
@@ -1120,9 +1138,9 @@
                 }
             });
 
-            // Event delegation for clickable results
+            // Event delegation for clickable titles in bot response
             messagesContainer.addEventListener('click', (event) => {
-                if (event.target.classList.contains('bot-result-link')) {
+                if (event.target.classList.contains('bot-result-title')) {
                     const itemId = event.target.dataset.id;
                     const item = [...reportanItems, ...informasiItems].find(i => i.id === itemId);
                     if (item) {
