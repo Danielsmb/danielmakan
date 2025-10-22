@@ -422,30 +422,32 @@
         .chatbot-launcher:hover {
             transform: scale(1.1);
         }
+        .chatbot-launcher.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
 
         .chatbot-window {
-            position: absolute;
-            bottom: 80px;
+            position: fixed;
+            top: 0;
             right: 0;
-            width: 380px;
-            height: 500px;
+            bottom: 0;
+            width: 50%;
+            height: 100vh;
             background: var(--glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 1rem;
+            border-left: 1px solid var(--glass-border);
             display: none;
             flex-direction: column;
             overflow: hidden;
             box-shadow: var(--shadow-lg);
-            animation: slideUp 0.3s ease-out;
-        }
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
         }
         .chatbot-window.active {
             display: flex;
+            transform: translateX(0);
         }
 
         .chatbot-header {
@@ -503,22 +505,53 @@
             align-self: flex-end;
             border-bottom-right-radius: 0.25rem;
         }
-        .message .bot-result-title {
+        
+        .bot-result-item {
+            margin-top: 1rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        .bot-result-title {
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
             color: var(--accent);
             cursor: pointer;
+            transition: background 0.2s;
         }
-        .message .bot-result-title:hover {
-            text-decoration: underline;
+        .bot-result-title:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
-        .message .bot-result-content {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            margin-top: 0.5rem;
+        .bot-result-content {
+            padding: 1rem;
             font-size: 0.9rem;
             white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .bot-result-actions {
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: flex-end;
+        }
+        .bot-copy-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .bot-copy-btn:hover {
+            background: #059669;
+        }
+        .bot-copy-btn.copied {
+            background: var(--dark);
         }
 
         .typing-indicator {
@@ -597,8 +630,8 @@
                 padding: 1rem;
             }
             .chatbot-window {
-                width: 90vw;
-                right: 5vw;
+                width: 90%;
+                right: 5%;
             }
         }
     </style>
@@ -1040,16 +1073,16 @@
             let isChatOpen = false;
 
             launcher.addEventListener('click', () => {
-                isChatOpen = !isChatOpen;
-                chatWindow.classList.toggle('active', isChatOpen);
-                if (isChatOpen) {
-                    inputField.focus();
-                }
+                isChatOpen = true;
+                chatWindow.classList.add('active');
+                launcher.classList.add('hidden');
+                inputField.focus();
             });
 
             closeBtn.addEventListener('click', () => {
                 isChatOpen = false;
                 chatWindow.classList.remove('active');
+                launcher.classList.remove('hidden');
             });
 
             const addMessage = (text, sender) => {
@@ -1074,7 +1107,6 @@
                 const allData = [...reportanItems, ...informasiItems];
                 const lowerText = userText.toLowerCase();
                 
-                // Simple keyword extraction (removes common question words)
                 const keywords = lowerText.replace(/(apa|siapa|dimana|kapan|bagaimana|berapa|kenapa|adalah|tentang|cari|informasi|reportan|laporan|data|konten)/g, '').trim();
 
                 if (keywords === "") {
@@ -1087,10 +1119,17 @@
                 );
 
                 if (results.length > 0) {
-                    let responseText = `Saya menemukan ${results.length} informasi yang relevan:<br><br>`;
+                    let responseText = `Saya menemukan ${results.length} informasi yang relevan:`;
                     results.forEach(item => {
-                        responseText += `<div class="bot-result-title" data-id="${item.id}">${item.title}</div>`;
-                        responseText += `<div class="bot-result-content">${item.content}</div><br>`;
+                        responseText += `
+                            <div class="bot-result-item">
+                                <div class="bot-result-title" data-id="${item.id}">${item.title}</div>
+                                <div class="bot-result-content">${item.content}</div>
+                                <div class="bot-result-actions">
+                                    <button class="bot-copy-btn" data-content="${item.content.replace(/"/g, '&quot;')}">Salin</button>
+                                </div>
+                            </div>
+                        `;
                     });
                     return responseText;
                 } else {
@@ -1101,7 +1140,6 @@
             const processBotResponse = (userText) => {
                 const lowerText = userText.toLowerCase();
 
-                // Handle greetings and simple commands first
                 if (lowerText.includes('halo') || lowerText.includes('hai')) {
                     return "Halo lagi! Ada yang bisa saya bantu hari ini?";
                 }
@@ -1112,7 +1150,6 @@
                     return "Anda bisa menanyakan apa saja kepada saya. Saya akan mencari jawabannya dari data Reportan dan Informasi yang tersedia. Contoh: 'Apa kebijakan perusahaan?' atau 'Berapa laporan keuangan terakhir?'";
                 }
 
-                // If not a simple command, try to find an answer
                 return findAndProvideAnswer(userText);
             };
 
@@ -1128,7 +1165,7 @@
                     hideTypingIndicator();
                     const botResponse = processBotResponse(userText);
                     addMessage(botResponse, 'bot');
-                }, 1000 + Math.random() * 1000); // Simulate thinking time
+                }, 1000 + Math.random() * 1000);
             };
 
             sendBtn.addEventListener('click', handleUserInput);
@@ -1138,20 +1175,36 @@
                 }
             });
 
-            // Event delegation for clickable titles in bot response
+            // Event delegation for clickable elements in bot response
             messagesContainer.addEventListener('click', (event) => {
+                // Handle title click to show in main content
                 if (event.target.classList.contains('bot-result-title')) {
                     const itemId = event.target.dataset.id;
                     const item = [...reportanItems, ...informasiItems].find(i => i.id === itemId);
                     if (item) {
                         showContent(item);
-                        // Optional: close chat after clicking a result
-                        isChatOpen = false;
-                        chatWindow.classList.remove('active');
                     }
                 }
+                // Handle copy button click
+                if (event.target.classList.contains('bot-copy-btn')) {
+                    const contentToCopy = event.target.dataset.content;
+                    navigator.clipboard.writeText(contentToCopy).then(() => {
+                        const originalText = event.target.textContent;
+                        event.target.textContent = 'Tersalin!';
+                        event.target.classList.add('copied');
+                        setTimeout(() => {
+                            event.target.textContent = originalText;
+                            event.target.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Gagal menyalin:', err);
+                        event.target.textContent = 'Gagal!';
+                        setTimeout(() => {
+                            event.target.textContent = 'Salin';
+                        }, 2000);
+                    });
+                }
             });
-
 
             // --- Start the App ---
             loadData();
