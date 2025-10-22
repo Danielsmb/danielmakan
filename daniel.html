@@ -74,11 +74,33 @@
         .sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 3px; }
         .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.5); }
 
-        .sidebar-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
+        /* Collapsible Menu Styles */
+        .collapsible-menu {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 1.5rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 1.5rem;
+            user-select: none; /* Prevents text selection on click */
+        }
+        .menu-header:hover .sidebar-title {
+            color: var(--accent);
+        }
+        .menu-chevron {
+            color: white;
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+        .collapsible-menu.active .menu-chevron {
+            transform: rotate(180deg);
         }
         .sidebar-title {
             font-size: 1.25rem;
@@ -86,7 +108,6 @@
             color: white;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 0.5rem;
         }
         .sidebar-title i {
@@ -95,7 +116,12 @@
 
         .menu-list {
             list-style: none;
+            display: none; /* Hidden by default */
             flex-grow: 1;
+            overflow-y: auto;
+        }
+        .collapsible-menu.active .menu-list {
+            display: block; /* Shown when parent is active */
         }
         .menu-item {
             background: rgba(255, 255, 255, 0.1);
@@ -640,19 +666,24 @@
     <div class="background-pattern"></div>
     
     <div class="app-container">
+        <!-- Sidebar Kiri: Reportan -->
         <aside class="sidebar" id="reportan-sidebar">
-            <div class="sidebar-header">
-                <h2 class="sidebar-title">
-                    <i class="fas fa-chart-line"></i>
-                    Reportan
-                </h2>
+            <div class="collapsible-menu" id="reportan-collapsible">
+                <div class="menu-header" data-target="reportan-list">
+                    <h2 class="sidebar-title">
+                        <i class="fas fa-chart-line"></i>
+                        Reportan
+                    </h2>
+                    <i class="fas fa-chevron-down menu-chevron"></i>
+                </div>
+                <ul class="menu-list" id="reportan-list">
+                    <!-- Menu items will be injected here -->
+                </ul>
             </div>
-            <ul class="menu-list" id="reportan-list">
-                <!-- Menu items will be injected here -->
-            </ul>
             <div class="loading-spinner" id="reportan-loading"></div>
         </aside>
 
+        <!-- Main Content Area -->
         <main class="main-content">
             <div class="top-bar">
                 <a href="#" class="logo">
@@ -708,16 +739,20 @@
             </div>
         </main>
 
+        <!-- Sidebar Kanan: Informasi -->
         <aside class="sidebar" id="informasi-sidebar">
-            <div class="sidebar-header">
-                <h2 class="sidebar-title">
-                    <i class="fas fa-info-circle"></i>
-                    Informasi
-                </h2>
+            <div class="collapsible-menu" id="informasi-collapsible">
+                <div class="menu-header" data-target="informasi-list">
+                    <h2 class="sidebar-title">
+                        <i class="fas fa-info-circle"></i>
+                        Informasi
+                    </h2>
+                    <i class="fas fa-chevron-down menu-chevron"></i>
+                </div>
+                <ul class="menu-list" id="informasi-list">
+                    <!-- Menu items will be injected here -->
+                </ul>
             </div>
-            <ul class="menu-list" id="informasi-list">
-                <!-- Menu items will be injected here -->
-            </ul>
             <div class="loading-spinner" id="informasi-loading"></div>
         </aside>
     </div>
@@ -735,7 +770,7 @@
                 <button class="chatbot-close-btn" id="chatbot-close-btn"><i class="fas fa-times"></i></button>
             </div>
             <div class="chatbot-messages" id="chatbot-messages">
-                <div class="message bot">Halo! Beri tahu saya apa yang anda butuhkan dan Bocor akan memberikannya?"</div>
+                <div class="message bot">Halo! Saya asisten virtual Anda. Tanyakan saja apa saja tentang reportan atau informasi. Contoh: "Apa kebijakan perusahaan?" atau "Bagaimana laporan keuangan Q1?"</div>
             </div>
             <div class="typing-indicator" id="typing-indicator">
                 <span></span><span></span><span></span>
@@ -1061,6 +1096,19 @@
                 });
             });
 
+            // --- Collapsible Menu Logic ---
+            const menuHeaders = document.querySelectorAll('.menu-header');
+            menuHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const targetId = header.dataset.target;
+                    const menuList = document.getElementById(targetId);
+                    const collapsibleMenu = header.closest('.collapsible-menu');
+
+                    // Toggle the 'active' class on the parent container
+                    collapsibleMenu.classList.toggle('active');
+                });
+            });
+
             // --- Chatbot Logic ---
             const launcher = document.getElementById('chatbot-launcher');
             const chatWindow = document.getElementById('chatbot-window');
@@ -1102,7 +1150,6 @@
                 typingIndicator.classList.remove('active');
             };
             
-            // NEW: Core logic for finding and providing answers
             const findAndProvideAnswer = (userText) => {
                 const allData = [...reportanItems, ...informasiItems];
                 const lowerText = userText.toLowerCase();
@@ -1175,9 +1222,7 @@
                 }
             });
 
-            // Event delegation for clickable elements in bot response
             messagesContainer.addEventListener('click', (event) => {
-                // Handle title click to show in main content
                 if (event.target.classList.contains('bot-result-title')) {
                     const itemId = event.target.dataset.id;
                     const item = [...reportanItems, ...informasiItems].find(i => i.id === itemId);
@@ -1185,7 +1230,6 @@
                         showContent(item);
                     }
                 }
-                // Handle copy button click
                 if (event.target.classList.contains('bot-copy-btn')) {
                     const contentToCopy = event.target.dataset.content;
                     navigator.clipboard.writeText(contentToCopy).then(() => {
