@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Interaktif dari Google Sheets</title>
+    <title>Menu Interaktif dengan Penyimpanan Lokal</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -58,7 +58,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Starry Effect */
         .stars {
             position: fixed;
             top: 0;
@@ -71,7 +70,7 @@
 
         .star {
             position: absolute;
-            background-color: #ffeb3b; /* Yellow color */
+            background-color: #ffeb3b;
             clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
             animation: twinkle 3s infinite;
         }
@@ -119,7 +118,7 @@
 
         .search-container {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         #search-input {
@@ -151,6 +150,29 @@
             transform: translateY(-50%);
             pointer-events: none;
             fill: rgba(255, 255, 255, 0.8);
+        }
+        
+        .sync-button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .sync-button:hover {
+            background: var(--primary-pink);
+            transform: scale(1.02);
         }
 
         .menu-item {
@@ -287,7 +309,6 @@
             overflow-y: auto;
         }
 
-        /* Tampilan Tabel yang Lebih Rapi */
         .content-table {
             display: grid;
             grid-template-columns: 120px 1fr;
@@ -309,9 +330,8 @@
             white-space: pre-wrap;
         }
 
-        /* Form Edit */
         #content-edit {
-            display: none; /* Hidden by default */
+            display: none;
         }
         .edit-form {
             display: grid;
@@ -478,7 +498,6 @@
     </style>
 </head>
 <body>
-    <!-- Efek Bintang -->
     <div class="stars" id="stars-container"></div>
 
     <div class="container">
@@ -493,6 +512,11 @@
                 </svg>
             </div>
 
+            <button id="sync-button" class="sync-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                Sync dengan Google Sheet
+            </button>
+
             <div id="menu-container">
                 <div class="loading">
                     <div class="spinner"></div>
@@ -506,7 +530,6 @@
                     <h1 id="content-title">Selamat Datang</h1>
                 </div>
                 <div class="content-body">
-                    <!-- Tombol Salin -->
                     <button id="copy-button" class="copy-button" title="Salin Konten">
                         <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -517,7 +540,6 @@
                         </svg>
                     </button>
 
-                    <!-- Tampilan Konten (Mode Tabel) -->
                     <div id="content-view">
                         <div class="content-table">
                             <div class="content-label">Menu</div>
@@ -528,7 +550,6 @@
                         </div>
                     </div>
 
-                    <!-- Form Edit (Tersembunyi) -->
                     <div id="content-edit">
                         <form class="edit-form" onsubmit="return false;">
                             <label for="edit-title">Menu</label>
@@ -552,66 +573,139 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const DB_NAME = 'MenuDatabase';
+            const DB_VERSION = 1;
+            const STORE_NAME = 'menus';
             const spreadsheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
-            const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json`;
+            const sheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json`;
             
+            let db;
             let menuData = [];
             let activeMenuIndex = -1;
             let isEditingMode = false;
 
-            // --- Generate Stars ---
+            // --- IndexedDB Functions ---
+            function openDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    request.onupgradeneeded = (event) => {
+                        db = event.target.result;
+                        if (!db.objectStoreNames.contains(STORE_NAME)) {
+                            db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        }
+                    };
+                    request.onsuccess = (event) => {
+                        db = event.target.result;
+                        resolve(db);
+                    };
+                    request.onerror = (event) => {
+                        reject('Error opening database');
+                    };
+                });
+            }
+
+            function saveDataToDB(data) {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                // Clear existing data before adding new
+                store.clear();
+                data.forEach(item => {
+                    store.add(item);
+                });
+            }
+
+            function getDataFromDB() {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([STORE_NAME], 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.getAll();
+                    request.onsuccess = (event) => {
+                        resolve(event.target.result);
+                    };
+                    request.onerror = (event) => {
+                        reject('Error getting data from DB');
+                    };
+                });
+            }
+
+            // --- UI Functions ---
             function createStars() {
                 const starsContainer = document.getElementById('stars-container');
                 const numberOfStars = 50;
                 for (let i = 0; i < numberOfStars; i++) {
                     const star = document.createElement('div');
                     star.className = 'star';
-                    
                     const size = Math.random() * 3 + 2 + 'px';
                     star.style.width = size;
                     star.style.height = size;
-                    
                     star.style.left = Math.random() * 100 + '%';
                     star.style.top = Math.random() * 100 + '%';
-                    
                     star.style.animationDelay = Math.random() * 3 + 's';
                     star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    
                     starsContainer.appendChild(star);
                 }
             }
             createStars();
 
-            // --- Fetch Data ---
-            fetch(url)
-                .then(response => response.text())
-                .then(text => {
-                    const json = JSON.parse(text.substring(47).slice(0, -2));
-                    const rows = json.table.rows;
+            function showNotification(message, duration = 3000) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
+            }
+
+            // --- Data Loading and Syncing ---
+            async function initializeApp() {
+                try {
+                    db = await openDB();
+                    const localData = await getDataFromDB();
                     
-                    menuData = rows.map(row => {
-                        return {
+                    if (localData.length > 0) {
+                        menuData = localData;
+                        renderMenu();
+                        selectMenu(0);
+                        showNotification('Memuat data dari penyimpanan lokal...');
+                    } else {
+                        fetchAndSyncFromSheet();
+                    }
+                } catch (error) {
+                    console.error('IndexedDB failed, falling back to fetch:', error);
+                    fetchAndSyncFromSheet();
+                }
+            }
+
+            function fetchAndSyncFromSheet() {
+                showNotification('Mengambil data dari Google Sheet...');
+                fetch(sheetUrl)
+                    .then(response => response.text())
+                    .then(text => {
+                        const json = JSON.parse(text.substring(47).slice(0, -2));
+                        const rows = json.table.rows;
+                        
+                        const fetchedData = rows.map(row => ({
                             title: row.c[0] ? row.c[0].v : '',
                             content: row.c[1] ? row.c[1].v : ''
-                        };
-                    }).filter(item => item.title);
-                    
-                    renderMenu();
-                    
-                    if (menuData.length > 0) {
-                        selectMenu(0);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('menu-container').innerHTML = `
-                        <div class="error-message">
-                            Gagal memuat data. Pastikan spreadsheet Anda dipublikasikan ke web.
-                        </div>
-                    `;
-                });
-            
-            // --- Render Menu ---
+                        })).filter(item => item.title);
+
+                        if (fetchedData.length > 0) {
+                            menuData = fetchedData;
+                            if (db) {
+                                saveDataToDB(menuData);
+                            }
+                            renderMenu();
+                            selectMenu(0);
+                            showNotification('Data berhasil disinkronkan!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        document.getElementById('menu-container').innerHTML = `<div class="error-message">Gagal memuat data. Pastikan spreadsheet Anda dipublikasikan ke web.</div>`;
+                    });
+            }
+
+            // --- Rendering and Interaction ---
             function renderMenu() {
                 const menuContainer = document.getElementById('menu-container');
                 menuContainer.innerHTML = '';
@@ -656,41 +750,29 @@
                 });
             }
             
-            // --- Select Menu ---
             function selectMenu(index) {
                 if (index < 0 || index >= menuData.length) return;
+                if (isEditingMode) exitEditMode();
                 
-                if (isEditingMode) {
-                    exitEditMode();
-                }
-                
-                document.querySelectorAll('.menu-item').forEach(item => {
-                    item.classList.remove('active');
-                });
+                document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
                 const selectedMenuItem = document.querySelector(`.menu-item[data-index="${index}"]`);
                 if (selectedMenuItem) {
                     selectedMenuItem.classList.add('active');
                     selectedMenuItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 
-                // Update view
                 document.getElementById('content-title').textContent = menuData[index].title;
                 document.getElementById('content-title-value').textContent = menuData[index].title;
                 document.getElementById('content-text-value').textContent = menuData[index].content;
-                
                 activeMenuIndex = index;
             }
 
-            // --- Edit Mode Functions ---
+            // --- Edit Mode ---
             function enterEditMode(index) {
                 isEditingMode = true;
                 activeMenuIndex = index;
-                
-                // Populate form
                 document.getElementById('edit-title').value = menuData[index].title;
                 document.getElementById('edit-content').value = menuData[index].content;
-                
-                // Switch view
                 document.getElementById('content-view').style.display = 'none';
                 document.getElementById('content-edit').style.display = 'block';
                 document.getElementById('copy-button').style.display = 'none';
@@ -698,105 +780,82 @@
 
             function exitEditMode() {
                 isEditingMode = false;
-                
-                // Switch view
                 document.getElementById('content-view').style.display = 'block';
                 document.getElementById('content-edit').style.display = 'none';
                 document.getElementById('copy-button').style.display = 'flex';
             }
 
-            // --- Save and Cancel Listeners ---
+            // --- Event Listeners ---
             document.getElementById('save-btn').addEventListener('click', () => {
                 const newTitle = document.getElementById('edit-title').value;
                 const newContent = document.getElementById('edit-content').value;
 
-                // Update local data
                 menuData[activeMenuIndex].title = newTitle;
                 menuData[activeMenuIndex].content = newContent;
 
-                // Re-render menu and content
+                if (db) {
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    store.put(menuData[activeMenuIndex]); // Update the specific item
+                }
+
                 renderMenu();
-                selectMenu(activeMenuIndex); // Re-select to update view
+                selectMenu(activeMenuIndex);
                 exitEditMode();
-                
-                showNotification('Perubahan berhasil disimpan (lokal)!');
+                showNotification('Perubahan berhasil disimpan secara lokal!');
             });
 
-            document.getElementById('cancel-btn').addEventListener('click', () => {
-                exitEditMode();
-            });
-            
-            // --- Search functionality ---
+            document.getElementById('cancel-btn').addEventListener('click', exitEditMode);
+
+            document.getElementById('sync-button').addEventListener('click', fetchAndSyncFromSheet);
+
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase().trim();
                 let foundIndex = -1;
-
                 if (searchTerm === "") {
-                    if (menuData.length > 0) {
-                        selectMenu(0);
-                    }
+                    if (menuData.length > 0) selectMenu(0);
                     return;
                 }
-
                 for (let i = 0; i < menuData.length; i++) {
                     if (menuData[i].title.toLowerCase().includes(searchTerm)) {
                         foundIndex = i;
                         break;
                     }
                 }
-
                 if (foundIndex !== -1) {
                     selectMenu(foundIndex);
                 } else {
                     document.getElementById('content-title').textContent = 'Tidak Ditemukan';
                     document.getElementById('content-title-value').textContent = '-';
                     document.getElementById('content-text-value').textContent = `Tidak ada menu yang cocok dengan "${searchTerm}".`;
-                    document.querySelectorAll('.menu-item').forEach(item => {
-                        item.classList.remove('active');
-                    });
+                    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
                 }
             });
             
-            // --- Copy functionality ---
             document.getElementById('copy-button').addEventListener('click', function() {
                 if (activeMenuIndex < 0 || isEditingMode) return;
-                
                 const content = menuData[activeMenuIndex].content;
-                
-                navigator.clipboard.writeText(content)
-                    .then(() => {
-                        showNotification('Konten berhasil disalin! 🎉');
-                        
-                        const copyIcon = document.getElementById('copy-icon');
-                        const checkIcon = document.getElementById('check-icon');
-                        this.classList.add('copied');
-                        
-                        copyIcon.style.display = 'none';
-                        checkIcon.style.display = 'block';
-
-                        setTimeout(() => {
-                            this.classList.remove('copied');
-                            copyIcon.style.display = 'block';
-                            checkIcon.style.display = 'none';
-                        }, 2500);
-                    })
-                    .catch(err => {
-                        console.error('Gagal menyalin teks: ', err);
-                        showNotification('Gagal menyalin, coba lagi.');
-                    });
+                navigator.clipboard.writeText(content).then(() => {
+                    showNotification('Konten berhasil disalin! 🎉');
+                    const copyIcon = document.getElementById('copy-icon');
+                    const checkIcon = document.getElementById('check-icon');
+                    this.classList.add('copied');
+                    copyIcon.style.display = 'none';
+                    checkIcon.style.display = 'block';
+                    setTimeout(() => {
+                        this.classList.remove('copied');
+                        copyIcon.style.display = 'block';
+                        checkIcon.style.display = 'none';
+                    }, 2500);
+                }).catch(err => {
+                    console.error('Gagal menyalin teks: ', err);
+                    showNotification('Gagal menyalin, coba lagi.');
+                });
             });
-            
-            // --- Notification ---
-            function showNotification(message) {
-                const notification = document.getElementById('notification');
-                notification.textContent = message;
-                notification.classList.add('show');
-                
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-            }
+
+            // --- Start the App ---
+            initializeApp();
         });
     </script>
 </body>
