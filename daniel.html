@@ -4,51 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Reportan & Informasi</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
-
-        :root {
-            --primary: #4f46e5;
-            --primary-dark: #3730a3;
-            --secondary: #7c3aed;
-            --accent: #ec4899;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --text: #334155;
-            --text-light: #64748b;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #0a0a14;
+            color: #ffffff;
             min-height: 100vh;
-            color: var(--text);
-            position: relative;
             overflow-x: hidden;
+            position: relative;
         }
-
-        .background-pattern {
+        
+        .bg-grid {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-image: 
+                linear-gradient(rgba(138, 43, 226, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(138, 43, 226, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
             z-index: -1;
+        }
+        
+        .bg-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.4) 0%, rgba(13, 27, 77, 0.2) 50%, transparent 70%);
+            filter: blur(50px);
+            z-index: -1;
+        }
+        
+        .glow-1 {
+            top: -100px;
+            right: -100px;
+        }
+        
+        .glow-2 {
+            bottom: -100px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(0, 123, 255, 0.4) 0%, rgba(13, 27, 77, 0.2) 50%, transparent 70%);
+        }
+        
+        .circuit-line {
+            position: fixed;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.5), transparent);
+            height: 1px;
+            z-index: -1;
+        }
+        
+        .line-1 {
+            width: 200px;
+            top: 150px;
+            left: -50px;
+            transform: rotate(30deg);
+        }
+        
+        .line-2 {
+            width: 150px;
+            bottom: 200px;
+            right: -30px;
+            transform: rotate(-20deg);
+        }
+        
+        .data-point {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #9d4edd;
+            box-shadow: 0 0 10px #9d4edd;
+            z-index: -1;
+        }
+        
+        .point-1 {
+            top: 150px;
+            left: 150px;
+        }
+        
+        .point-2 {
+            bottom: 200px;
+            right: 120px;
+        }
+        
+        .point-3 {
+            top: 300px;
+            right: 80px;
         }
 
         .app-container {
@@ -59,20 +110,19 @@
 
         .sidebar {
             width: 300px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
+            background: rgba(20, 20, 40, 0.8);
+            border-right: 1px solid rgba(138, 43, 226, 0.3);
             padding: 1.5rem;
             overflow-y: auto;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
+            backdrop-filter: blur(5px);
         }
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-        .sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 3px; }
-        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.5); }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(138, 43, 226, 0.5); border-radius: 3px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(138, 43, 226, 0.7); }
 
         /* Collapsible Menu Styles */
         .collapsible-menu {
@@ -87,15 +137,15 @@
             cursor: pointer;
             padding: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
             margin-bottom: 1.5rem;
-            user-select: none; /* Prevents text selection on click */
+            user-select: none;
         }
         .menu-header:hover .sidebar-title {
-            color: var(--accent);
+            color: #5390d9;
         }
         .menu-chevron {
-            color: white;
+            color: #9d4edd;
             font-size: 1rem;
             transition: transform 0.3s ease;
         }
@@ -103,9 +153,10 @@
             transform: rotate(180deg);
         }
         .sidebar-title {
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.25rem;
             font-weight: 700;
-            color: white;
+            color: #9d4edd;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -116,34 +167,35 @@
 
         .menu-list {
             list-style: none;
-            display: none; /* Hidden by default */
+            display: none;
             flex-grow: 1;
             overflow-y: auto;
         }
         .collapsible-menu.active .menu-list {
-            display: block; /* Shown when parent is active */
+            display: block;
         }
         .menu-item {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(30, 30, 50, 0.7);
+            border: 1px solid rgba(138, 43, 226, 0.2);
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
             margin-bottom: 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 1px solid transparent;
         }
         .menu-item:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(138, 43, 226, 0.2);
             transform: translateX(5px);
+            border-color: rgba(138, 43, 226, 0.5);
         }
         .menu-item.active {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            border-color: var(--glass-border);
-            box-shadow: var(--shadow);
+            background: linear-gradient(45deg, rgba(138, 43, 226, 0.3), rgba(83, 144, 217, 0.3));
+            border-color: rgba(138, 43, 226, 0.5);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
         }
         .menu-item-title {
             font-weight: 600;
-            color: white;
+            color: #ffffff;
             font-size: 0.95rem;
             white-space: nowrap;
             overflow: hidden;
@@ -167,17 +219,16 @@
         }
 
         .content-wrapper {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(20, 20, 40, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
             border-radius: 1rem;
-            border: 1px solid var(--glass-border);
             padding: 2rem;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
             overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
         .content-header {
@@ -186,23 +237,24 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
         }
         .content-title {
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.75rem;
             font-weight: 700;
-            color: white;
+            color: #9d4edd;
         }
         .content-actions {
             display: flex;
             gap: 0.5rem;
         }
         .action-button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(30, 30, 50, 0.7);
+            border: 1px solid rgba(138, 43, 226, 0.3);
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
-            color: white;
+            color: #ffffff;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -211,8 +263,9 @@
             font-weight: 500;
         }
         .action-button:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(138, 43, 226, 0.2);
             transform: scale(1.05);
+            border-color: rgba(138, 43, 226, 0.5);
         }
 
         .content-body {
@@ -225,7 +278,7 @@
         }
         .content-body::-webkit-scrollbar { width: 8px; }
         .content-body::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
-        .content-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
+        .content-body::-webkit-scrollbar-thumb { background: rgba(138, 43, 226, 0.5); border-radius: 4px; }
 
         .edit-form {
             display: none;
@@ -242,22 +295,22 @@
         }
         .form-label {
             font-weight: 600;
-            color: white;
+            color: #9d4edd;
             margin-bottom: 0.5rem;
         }
         .form-input, .form-textarea {
             padding: 0.75rem;
             border-radius: 0.5rem;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            background: rgba(30, 30, 50, 0.7);
             color: white;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Rajdhani', sans-serif;
             transition: all 0.3s ease;
         }
         .form-input:focus, .form-textarea:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--primary);
+            background: rgba(138, 43, 226, 0.1);
+            border-color: #9d4edd;
         }
         .form-textarea {
             min-height: 300px;
@@ -278,33 +331,34 @@
             transition: all 0.3s ease;
         }
         .btn-primary {
-            background: linear-gradient(45deg, var(--success), #34d399);
+            background: linear-gradient(45deg, #9d4edd, #5390d9);
             color: white;
         }
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(30, 30, 50, 0.7);
             color: white;
+            border: 1px solid rgba(138, 43, 226, 0.3);
         }
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
         }
 
         .top-bar {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--glass-border);
+            background: rgba(20, 20, 40, 0.8);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
+            backdrop-filter: blur(5px);
         }
         .logo {
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
-            color: white;
+            color: #9d4edd;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -312,7 +366,7 @@
         }
         .logo i {
             font-size: 1.8rem;
-            background: linear-gradient(45deg, var(--accent), var(--secondary));
+            background: linear-gradient(45deg, #9d4edd, #5390d9);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -325,8 +379,8 @@
             position: relative;
         }
         .search-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(30, 30, 50, 0.7);
+            border: 1px solid rgba(138, 43, 226, 0.3);
             border-radius: 2rem;
             padding: 0.5rem 1rem 0.5rem 2.5rem;
             color: white;
@@ -335,7 +389,8 @@
         }
         .search-input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(138, 43, 226, 0.1);
+            border-color: #9d4edd;
         }
         .search-input::placeholder {
             color: rgba(255, 255, 255, 0.7);
@@ -348,7 +403,7 @@
             color: rgba(255, 255, 255, 0.7);
         }
         .sync-button {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, #9d4edd, #5390d9);
             border: none;
             border-radius: 2rem;
             padding: 0.5rem 1.5rem;
@@ -363,7 +418,7 @@
         }
         .sync-button:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
         }
         .sync-button:disabled {
             opacity: 0.7;
@@ -374,16 +429,18 @@
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            background: var(--dark);
+            background: rgba(20, 20, 40, 0.9);
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 0.5rem;
-            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
             transform: translateY(150%);
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 1000;
             max-width: 300px;
+            backdrop-filter: blur(5px);
         }
         .notification.show {
             transform: translateY(0);
@@ -392,6 +449,7 @@
         .notification-title {
             font-weight: 600;
             margin-bottom: 0.25rem;
+            color: #9d4edd;
         }
         .notification-message {
             font-size: 0.9rem;
@@ -402,9 +460,9 @@
             display: none;
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
+            border: 4px solid rgba(138, 43, 226, 0.3);
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: #9d4edd;
             animation: spin 1s ease-in-out infinite;
             margin: 20px auto;
         }
@@ -421,14 +479,14 @@
             bottom: 25px;
             right: 25px;
             z-index: 10000;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Rajdhani', sans-serif;
         }
 
         .chatbot-launcher {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #9d4edd, #5390d9);
             color: white;
             border: none;
             cursor: pointer;
@@ -436,14 +494,14 @@
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
             transition: all 0.3s ease;
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(79, 70, 229, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(138, 43, 226, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0); }
         }
         .chatbot-launcher:hover {
             transform: scale(1.1);
@@ -460,16 +518,15 @@
             bottom: 0;
             width: 50%;
             height: 100vh;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid var(--glass-border);
+            background: rgba(20, 20, 40, 0.9);
+            border-left: 1px solid rgba(138, 43, 226, 0.3);
             display: none;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
             transform: translateX(100%);
             transition: transform 0.3s ease-out;
+            backdrop-filter: blur(5px);
         }
         .chatbot-window.active {
             display: flex;
@@ -477,7 +534,7 @@
         }
 
         .chatbot-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #9d4edd, #5390d9);
             color: white;
             padding: 1rem 1.5rem;
             display: flex;
@@ -485,6 +542,7 @@
             align-items: center;
         }
         .chatbot-header h3 {
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.1rem;
             font-weight: 600;
         }
@@ -510,7 +568,7 @@
         }
         .chatbot-messages::-webkit-scrollbar { width: 6px; }
         .chatbot-messages::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-        .chatbot-messages::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 3px; }
+        .chatbot-messages::-webkit-scrollbar-thumb { background: rgba(138, 43, 226, 0.5); border-radius: 3px; }
 
         .message {
             max-width: 80%;
@@ -520,13 +578,14 @@
             word-wrap: break-word;
         }
         .message.bot {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(30, 30, 50, 0.7);
             color: white;
             align-self: flex-start;
             border-bottom-left-radius: 0.25rem;
+            border: 1px solid rgba(138, 43, 226, 0.2);
         }
         .message.user {
-            background: var(--primary);
+            background: linear-gradient(45deg, #9d4edd, #5390d9);
             color: white;
             align-self: flex-end;
             border-bottom-right-radius: 0.25rem;
@@ -534,20 +593,20 @@
         
         .bot-result-item {
             margin-top: 1rem;
-            border: 1px solid var(--glass-border);
+            border: 1px solid rgba(138, 43, 226, 0.3);
             border-radius: 0.75rem;
             overflow: hidden;
         }
         .bot-result-title {
             font-weight: 600;
             padding: 0.75rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--accent);
+            background: rgba(138, 43, 226, 0.2);
+            color: #5390d9;
             cursor: pointer;
             transition: background 0.2s;
         }
         .bot-result-title:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(138, 43, 226, 0.3);
         }
         .bot-result-content {
             padding: 1rem;
@@ -563,7 +622,7 @@
             justify-content: flex-end;
         }
         .bot-copy-btn {
-            background: var(--success);
+            background: linear-gradient(45deg, #9d4edd, #5390d9);
             color: white;
             border: none;
             border-radius: 0.5rem;
@@ -574,19 +633,20 @@
             transition: background 0.2s;
         }
         .bot-copy-btn:hover {
-            background: #059669;
+            background: linear-gradient(45deg, #7b2cbf, #3a86ff);
         }
         .bot-copy-btn.copied {
-            background: var(--dark);
+            background: rgba(20, 20, 40, 0.9);
         }
 
         .typing-indicator {
             display: none;
             align-self: flex-start;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(30, 30, 50, 0.7);
             padding: 0.75rem 1rem;
             border-radius: 1rem;
             border-bottom-left-radius: 0.25rem;
+            border: 1px solid rgba(138, 43, 226, 0.2);
         }
         .typing-indicator.active {
             display: block;
@@ -610,13 +670,13 @@
         .chatbot-input-area {
             display: flex;
             padding: 1rem;
-            border-top: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(138, 43, 226, 0.3);
             gap: 0.5rem;
         }
         .chatbot-input {
             flex-grow: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border);
+            background: rgba(30, 30, 50, 0.7);
+            border: 1px solid rgba(138, 43, 226, 0.3);
             border-radius: 2rem;
             padding: 0.75rem 1.25rem;
             color: white;
@@ -624,10 +684,11 @@
         }
         .chatbot-input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(138, 43, 226, 0.1);
+            border-color: #9d4edd;
         }
         .chatbot-send-btn {
-            background: var(--primary);
+            background: linear-gradient(45deg, #9d4edd, #5390d9);
             color: white;
             border: none;
             border-radius: 50%;
@@ -640,7 +701,7 @@
             transition: background 0.3s;
         }
         .chatbot-send-btn:hover {
-            background: var(--primary-dark);
+            background: linear-gradient(45deg, #7b2cbf, #3a86ff);
         }
 
 
@@ -663,7 +724,14 @@
     </style>
 </head>
 <body>
-    <div class="background-pattern"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="circuit-line line-1"></div>
+    <div class="circuit-line line-2"></div>
+    <div class="data-point point-1"></div>
+    <div class="data-point point-2"></div>
+    <div class="data-point point-3"></div>
     
     <div class="app-container">
         <!-- Sidebar Kiri: Reportan -->
@@ -671,10 +739,10 @@
             <div class="collapsible-menu" id="reportan-collapsible">
                 <div class="menu-header" data-target="reportan-list">
                     <h2 class="sidebar-title">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="material-icons">assessment</i>
                         Reportan
                     </h2>
-                    <i class="fas fa-chevron-down menu-chevron"></i>
+                    <i class="material-icons menu-chevron">expand_more</i>
                 </div>
                 <ul class="menu-list" id="reportan-list">
                     <!-- Menu items will be injected here -->
@@ -687,16 +755,16 @@
         <main class="main-content">
             <div class="top-bar">
                 <a href="#" class="logo">
-                    <i class="fas fa-file-alt"></i>
+                    <i class="material-icons">description</i>
                     <span>Portal Reportan & Informasi</span>
                 </a>
                 <div class="top-bar-actions">
                     <div class="search-container">
-                        <i class="fas fa-search search-icon"></i>
+                        <i class="material-icons search-icon">search</i>
                         <input type="text" class="search-input" id="search-input" placeholder="Cari di semua menu...">
                     </div>
                     <button id="sync-button" class="sync-button">
-                        <i class="fas fa-sync-alt"></i>
+                        <i class="material-icons">sync</i>
                         <span>Sync</span>
                     </button>
                 </div>
@@ -706,11 +774,11 @@
                     <h1 class="content-title" id="content-title">Pilih Menu</h1>
                     <div class="content-actions">
                         <button class="action-button" id="edit-button">
-                            <i class="fas fa-edit"></i>
+                            <i class="material-icons">edit</i>
                             <span>Edit</span>
                         </button>
                         <button class="action-button" id="copy-button">
-                            <i class="fas fa-copy"></i>
+                            <i class="material-icons">content_copy</i>
                             <span>Salin</span>
                         </button>
                     </div>
@@ -744,10 +812,10 @@
             <div class="collapsible-menu" id="informasi-collapsible">
                 <div class="menu-header" data-target="informasi-list">
                     <h2 class="sidebar-title">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="material-icons">info</i>
                         Informasi
                     </h2>
-                    <i class="fas fa-chevron-down menu-chevron"></i>
+                    <i class="material-icons menu-chevron">expand_more</i>
                 </div>
                 <ul class="menu-list" id="informasi-list">
                     <!-- Menu items will be injected here -->
@@ -766,8 +834,8 @@
     <div class="chatbot-container">
         <div class="chatbot-window" id="chatbot-window">
             <div class="chatbot-header">
-                <h3><i class="fas fa-robot"></i> Bantuan AI</h3>
-                <button class="chatbot-close-btn" id="chatbot-close-btn"><i class="fas fa-times"></i></button>
+                <h3><i class="material-icons">smart_toy</i> Bantuan AI</h3>
+                <button class="chatbot-close-btn" id="chatbot-close-btn"><i class="material-icons">close</i></button>
             </div>
             <div class="chatbot-messages" id="chatbot-messages">
                 <div class="message bot">Halo! Saya asisten virtual Anda. Tanyakan saja apa saja tentang reportan atau informasi. Contoh: "Apa kebijakan perusahaan?" atau "Bagaimana laporan keuangan Q1?"</div>
@@ -777,11 +845,11 @@
             </div>
             <div class="chatbot-input-area">
                 <input type="text" class="chatbot-input" id="chatbot-input" placeholder="Ketik pesan...">
-                <button class="chatbot-send-btn" id="chatbot-send-btn"><i class="fas fa-paper-plane"></i></button>
+                <button class="chatbot-send-btn" id="chatbot-send-btn"><i class="material-icons">send</i></button>
             </div>
         </div>
         <button class="chatbot-launcher" id="chatbot-launcher">
-            <i class="fas fa-comments"></i>
+            <i class="material-icons">chat</i>
         </button>
     </div>
 
