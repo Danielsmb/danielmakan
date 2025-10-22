@@ -170,9 +170,13 @@
             justify-content: center;
             gap: 8px;
         }
-        .sync-button:hover {
+        .sync-button:hover:not(:disabled) {
             background: var(--primary-pink);
             transform: scale(1.02);
+        }
+        .sync-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .menu-item {
@@ -514,7 +518,7 @@
 
             <button id="sync-button" class="sync-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                Sync dengan Google Sheet
+                <span id="sync-text">Sync dengan Google Sheet</span>
             </button>
 
             <div id="menu-container">
@@ -588,51 +592,44 @@
             function openDB() {
                 return new Promise((resolve, reject) => {
                     const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    request.onerror = () => reject('Error opening database');
+                    request.onsuccess = () => resolve(request.result);
                     request.onupgradeneeded = (event) => {
-                        db = event.target.result;
+                        const db = event.target.result;
                         if (!db.objectStoreNames.contains(STORE_NAME)) {
                             db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
                         }
-                    };
-                    request.onsuccess = (event) => {
-                        db = event.target.result;
-                        resolve(db);
-                    };
-                    request.onerror = (event) => {
-                        reject('Error opening database');
                     };
                 });
             }
 
             function saveDataToDB(data) {
-                const transaction = db.transaction([STORE_NAME], 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                // Clear existing data before adding new
-                store.clear();
-                data.forEach(item => {
-                    store.add(item);
+                if (!db) return Promise.resolve();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    store.clear(); // Clear old data
+                    data.forEach(item => store.add(item));
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = () => reject(transaction.error);
                 });
             }
 
             function getDataFromDB() {
+                if (!db) return Promise.resolve([]);
                 return new Promise((resolve, reject) => {
                     const transaction = db.transaction([STORE_NAME], 'readonly');
                     const store = transaction.objectStore(STORE_NAME);
                     const request = store.getAll();
-                    request.onsuccess = (event) => {
-                        resolve(event.target.result);
-                    };
-                    request.onerror = (event) => {
-                        reject('Error getting data from DB');
-                    };
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
                 });
             }
 
             // --- UI Functions ---
             function createStars() {
                 const starsContainer = document.getElementById('stars-container');
-                const numberOfStars = 50;
-                for (let i = 0; i < numberOfStars; i++) {
+                for (let i = 0; i < 50; i++) {
                     const star = document.createElement('div');
                     star.className = 'star';
                     const size = Math.random() * 3 + 2 + 'px';
@@ -651,63 +648,15 @@
                 const notification = document.getElementById('notification');
                 notification.textContent = message;
                 notification.classList.add('show');
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, duration);
+                setTimeout(() => notification.classList.remove('show'), duration);
             }
 
-            // --- Data Loading and Syncing ---
-            async function initializeApp() {
-                try {
-                    db = await openDB();
-                    const localData = await getDataFromDB();
-                    
-                    if (localData.length > 0) {
-                        menuData = localData;
-                        renderMenu();
-                        selectMenu(0);
-                        showNotification('Memuat data dari penyimpanan lokal...');
-                    } else {
-                        fetchAndSyncFromSheet();
-                    }
-                } catch (error) {
-                    console.error('IndexedDB failed, falling back to fetch:', error);
-                    fetchAndSyncFromSheet();
-                }
-            }
-
-            function fetchAndSyncFromSheet() {
-                showNotification('Mengambil data dari Google Sheet...');
-                fetch(sheetUrl)
-                    .then(response => response.text())
-                    .then(text => {
-                        const json = JSON.parse(text.substring(47).slice(0, -2));
-                        const rows = json.table.rows;
-                        
-                        const fetchedData = rows.map(row => ({
-                            title: row.c[0] ? row.c[0].v : '',
-                            content: row.c[1] ? row.c[1].v : ''
-                        })).filter(item => item.title);
-
-                        if (fetchedData.length > 0) {
-                            menuData = fetchedData;
-                            if (db) {
-                                saveDataToDB(menuData);
-                            }
-                            renderMenu();
-                            selectMenu(0);
-                            showNotification('Data berhasil disinkronkan!');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data:', error);
-                        document.getElementById('menu-container').innerHTML = `<div class="error-message">Gagal memuat data. Pastikan spreadsheet Anda dipublikasikan ke web.</div>`;
-                    });
-            }
-
-            // --- Rendering and Interaction ---
             function renderMenu() {
                 const menuContainer = document.getElementById('menu-container');
+                if (menuData.length === 0) {
+                    menuContainer.innerHTML = '<div class="error-message">Tidak ada data menu. Coba sinkronkan dengan Google Sheet.</div>';
+                    return;
+                }
                 menuContainer.innerHTML = '';
                 
                 menuData.forEach((item, index) => {
@@ -717,11 +666,9 @@
                     
                     const menuItemContent = document.createElement('div');
                     menuItemContent.className = 'menu-item-content';
-
                     const menuTitle = document.createElement('div');
                     menuTitle.className = 'menu-title';
                     menuTitle.textContent = item.title;
-                    
                     const menuPreview = document.createElement('div');
                     menuPreview.className = 'menu-preview';
                     menuPreview.textContent = item.content.substring(0, 60) + (item.content.length > 60 ? '...' : '');
@@ -739,13 +686,9 @@
 
                     menuItem.appendChild(menuItemContent);
                     menuItem.appendChild(editBtn);
-                    
                     menuItem.addEventListener('click', () => {
-                        if (!isEditingMode) {
-                            selectMenu(index);
-                        }
+                        if (!isEditingMode) selectMenu(index);
                     });
-                    
                     menuContainer.appendChild(menuItem);
                 });
             }
@@ -761,18 +704,77 @@
                     selectedMenuItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 
-                document.getElementById('content-title').textContent = menuData[index].title;
-                document.getElementById('content-title-value').textContent = menuData[index].title;
-                document.getElementById('content-text-value').textContent = menuData[index].content;
+                const item = menuData[index];
+                document.getElementById('content-title').textContent = item.title;
+                document.getElementById('content-title-value').textContent = item.title;
+                document.getElementById('content-text-value').textContent = item.content;
                 activeMenuIndex = index;
+            }
+
+            // --- Data Loading and Syncing ---
+            async function loadData() {
+                try {
+                    db = await openDB();
+                    const localData = await getDataFromDB();
+                    if (localData.length > 0) {
+                        menuData = localData;
+                        renderMenu();
+                        selectMenu(0);
+                        showNotification('Memuat data dari penyimpanan lokal...');
+                    }
+                    // Always try to sync in the background to get the latest data
+                    syncWithSheet(true); 
+                } catch (error) {
+                    console.error("IndexedDB failed, falling back to network:", error);
+                    // If IndexedDB fails, try to fetch directly from the sheet
+                    syncWithSheet(false);
+                }
+            }
+
+            async function syncWithSheet(isBackgroundSync) {
+                const syncButton = document.getElementById('sync-button');
+                const syncText = document.getElementById('sync-text');
+                syncButton.disabled = true;
+                syncText.textContent = isBackgroundSync ? 'Menyinkronkan...' : 'Mengambil data...';
+
+                try {
+                    const response = await fetch(sheetUrl);
+                    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                    const text = await response.text();
+                    const json = JSON.parse(text.substring(47).slice(0, -2));
+                    
+                    const fetchedData = json.table.rows.map(row => ({
+                        title: row.c[0] ? row.c[0].v : '',
+                        content: row.c[1] ? row.c[1].v : ''
+                    })).filter(item => item.title);
+
+                    if (fetchedData.length > 0) {
+                        menuData = fetchedData;
+                        renderMenu();
+                        if (menuData.length > 0) selectMenu(0);
+                        await saveDataToDB(menuData);
+                        showNotification(isBackgroundSync ? 'Data berhasil diperbarui di latar belakang.' : 'Data berhasil disinkronkan!');
+                    } else {
+                        if(!isBackgroundSync) showNotification('Google Sheet kosong atau tidak ada data valid.');
+                    }
+                } catch (error) {
+                    console.error("Sync failed:", error);
+                    if (!isBackgroundSync) {
+                        showNotification('Gagal sinkronisasi. Periksa koneksi internet dan pastikan Sheet dipublikasikan.');
+                    }
+                } finally {
+                    syncButton.disabled = false;
+                    syncText.textContent = 'Sync dengan Google Sheet';
+                }
             }
 
             // --- Edit Mode ---
             function enterEditMode(index) {
                 isEditingMode = true;
                 activeMenuIndex = index;
-                document.getElementById('edit-title').value = menuData[index].title;
-                document.getElementById('edit-content').value = menuData[index].content;
+                const item = menuData[index];
+                document.getElementById('edit-title').value = item.title;
+                document.getElementById('edit-content').value = item.content;
                 document.getElementById('content-view').style.display = 'none';
                 document.getElementById('content-edit').style.display = 'block';
                 document.getElementById('copy-button').style.display = 'none';
@@ -786,28 +788,31 @@
             }
 
             // --- Event Listeners ---
-            document.getElementById('save-btn').addEventListener('click', () => {
+            document.getElementById('save-btn').addEventListener('click', async () => {
                 const newTitle = document.getElementById('edit-title').value;
                 const newContent = document.getElementById('edit-content').value;
 
                 menuData[activeMenuIndex].title = newTitle;
                 menuData[activeMenuIndex].content = newContent;
 
-                if (db) {
-                    const transaction = db.transaction([STORE_NAME], 'readwrite');
-                    const store = transaction.objectStore(STORE_NAME);
-                    store.put(menuData[activeMenuIndex]); // Update the specific item
+                try {
+                    if (db) {
+                        const transaction = db.transaction([STORE_NAME], 'readwrite');
+                        const store = transaction.objectStore(STORE_NAME);
+                        store.put(menuData[activeMenuIndex]);
+                    }
+                    renderMenu();
+                    selectMenu(activeMenuIndex);
+                    exitEditMode();
+                    showNotification('Perubahan berhasil disimpan secara lokal!');
+                } catch (error) {
+                    console.error("Failed to save to IndexedDB:", error);
+                    showNotification('Gagal menyimpan perubahan secara lokal.');
                 }
-
-                renderMenu();
-                selectMenu(activeMenuIndex);
-                exitEditMode();
-                showNotification('Perubahan berhasil disimpan secara lokal!');
             });
 
             document.getElementById('cancel-btn').addEventListener('click', exitEditMode);
-
-            document.getElementById('sync-button').addEventListener('click', fetchAndSyncFromSheet);
+            document.getElementById('sync-button').addEventListener('click', () => syncWithSheet(false));
 
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', function() {
@@ -855,7 +860,7 @@
             });
 
             // --- Start the App ---
-            initializeApp();
+            loadData();
         });
     </script>
 </body>
