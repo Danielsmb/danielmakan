@@ -29,8 +29,8 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(rgba(138, 43, 226, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(138, 43, 226, 0.1) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
             background-size: 20px 20px;
             z-index: -1;
         }
@@ -40,7 +40,7 @@
             width: 500px;
             height: 500px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(138, 43, 226, 0.4) 0%, rgba(13, 27, 77, 0.2) 50%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(13, 27, 77, 0.2) 50%, transparent 70%);
             filter: blur(50px);
             z-index: -1;
         }
@@ -58,7 +58,7 @@
         
         .circuit-line {
             position: fixed;
-            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.5), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
             height: 1px;
             z-index: -1;
         }
@@ -82,8 +82,8 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #9d4edd;
-            box-shadow: 0 0 10px #9d4edd;
+            background: #ffffff;
+            box-shadow: 0 0 10px #ffffff;
             z-index: -1;
         }
         
@@ -111,7 +111,7 @@
         .sidebar {
             width: 300px;
             background: rgba(20, 20, 40, 0.8);
-            border-right: 1px solid rgba(138, 43, 226, 0.3);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
             padding: 1.5rem;
             overflow-y: auto;
             flex-shrink: 0;
@@ -121,8 +121,8 @@
         }
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-        .sidebar::-webkit-scrollbar-thumb { background: rgba(138, 43, 226, 0.5); border-radius: 3px; }
-        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(138, 43, 226, 0.7); }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 3px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.7); }
 
         /* Collapsible Menu Styles */
         .collapsible-menu {
@@ -137,7 +137,7 @@
             cursor: pointer;
             padding: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
             margin-bottom: 1.5rem;
             user-select: none;
         }
@@ -145,7 +145,7 @@
             color: #5390d9;
         }
         .menu-chevron {
-            color: #9d4edd;
+            color: #ffffff;
             font-size: 1rem;
             transition: transform 0.3s ease;
         }
@@ -156,7 +156,8 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 1.25rem;
             font-weight: 700;
-            color: #9d4edd;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -176,7 +177,7 @@
         }
         .menu-item {
             background: rgba(30, 30, 50, 0.7);
-            border: 1px solid rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
             margin-bottom: 0.75rem;
@@ -184,14 +185,14 @@
             transition: all 0.3s ease;
         }
         .menu-item:hover {
-            background: rgba(138, 43, 226, 0.2);
+            background: rgba(255, 255, 255, 0.2);
             transform: translateX(5px);
-            border-color: rgba(138, 43, 226, 0.5);
+            border-color: rgba(255, 255, 255, 0.5);
         }
         .menu-item.active {
-            background: linear-gradient(45deg, rgba(138, 43, 226, 0.3), rgba(83, 144, 217, 0.3));
-            border-color: rgba(138, 43, 226, 0.5);
-            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(83, 144, 217, 0.3));
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         }
         .menu-item-title {
             font-weight: 600;
@@ -220,13 +221,13 @@
 
         .content-wrapper {
             background: rgba(20, 20, 40, 0.8);
-            border: 1px solid rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 1rem;
             padding: 2rem;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             overflow: hidden;
             backdrop-filter: blur(5px);
         }
@@ -237,13 +238,14 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
         .content-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.75rem;
             font-weight: 700;
-            color: #9d4edd;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff;
         }
         .content-actions {
             display: flex;
@@ -251,7 +253,7 @@
         }
         .action-button {
             background: rgba(30, 30, 50, 0.7);
-            border: 1px solid rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
             color: #ffffff;
@@ -263,9 +265,9 @@
             font-weight: 500;
         }
         .action-button:hover {
-            background: rgba(138, 43, 226, 0.2);
+            background: rgba(255, 255, 255, 0.2);
             transform: scale(1.05);
-            border-color: rgba(138, 43, 226, 0.5);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
         .content-body {
@@ -278,7 +280,7 @@
         }
         .content-body::-webkit-scrollbar { width: 8px; }
         .content-body::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
-        .content-body::-webkit-scrollbar-thumb { background: rgba(138, 43, 226, 0.5); border-radius: 4px; }
+        .content-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 4px; }
 
         .edit-form {
             display: none;
@@ -295,13 +297,14 @@
         }
         .form-label {
             font-weight: 600;
-            color: #9d4edd;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
             margin-bottom: 0.5rem;
         }
         .form-input, .form-textarea {
             padding: 0.75rem;
             border-radius: 0.5rem;
-            border: 1px solid rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             background: rgba(30, 30, 50, 0.7);
             color: white;
             font-family: 'Rajdhani', sans-serif;
@@ -309,8 +312,9 @@
         }
         .form-input:focus, .form-textarea:focus {
             outline: none;
-            background: rgba(138, 43, 226, 0.1);
-            border-color: #9d4edd;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
         .form-textarea {
             min-height: 300px;
@@ -331,22 +335,22 @@
             transition: all 0.3s ease;
         }
         .btn-primary {
-            background: linear-gradient(45deg, #9d4edd, #5390d9);
-            color: white;
+            background: linear-gradient(45deg, #ffffff, #5390d9);
+            color: #0a0a14;
         }
         .btn-secondary {
             background: rgba(30, 30, 50, 0.7);
             color: white;
-            border: 1px solid rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         }
 
         .top-bar {
             background: rgba(20, 20, 40, 0.8);
-            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -358,7 +362,8 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
-            color: #9d4edd;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff;
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -366,7 +371,7 @@
         }
         .logo i {
             font-size: 1.8rem;
-            background: linear-gradient(45deg, #9d4edd, #5390d9);
+            background: linear-gradient(45deg, #ffffff, #5390d9);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -380,7 +385,7 @@
         }
         .search-input {
             background: rgba(30, 30, 50, 0.7);
-            border: 1px solid rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 2rem;
             padding: 0.5rem 1rem 0.5rem 2.5rem;
             color: white;
@@ -389,8 +394,9 @@
         }
         .search-input:focus {
             outline: none;
-            background: rgba(138, 43, 226, 0.1);
-            border-color: #9d4edd;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
         .search-input::placeholder {
             color: rgba(255, 255, 255, 0.7);
@@ -403,11 +409,11 @@
             color: rgba(255, 255, 255, 0.7);
         }
         .sync-button {
-            background: linear-gradient(45deg, #9d4edd, #5390d9);
+            background: linear-gradient(45deg, #ffffff, #5390d9);
             border: none;
             border-radius: 2rem;
             padding: 0.5rem 1.5rem;
-            color: white;
+            color: #0a0a14;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -418,7 +424,7 @@
         }
         .sync-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         }
         .sync-button:disabled {
             opacity: 0.7;
@@ -433,8 +439,8 @@
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 0.5rem;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
             transform: translateY(150%);
             opacity: 0;
             transition: all 0.3s ease;
@@ -449,7 +455,8 @@
         .notification-title {
             font-weight: 600;
             margin-bottom: 0.25rem;
-            color: #9d4edd;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
         }
         .notification-message {
             font-size: 0.9rem;
@@ -460,9 +467,9 @@
             display: none;
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(138, 43, 226, 0.3);
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: #9d4edd;
+            border-top-color: #ffffff;
             animation: spin 1s ease-in-out infinite;
             margin: 20px auto;
         }
@@ -471,6 +478,56 @@
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Image Container Styles */
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+        
+        .image-container img {
+            max-width: 80%;
+            max-height: 70%;
+            border-radius: 1rem;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            object-fit: contain;
+        }
+        
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        
+        .image-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff, 0 0 40px #ffffff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .image-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff;
+            text-align: center;
+            max-width: 80%;
         }
 
         /* Chatbot Styles */
@@ -486,22 +543,22 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #9d4edd, #5390d9);
-            color: white;
+            background: linear-gradient(135deg, #ffffff, #5390d9);
+            color: #0a0a14;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
             transition: all 0.3s ease;
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(138, 43, 226, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
         }
         .chatbot-launcher:hover {
             transform: scale(1.1);
@@ -519,11 +576,11 @@
             width: 50%;
             height: 100vh;
             background: rgba(20, 20, 40, 0.9);
-            border-left: 1px solid rgba(138, 43, 226, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
             display: none;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
             transform: translateX(100%);
             transition: transform 0.3s ease-out;
             backdrop-filter: blur(5px);
@@ -534,8 +591,8 @@
         }
 
         .chatbot-header {
-            background: linear-gradient(135deg, #9d4edd, #5390d9);
-            color: white;
+            background: linear-gradient(135deg, #ffffff, #5390d9);
+            color: #0a0a14;
             padding: 1rem 1.5rem;
             display: flex;
             justify-content: space-between;
@@ -549,7 +606,7 @@
         .chatbot-close-btn {
             background: none;
             border: none;
-            color: white;
+            color: #0a0a14;
             font-size: 1.5rem;
             cursor: pointer;
             transition: transform 0.2s;
@@ -568,7 +625,7 @@
         }
         .chatbot-messages::-webkit-scrollbar { width: 6px; }
         .chatbot-messages::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-        .chatbot-messages::-webkit-scrollbar-thumb { background: rgba(138, 43, 226, 0.5); border-radius: 3px; }
+        .chatbot-messages::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 3px; }
 
         .message {
             max-width: 80%;
@@ -582,31 +639,31 @@
             color: white;
             align-self: flex-start;
             border-bottom-left-radius: 0.25rem;
-            border: 1px solid rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .message.user {
-            background: linear-gradient(45deg, #9d4edd, #5390d9);
-            color: white;
+            background: linear-gradient(45deg, #ffffff, #5390d9);
+            color: #0a0a14;
             align-self: flex-end;
             border-bottom-right-radius: 0.25rem;
         }
         
         .bot-result-item {
             margin-top: 1rem;
-            border: 1px solid rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 0.75rem;
             overflow: hidden;
         }
         .bot-result-title {
             font-weight: 600;
             padding: 0.75rem 1rem;
-            background: rgba(138, 43, 226, 0.2);
+            background: rgba(255, 255, 255, 0.2);
             color: #5390d9;
             cursor: pointer;
             transition: background 0.2s;
         }
         .bot-result-title:hover {
-            background: rgba(138, 43, 226, 0.3);
+            background: rgba(255, 255, 255, 0.3);
         }
         .bot-result-content {
             padding: 1rem;
@@ -622,8 +679,8 @@
             justify-content: flex-end;
         }
         .bot-copy-btn {
-            background: linear-gradient(45deg, #9d4edd, #5390d9);
-            color: white;
+            background: linear-gradient(45deg, #ffffff, #5390d9);
+            color: #0a0a14;
             border: none;
             border-radius: 0.5rem;
             padding: 0.5rem 1rem;
@@ -633,10 +690,11 @@
             transition: background 0.2s;
         }
         .bot-copy-btn:hover {
-            background: linear-gradient(45deg, #7b2cbf, #3a86ff);
+            background: linear-gradient(45deg, #e0e0e0, #3a86ff);
         }
         .bot-copy-btn.copied {
             background: rgba(20, 20, 40, 0.9);
+            color: white;
         }
 
         .typing-indicator {
@@ -646,7 +704,7 @@
             padding: 0.75rem 1rem;
             border-radius: 1rem;
             border-bottom-left-radius: 0.25rem;
-            border: 1px solid rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .typing-indicator.active {
             display: block;
@@ -670,13 +728,13 @@
         .chatbot-input-area {
             display: flex;
             padding: 1rem;
-            border-top: 1px solid rgba(138, 43, 226, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
             gap: 0.5rem;
         }
         .chatbot-input {
             flex-grow: 1;
             background: rgba(30, 30, 50, 0.7);
-            border: 1px solid rgba(138, 43, 226, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 2rem;
             padding: 0.75rem 1.25rem;
             color: white;
@@ -684,12 +742,13 @@
         }
         .chatbot-input:focus {
             outline: none;
-            background: rgba(138, 43, 226, 0.1);
-            border-color: #9d4edd;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
         .chatbot-send-btn {
-            background: linear-gradient(45deg, #9d4edd, #5390d9);
-            color: white;
+            background: linear-gradient(45deg, #ffffff, #5390d9);
+            color: #0a0a14;
             border: none;
             border-radius: 50%;
             width: 45px;
@@ -701,7 +760,7 @@
             transition: background 0.3s;
         }
         .chatbot-send-btn:hover {
-            background: linear-gradient(45deg, #7b2cbf, #3a86ff);
+            background: linear-gradient(45deg, #e0e0e0, #3a86ff);
         }
 
 
@@ -771,7 +830,7 @@
             </div>
             <div class="content-wrapper">
                 <div class="content-header">
-                    <h1 class="content-title" id="content-title">Pilih Menu</h1>
+                    <h1 class="content-title" id="content-title"></h1>
                     <div class="content-actions">
                         <button class="action-button" id="edit-button">
                             <i class="material-icons">edit</i>
@@ -785,7 +844,14 @@
                 </div>
                 
                 <div class="content-body" id="content-view">
-                    Silakan pilih laporan atau informasi dari sidebar untuk melihat detailnya.
+                    <!-- Empty by default, will show image when no menu is selected -->
+                    <div class="image-container" id="image-container">
+                        <img src="https://z-cdn-media.chatglm.cn/files/2586e647-89c2-4ce6-a148-f5575b743edf_pasted_image_1761163337961.png?auth_key=1792699419-fbd4f90d91404fb9809d71f98e7dcecc-0-5780080d8770b00d6aa0b33b78681b4a" alt="Portal Image">
+                        <div class="image-overlay">
+                            <h2 class="image-title">Portal Reportan & Informasi</h2>
+                            <p class="image-subtitle">Pilih menu dari sidebar untuk melihat detailnya</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="edit-form" id="edit-form">
@@ -966,6 +1032,9 @@
                 const activeElement = document.querySelector(`.menu-item[data-id="${item.id}"]`);
                 if (activeElement) activeElement.classList.add('active');
                 document.getElementById('content-title').textContent = item.title;
+                
+                // Hide image container and show content
+                document.getElementById('image-container').style.display = 'none';
                 document.getElementById('content-view').textContent = item.content;
             }
 
@@ -1100,6 +1169,11 @@
                 isEditingMode = false;
                 document.getElementById('content-view').style.display = 'block';
                 document.getElementById('edit-form').classList.remove('active');
+                
+                // If no active item, show image container
+                if (!activeItem) {
+                    document.getElementById('image-container').style.display = 'flex';
+                }
             }
 
             // --- Event Listeners for Main App ---
