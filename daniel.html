@@ -51,14 +51,12 @@
             z-index: -1;
         }
 
-        /* App Container with Flexbox */
         .app-container {
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* General Sidebar Styles */
         .sidebar {
             width: 300px;
             background: var(--glass);
@@ -134,7 +132,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Main Content Area */
         .main-content {
             flex-grow: 1;
             display: flex;
@@ -204,7 +201,6 @@
         .content-body::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
         .content-body::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
 
-        /* Edit Form */
         .edit-form {
             display: none;
             flex-direction: column;
@@ -268,7 +264,6 @@
             box-shadow: var(--shadow);
         }
 
-        /* Top Bar */
         .top-bar {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -349,7 +344,6 @@
             cursor: not-allowed;
         }
 
-        /* Notification */
         .notification {
             position: fixed;
             bottom: 2rem;
@@ -378,7 +372,6 @@
             opacity: 0.9;
         }
 
-        /* Loading Spinner */
         .loading-spinner {
             display: none;
             width: 40px;
@@ -396,14 +389,13 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Responsive */
         @media (max-width: 1024px) {
             .app-container {
                 flex-direction: column;
             }
             .sidebar {
                 width: 100%;
-                height: 200px; /* Fixed height for mobile */
+                height: 200px;
             }
             .main-content {
                 padding: 1rem;
@@ -415,7 +407,6 @@
     <div class="background-pattern"></div>
     
     <div class="app-container">
-        <!-- Sidebar Kiri: Reportan -->
         <aside class="sidebar" id="reportan-sidebar">
             <div class="sidebar-header">
                 <h2 class="sidebar-title">
@@ -429,7 +420,6 @@
             <div class="loading-spinner" id="reportan-loading"></div>
         </aside>
 
-        <!-- Main Content Area -->
         <main class="main-content">
             <div class="top-bar">
                 <a href="#" class="logo">
@@ -485,7 +475,6 @@
             </div>
         </main>
 
-        <!-- Sidebar Kanan: Informasi -->
         <aside class="sidebar" id="informasi-sidebar">
             <div class="sidebar-header">
                 <h2 class="sidebar-title">
@@ -500,7 +489,6 @@
         </aside>
     </div>
     
-    <!-- Notification -->
     <div class="notification" id="notification">
         <div class="notification-title">Notifikasi</div>
         <div class="notification-message" id="notification-message">Pesan notifikasi</div>
@@ -513,11 +501,9 @@
             const STORE_NAME = 'menus';
             const spreadsheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
             
-            // GID untuk setiap sheet
             const reportanGid = '0';
             const informasiGid = '867686987';
             
-            // URL untuk setiap sheet
             const reportanSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${reportanGid}&tqx=out:json`;
             const informasiSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${informasiGid}&tqx=out:json`;
             
@@ -556,7 +542,6 @@
                     const transaction = db.transaction([STORE_NAME], 'readwrite');
                     const store = transaction.objectStore(STORE_NAME);
                     
-                    // Clear existing data of this type
                     const index = store.index('type');
                     const request = index.openCursor(IDBKeyRange.only(type));
                     
@@ -568,9 +553,8 @@
                         }
                     };
                     
-                    // Add new data
                     data.forEach(item => {
-                        item.type = type; // Add type to identify the source
+                        item.type = type;
                         store.add(item);
                     });
                     
@@ -628,14 +612,12 @@
                 if (isEditingMode) exitEditMode();
                 activeItem = item;
 
-                // Update active state in both sidebars
                 document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
                 const activeElement = document.querySelector(`.menu-item[data-id="${item.id}"]`);
                 if (activeElement) {
                     activeElement.classList.add('active');
                 }
 
-                // Update main content
                 document.getElementById('content-title').textContent = item.title;
                 document.getElementById('content-view').textContent = item.content;
             }
@@ -643,35 +625,29 @@
             // --- Data Loading and Syncing ---
             async function loadData() {
                 try {
-                    // Show loading spinners
                     document.getElementById('reportan-loading').classList.add('active');
                     document.getElementById('informasi-loading').classList.add('active');
                     
                     db = await openDB();
                     
-                    // Try to get data from IndexedDB first
                     const localReportanData = await getDataFromDB('reportan');
                     const localInformasiData = await getDataFromDB('informasi');
                     
                     if (localReportanData.length > 0) {
                         reportanItems = localReportanData;
                         renderSidebarMenu('reportan-list', reportanItems);
-                        showNotification('Berhasil', 'Memuat data Reportan dari penyimpanan lokal...');
                     }
                     
                     if (localInformasiData.length > 0) {
                         informasiItems = localInformasiData;
                         renderSidebarMenu('informasi-list', informasiItems);
-                        showNotification('Berhasil', 'Memuat data Informasi dari penyimpanan lokal...');
                     }
                     
-                    // Try to sync with sheets in background
                     syncWithSheets(true); 
                 } catch (error) {
                     console.error("Error loading data:", error);
                     showNotification('Error', 'Gagal memuat data. Silakan coba lagi.');
                 } finally {
-                    // Hide loading spinners
                     document.getElementById('reportan-loading').classList.remove('active');
                     document.getElementById('informasi-loading').classList.remove('active');
                 }
@@ -683,73 +659,81 @@
                 syncButton.disabled = true;
                 syncText.textContent = isBackgroundSync ? 'Menyinkronkan...' : 'Mengambil data...';
 
+                let reportanSuccess = false;
+                let informasiSuccess = false;
+
+                // Sync Reportan
                 try {
-                    // Fetch Reportan data
                     const reportanResponse = await fetch(reportanSheetUrl);
                     if (!reportanResponse.ok) throw new Error(`Reportan network error: ${reportanResponse.statusText}`);
                     const reportanText = await reportanResponse.text();
-                    
-                    // Parse the Google Sheets response
                     const reportanJson = JSON.parse(reportanText.substring(47).slice(0, -2));
                     
-                    // Extract data from the response
                     const fetchedReportanData = reportanJson.table.rows.map((row, index) => {
-                        // Assuming first column is title and second is content
                         const title = row.c[0] ? row.c[0].v : '';
                         const content = row.c[1] ? row.c[1].v : '';
-                        
-                        return {
-                            id: `reportan_${index + 1}`, // Use index as ID with prefix
-                            title: title,
-                            content: content
-                        };
-                    }).filter(item => item.title); // Filter out empty rows
+                        return { id: `reportan_${index + 1}`, title, content };
+                    }).filter(item => item.title);
                     
-                    // Fetch Informasi data
-                    const informasiResponse = await fetch(informasiSheetUrl);
-                    if (!informasiResponse.ok) throw new Error(`Informasi network error: ${informasiResponse.statusText}`);
-                    const informasiText = await informasiResponse.text();
-                    
-                    // Parse the Google Sheets response
-                    const informasiJson = JSON.parse(informasiText.substring(47).slice(0, -2));
-                    
-                    // Extract data from the response
-                    const fetchedInformasiData = informasiJson.table.rows.map((row, index) => {
-                        // Assuming first column is title and second is content
-                        const title = row.c[0] ? row.c[0].v : '';
-                        const content = row.c[1] ? row.c[1].v : '';
-                        
-                        return {
-                            id: `informasi_${index + 1}`, // Use index as ID with prefix
-                            title: title,
-                            content: content
-                        };
-                    }).filter(item => item.title); // Filter out empty rows
-
                     if (fetchedReportanData.length > 0) {
                         reportanItems = fetchedReportanData;
                         renderSidebarMenu('reportan-list', reportanItems);
                         await saveDataToDB(reportanItems, 'reportan');
-                        showNotification('Berhasil', 'Data Reportan berhasil disinkronkan!');
-                    } else {
-                        showNotification('Peringatan', 'Tidak ada data Reportan ditemukan di Google Sheet.');
+                        reportanSuccess = true;
                     }
+                } catch (error) {
+                    console.error("Reportan sync failed:", error);
+                    if (!isBackgroundSync) showNotification('Error', `Gagal sinkronisasi Reportan: ${error.message}`);
+                }
+
+                // Sync Informasi
+                try {
+                    const informasiResponse = await fetch(informasiSheetUrl);
+                    if (!informasiResponse.ok) throw new Error(`Informasi network error: ${informasiResponse.statusText}`);
+                    const informasiText = await informasiResponse.text();
                     
+                    // Log the raw response for debugging
+                    console.log("Informasi raw response:", informasiText.substring(0, 200));
+
+                    const informasiJson = JSON.parse(informasiText.substring(47).slice(0, -2));
+                    
+                    const fetchedInformasiData = informasiJson.table.rows.map((row, index) => {
+                        const title = row.c[0] ? row.c[0].v : '';
+                        const content = row.c[1] ? row.c[1].v : '';
+                        return { id: `informasi_${index + 1}`, title, content };
+                    }).filter(item => item.title);
+
                     if (fetchedInformasiData.length > 0) {
                         informasiItems = fetchedInformasiData;
                         renderSidebarMenu('informasi-list', informasiItems);
                         await saveDataToDB(informasiItems, 'informasi');
-                        showNotification('Berhasil', 'Data Informasi berhasil disinkronkan!');
-                    } else {
-                        showNotification('Peringatan', 'Tidak ada data Informasi ditemukan di Google Sheet.');
+                        informasiSuccess = true;
                     }
                 } catch (error) {
-                    console.error("Sync failed:", error);
-                    if (!isBackgroundSync) showNotification('Error', 'Gagal sinkronisasi. Pastikan Google Sheet dapat diakses.');
-                } finally {
-                    syncButton.disabled = false;
-                    syncText.textContent = 'Sync';
+                    console.error("Informasi sync failed:", error);
+                    // Provide a more user-friendly error message
+                    if (!isBackgroundSync) {
+                        let message = 'Gagal sinkronisasi Informasi.';
+                        if (error.message.includes('Failed to fetch')) {
+                            message += ' Pastikan sheet Informasi dibagikan secara publik (Anyone with the link).';
+                        } else {
+                            message += ` Error: ${error.message}`;
+                        }
+                        showNotification('Error', message);
+                    }
                 }
+                
+                // Final notifications
+                if (!isBackgroundSync) {
+                    if (reportanSuccess) showNotification('Berhasil', 'Data Reportan berhasil disinkronkan!');
+                    if (informasiSuccess) showNotification('Berhasil', 'Data Informasi berhasil disinkronkan!');
+                    if (!reportanSuccess && !informasiSuccess) {
+                        showNotification('Gagal', 'Tidak ada data yang berhasil disinkronkan. Periksa console untuk detail.');
+                    }
+                }
+
+                syncButton.disabled = false;
+                syncText.textContent = 'Sync';
             }
 
             // --- Edit Mode ---
@@ -778,7 +762,6 @@
                 activeItem.content = document.getElementById('edit-content-input').value;
 
                 try {
-                    // Determine the type based on ID prefix
                     const type = activeItem.id.startsWith('reportan_') ? 'reportan' : 'informasi';
                     
                     if (db) {
@@ -787,7 +770,6 @@
                         store.put(activeItem);
                     }
                     
-                    // Update the appropriate array
                     if (type === 'reportan') {
                         const index = reportanItems.findIndex(item => item.id === activeItem.id);
                         if (index !== -1) reportanItems[index] = activeItem;
@@ -798,7 +780,7 @@
                         renderSidebarMenu('informasi-list', informasiItems);
                     }
                     
-                    showContent(activeItem); // Refresh main view
+                    showContent(activeItem);
                     exitEditMode();
                     showNotification('Berhasil', 'Perubahan disimpan!');
                 } catch (error) {
