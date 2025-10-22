@@ -378,6 +378,24 @@
             opacity: 0.9;
         }
 
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
+        .loading-spinner.active {
+            display: block;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .app-container {
@@ -408,6 +426,7 @@
             <ul class="menu-list" id="reportan-list">
                 <!-- Menu items will be injected here -->
             </ul>
+            <div class="loading-spinner" id="reportan-loading"></div>
         </aside>
 
         <!-- Main Content Area -->
@@ -477,6 +496,7 @@
             <ul class="menu-list" id="informasi-list">
                 <!-- Menu items will be injected here -->
             </ul>
+            <div class="loading-spinner" id="informasi-loading"></div>
         </aside>
     </div>
     
@@ -503,20 +523,69 @@
 
             // Sample data with new keywords
             const sampleData = [
-                { title: "Laporan Reportan Keuangan Q1 2024", content: "Laporan ini merinci pendapatan, pengeluaran, dan laba bersih perusahaan untuk kuartal pertama tahun 2024. Analisis menunjukkan pertumbuhan pendapatan sebesar 15%." },
-                { title: "Informasi Karyawan", content: "Berisi daftar seluruh karyawan, posisi, dan informasi kontak. Data ini diperbarui setiap bulan oleh HRD." },
-                { title: "Analisis Reportan Pasar Produk Baru", content: "Penelitian pasar menyeluruh untuk peluncuran produk 'X'. Target pasar adalah demografi usia 18-35 tahun yang aktif secara digital." },
-                { title: "Informasi Kontak Perusahaan", content: "Alamat: Jl. Contoh No. 123, Jakarta. Email: info@perusahaan.com. Telepon: (021) 123-4567." },
-                { title: "Reportan Kegiatan Tim IT", content: "Dokumentasi kegiatan tim IT selama bulan Maret 2024. Fokus utama adalah migrasi server ke cloud, yang telah selesai 80%." },
-                { title: "Informasi Umum Kantor", content: "Jam kerja: Senin - Jumat, 09:00 - 18:00. Fasilitas: Kantin, Parkir, Ruang Istirahat." },
-                { title: "Laporan Reportan Evaluasi Kinerja", content: "Hasil evaluasi kinerja semesteran. Secara keseluruhan, 85% karyawan memenuhi atau melebihi target yang ditetapkan." },
-                { title: "Informasi Kebijakan Perusahaan", content: "Dokumen ini berisi semua kebijakan yang berlaku di perusahaan, termasuk kode etik, kebijakan cuti, dan aturan lainnya." }
+                { id: 1, title: "Laporan Reportan Keuangan Q1 2024", content: "Laporan ini merinci pendapatan, pengeluaran, dan laba bersih perusahaan untuk kuartal pertama tahun 2024. Analisis menunjukkan pertumbuhan pendapatan sebesar 15%." },
+                { id: 2, title: "Informasi Karyawan", content: "Berisi daftar seluruh karyawan, posisi, dan informasi kontak. Data ini diperbarui setiap bulan oleh HRD." },
+                { id: 3, title: "Analisis Reportan Pasar Produk Baru", content: "Penelitian pasar menyeluruh untuk peluncuran produk 'X'. Target pasar adalah demografi usia 18-35 tahun yang aktif secara digital." },
+                { id: 4, title: "Informasi Kontak Perusahaan", content: "Alamat: Jl. Contoh No. 123, Jakarta. Email: info@perusahaan.com. Telepon: (021) 123-4567." },
+                { id: 5, title: "Reportan Kegiatan Tim IT", content: "Dokumentasi kegiatan tim IT selama bulan Maret 2024. Fokus utama adalah migrasi server ke cloud, yang telah selesai 80%." },
+                { id: 6, title: "Informasi Umum Kantor", content: "Jam kerja: Senin - Jumat, 09:00 - 18:00. Fasilitas: Kantin, Parkir, Ruang Istirahat." },
+                { id: 7, title: "Laporan Reportan Evaluasi Kinerja", content: "Hasil evaluasi kinerja semesteran. Secara keseluruhan, 85% karyawan memenuhi atau melebihi target yang ditetapkan." },
+                { id: 8, title: "Informasi Kebijakan Perusahaan", content: "Dokumen ini berisi semua kebijakan yang berlaku di perusahaan, termasuk kode etik, kebijakan cuti, dan aturan lainnya." }
             ];
 
             // --- IndexedDB Functions ---
-            function openDB() { /* ... same as before ... */ }
-            function saveDataToDB(data) { /* ... same as before ... */ }
-            function getDataFromDB() { /* ... same as before ... */ }
+            function openDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+                    
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        db = request.result;
+                        resolve(db);
+                    };
+                    
+                    request.onupgradeneeded = (event) => {
+                        db = event.target.result;
+                        if (!db.objectStoreNames.contains(STORE_NAME)) {
+                            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                            store.createIndex('title', 'title', { unique: false });
+                        }
+                    };
+                });
+            }
+
+            function saveDataToDB(data) {
+                return new Promise((resolve, reject) => {
+                    if (!db) return reject('Database not initialized');
+                    
+                    const transaction = db.transaction([STORE_NAME], 'readwrite');
+                    const store = transaction.objectStore(STORE_NAME);
+                    
+                    // Clear existing data
+                    store.clear();
+                    
+                    // Add new data
+                    data.forEach(item => {
+                        store.add(item);
+                    });
+                    
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = () => reject(transaction.error);
+                });
+            }
+
+            function getDataFromDB() {
+                return new Promise((resolve, reject) => {
+                    if (!db) return reject('Database not initialized');
+                    
+                    const transaction = db.transaction([STORE_NAME], 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.getAll();
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
 
             // --- UI Functions ---
             function showNotification(title, message, duration = 3000) {
@@ -530,6 +599,7 @@
             function categorizeAndRenderMenus(data) {
                 reportanItems = [];
                 informasiItems = [];
+                
                 data.forEach(item => {
                     const titleLower = item.title.toLowerCase();
                     if (titleLower.includes('reportan')) {
@@ -541,6 +611,7 @@
                         informasiItems.push(item);
                     }
                 });
+                
                 renderSidebarMenu('reportan-list', reportanItems);
                 renderSidebarMenu('informasi-list', informasiItems);
             }
@@ -548,10 +619,12 @@
             function renderSidebarMenu(listId, items) {
                 const listContainer = document.getElementById(listId);
                 listContainer.innerHTML = '';
+                
                 if (items.length === 0) {
                     listContainer.innerHTML = `<li class="menu-item" style="cursor: default; opacity: 0.6;">(Tidak ada item)</li>`;
                     return;
                 }
+                
                 items.forEach(item => {
                     const li = document.createElement('li');
                     li.className = 'menu-item';
@@ -584,8 +657,13 @@
             // --- Data Loading and Syncing ---
             async function loadData() {
                 try {
+                    // Show loading spinners
+                    document.getElementById('reportan-loading').classList.add('active');
+                    document.getElementById('informasi-loading').classList.add('active');
+                    
                     db = await openDB();
                     const localData = await getDataFromDB();
+                    
                     if (localData.length > 0) {
                         allMenuData = localData;
                         categorizeAndRenderMenus(allMenuData);
@@ -593,15 +671,21 @@
                     } else {
                         allMenuData = sampleData;
                         categorizeAndRenderMenus(allMenuData);
-                        saveDataToDB(allMenuData);
+                        await saveDataToDB(allMenuData);
                         showNotification('Berhasil', 'Menggunakan data sampel...');
                     }
+                    
+                    // Try to sync with sheet in background
                     syncWithSheet(true); 
                 } catch (error) {
                     console.error("IndexedDB failed, using sample data:", error);
                     allMenuData = sampleData;
                     categorizeAndRenderMenus(allMenuData);
                     showNotification('Peringatan', 'Menggunakan data sampel.');
+                } finally {
+                    // Hide loading spinners
+                    document.getElementById('reportan-loading').classList.remove('active');
+                    document.getElementById('informasi-loading').classList.remove('active');
                 }
             }
 
@@ -615,22 +699,34 @@
                     const response = await fetch(sheetUrl);
                     if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
                     const text = await response.text();
+                    
+                    // Parse the Google Sheets response
                     const json = JSON.parse(text.substring(47).slice(0, -2));
                     
-                    const fetchedData = json.table.rows.map(row => ({
-                        title: row.c[0] ? row.c[0].v : '',
-                        content: row.c[1] ? row.c[1].v : ''
-                    })).filter(item => item.title);
+                    // Extract data from the response
+                    const fetchedData = json.table.rows.map((row, index) => {
+                        // Assuming first column is title and second is content
+                        const title = row.c[0] ? row.c[0].v : '';
+                        const content = row.c[1] ? row.c[1].v : '';
+                        
+                        return {
+                            id: index + 1, // Use index as ID
+                            title: title,
+                            content: content
+                        };
+                    }).filter(item => item.title); // Filter out empty rows
 
                     if (fetchedData.length > 0) {
                         allMenuData = fetchedData;
                         categorizeAndRenderMenus(allMenuData);
                         await saveDataToDB(allMenuData);
                         showNotification('Berhasil', isBackgroundSync ? 'Data diperbarui.' : 'Data berhasil disinkronkan!');
+                    } else {
+                        showNotification('Peringatan', 'Tidak ada data ditemukan di Google Sheet.');
                     }
                 } catch (error) {
                     console.error("Sync failed:", error);
-                    if (!isBackgroundSync) showNotification('Error', 'Gagal sinkronisasi.');
+                    if (!isBackgroundSync) showNotification('Error', 'Gagal sinkronisasi. Pastikan Google Sheet dapat diakses.');
                 } finally {
                     syncButton.disabled = false;
                     syncText.textContent = 'Sync';
@@ -655,8 +751,10 @@
 
             // --- Event Listeners ---
             document.getElementById('edit-button').addEventListener('click', enterEditMode);
+            
             document.getElementById('save-edit-btn').addEventListener('click', async () => {
                 if (!activeItem) return;
+                
                 activeItem.title = document.getElementById('edit-title-input').value;
                 activeItem.content = document.getElementById('edit-content-input').value;
 
@@ -666,6 +764,7 @@
                         const store = transaction.objectStore(STORE_NAME);
                         store.put(activeItem);
                     }
+                    
                     categorizeAndRenderMenus(allMenuData); // Re-render both sidebars
                     showContent(activeItem); // Refresh main view
                     exitEditMode();
@@ -675,28 +774,36 @@
                     showNotification('Error', 'Gagal menyimpan.');
                 }
             });
+            
             document.getElementById('cancel-edit-btn').addEventListener('click', exitEditMode);
             document.getElementById('sync-button').addEventListener('click', () => syncWithSheet(false));
 
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase().trim();
+                
                 if (searchTerm === "") {
                     categorizeAndRenderMenus(allMenuData);
                     return;
                 }
+                
                 const filteredReportan = reportanItems.filter(item => 
-                    item.title.toLowerCase().includes(searchTerm) || item.content.toLowerCase().includes(searchTerm)
+                    item.title.toLowerCase().includes(searchTerm) || 
+                    item.content.toLowerCase().includes(searchTerm)
                 );
+                
                 const filteredInformasi = informasiItems.filter(item => 
-                    item.title.toLowerCase().includes(searchTerm) || item.content.toLowerCase().includes(searchTerm)
+                    item.title.toLowerCase().includes(searchTerm) || 
+                    item.content.toLowerCase().includes(searchTerm)
                 );
+                
                 renderSidebarMenu('reportan-list', filteredReportan);
                 renderSidebarMenu('informasi-list', filteredInformasi);
             });
             
             document.getElementById('copy-button').addEventListener('click', function() {
                 if (!activeItem || isEditingMode) return;
+                
                 navigator.clipboard.writeText(activeItem.content).then(() => {
                     showNotification('Berhasil', 'Konten berhasil disalin!');
                 }).catch(err => {
