@@ -492,42 +492,11 @@
         }
         
         .image-container img {
-            max-width: 80%;
-            max-height: 70%;
-            border-radius: 1rem;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-            object-fit: contain;
-        }
-        
-        .image-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-        }
-        
-        .image-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff, 0 0 40px #ffffff;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        
-        .image-subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.8);
-            text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff;
-            text-align: center;
-            max-width: 80%;
+            object-fit: contain;
+            border-radius: 1rem;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
         }
 
         /* Chatbot Styles */
@@ -847,10 +816,6 @@
                     <!-- Empty by default, will show image when no menu is selected -->
                     <div class="image-container" id="image-container">
                         <img src="https://z-cdn-media.chatglm.cn/files/2586e647-89c2-4ce6-a148-f5575b743edf_pasted_image_1761163337961.png?auth_key=1792699419-fbd4f90d91404fb9809d71f98e7dcecc-0-5780080d8770b00d6aa0b33b78681b4a" alt="Portal Image">
-                        <div class="image-overlay">
-                            <h2 class="image-title">Portal Reportan & Informasi</h2>
-                            <p class="image-subtitle">Pilih menu dari sidebar untuk melihat detailnya</p>
-                        </div>
                     </div>
                 </div>
 
