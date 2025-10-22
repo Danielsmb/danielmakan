@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Interaktif Modern</title>
+    <title>Portal Laporan Interaktif</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
             --accent: #ec4899;
             --success: #10b981;
             --warning: #f59e0b;
@@ -22,8 +22,8 @@
             --text-light: #64748b;
             --glass: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         * {
@@ -71,11 +71,13 @@
         }
 
         .navbar-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .logo {
@@ -95,43 +97,18 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 1rem;
-        }
-
-        .nav-item {
-            position: relative;
-        }
-
-        .nav-link {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         .nav-actions {
             display: flex;
             gap: 1rem;
             align-items: center;
+            flex-grow: 1;
+            justify-content: flex-end;
         }
 
         .search-container {
             position: relative;
+            flex-grow: 1;
+            max-width: 400px;
         }
 
         .search-input {
@@ -140,13 +117,12 @@
             border-radius: 2rem;
             padding: 0.5rem 1rem 0.5rem 2.5rem;
             color: white;
-            width: 200px;
+            width: 100%;
             transition: all 0.3s ease;
         }
 
         .search-input:focus {
             outline: none;
-            width: 250px;
             background: rgba(255, 255, 255, 0.2);
         }
 
@@ -174,6 +150,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            white-space: nowrap;
         }
 
         .sync-button:hover {
@@ -186,231 +163,184 @@
             cursor: not-allowed;
         }
 
-        /* Main Content */
+        /* Main Content Area */
         .main-content {
             flex: 1;
             padding: 2rem;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             width: 100%;
         }
 
-        .content-header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .content-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .content-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
-        }
-
-        /* Menu Grid */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .menu-card {
+        .view-container {
             background: var(--glass);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-radius: 1rem;
             border: 1px solid var(--glass-border);
             padding: 1.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            min-height: 70vh;
+            box-shadow: var(--shadow-lg);
             position: relative;
-            overflow: hidden;
+        }
+
+        /* Menu List View */
+        #menu-list-view {
+            display: block;
+        }
+        #menu-list-view.hidden {
+            display: none;
+        }
+
+        .view-header {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .view-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .menu-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(10px);
             box-shadow: var(--shadow);
         }
 
-        .menu-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        .menu-item-icon {
+            font-size: 2rem;
+            color: var(--accent);
+            min-width: 50px;
+            text-align: center;
         }
 
-        .menu-card:hover::before {
-            opacity: 1;
+        .menu-item-content {
+            flex-grow: 1;
         }
 
-        .menu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .menu-card.active {
-            background: rgba(99, 102, 241, 0.2);
-            border-color: rgba(99, 102, 241, 0.5);
-        }
-
-        .menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .menu-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 0.75rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .menu-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .menu-action-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .menu-action-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-
-        .menu-title {
+        .menu-item-title {
             font-size: 1.25rem;
             font-weight: 600;
             color: white;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
-        .menu-description {
+        .menu-item-preview {
             color: rgba(255, 255, 255, 0.8);
             font-size: 0.9rem;
-            line-height: 1.5;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
-        /* Content Panel */
-        .content-panel {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            border: 1px solid var(--glass-border);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            position: relative;
+        
+        .no-results {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 3rem 1rem;
+        }
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
         }
 
-        .content-panel-header {
+        /* Content Detail View */
+        #content-detail-view {
+            display: none;
+        }
+        #content-detail-view.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .detail-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--glass-border);
         }
 
-        .content-panel-title {
-            font-size: 1.5rem;
-            font-weight: 600;
+        .detail-title {
+            font-size: 1.75rem;
+            font-weight: 700;
             color: white;
         }
 
-        .content-panel-actions {
+        .detail-actions {
             display: flex;
             gap: 0.5rem;
         }
 
-        .panel-action-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+        .action-button {
             background: rgba(255, 255, 255, 0.1);
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
         }
-
-        .panel-action-btn:hover {
+        .action-button:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
-        .content-body {
+        .detail-body {
             color: rgba(255, 255, 255, 0.9);
-            line-height: 1.7;
-        }
-
-        .content-info {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .content-label {
-            font-weight: 600;
-            color: white;
-        }
-
-        .content-value {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 0.5rem;
+            line-height: 1.8;
+            font-size: 1.05rem;
             white-space: pre-wrap;
         }
 
+        /* Edit Form within Detail View */
         .edit-form {
             display: none;
         }
-
+        .edit-form.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
         .form-group {
             margin-bottom: 1.5rem;
         }
-
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: white;
         }
-
         .form-input, .form-textarea {
             width: 100%;
             padding: 0.75rem;
@@ -421,24 +351,20 @@
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
         }
-
         .form-input:focus, .form-textarea:focus {
             outline: none;
             background: rgba(255, 255, 255, 0.2);
             border-color: var(--primary);
         }
-
         .form-textarea {
-            min-height: 200px;
+            min-height: 300px;
             resize: vertical;
         }
-
         .form-actions {
             display: flex;
             gap: 1rem;
             justify-content: flex-end;
         }
-
         .btn {
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
@@ -447,17 +373,14 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
         .btn-primary {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, var(--success), #34d399);
             color: white;
         }
-
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             color: white;
         }
-
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow);
@@ -479,17 +402,14 @@
             z-index: 1000;
             max-width: 300px;
         }
-
         .notification.show {
             transform: translateY(0);
             opacity: 1;
         }
-
         .notification-title {
             font-weight: 600;
             margin-bottom: 0.25rem;
         }
-
         .notification-message {
             font-size: 0.9rem;
             opacity: 0.9;
@@ -502,7 +422,6 @@
             align-items: center;
             height: 200px;
         }
-
         .spinner {
             width: 50px;
             height: 50px;
@@ -511,7 +430,6 @@
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
         }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -520,28 +438,22 @@
         @media (max-width: 768px) {
             .navbar-container {
                 flex-direction: column;
+            }
+            .nav-actions {
+                width: 100%;
+                max-width: none;
+            }
+            .search-container {
+                max-width: none;
+            }
+            .detail-header {
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 1rem;
             }
-
-            .nav-menu {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .search-input {
-                width: 150px;
-            }
-
-            .search-input:focus {
-                width: 180px;
-            }
-
-            .menu-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .content-info {
-                grid-template-columns: 1fr;
+            .detail-actions {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
@@ -554,41 +466,14 @@
         <nav class="navbar">
             <div class="navbar-container">
                 <a href="#" class="logo">
-                    <i class="fas fa-rocket"></i>
-                    <span>Menu Interaktif</span>
+                    <i class="fas fa-file-alt"></i>
+                    <span>Portal Laporan</span>
                 </a>
-                
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active">
-                            <i class="fas fa-home"></i>
-                            <span>Beranda</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-th-large"></i>
-                            <span>Semua Menu</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-star"></i>
-                            <span>Favorit</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-cog"></i>
-                            <span>Pengaturan</span>
-                        </a>
-                    </li>
-                </ul>
                 
                 <div class="nav-actions">
                     <div class="search-container">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" id="search-input" placeholder="Cari menu...">
+                        <input type="text" class="search-input" id="search-input" placeholder="Cari laporan...">
                     </div>
                     
                     <button id="sync-button" class="sync-button">
@@ -601,56 +486,58 @@
         
         <!-- Main Content -->
         <main class="main-content">
-            <div class="content-header">
-                <h1 class="content-title">Menu Interaktif</h1>
-                <p class="content-subtitle">Jelajahi berbagai menu menarik dengan tampilan yang modern</p>
-            </div>
-            
-            <!-- Menu Grid -->
-            <div class="menu-grid" id="menu-container">
-                <div class="loading">
-                    <div class="spinner"></div>
-                </div>
-            </div>
-            
-            <!-- Content Panel -->
-            <div class="content-panel">
-                <div class="content-panel-header">
-                    <h2 class="content-panel-title" id="content-title">Pilih Menu</h2>
-                    <div class="content-panel-actions">
-                        <button class="panel-action-btn" id="copy-button" title="Salin Konten">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                        <button class="panel-action-btn" id="edit-button" title="Edit Konten">
-                            <i class="fas fa-edit"></i>
-                        </button>
+            <div class="view-container">
+                <!-- MENU LIST VIEW -->
+                <div id="menu-list-view">
+                    <div class="view-header">
+                        <h1 class="view-title">Daftar Laporan</h1>
+                    </div>
+                    <div class="menu-list" id="menu-list-container">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="content-body" id="content-view">
-                    <div class="content-info">
-                        <div class="content-label">Menu</div>
-                        <div class="content-value" id="content-title-value">-</div>
+
+                <!-- CONTENT DETAIL VIEW -->
+                <div id="content-detail-view">
+                    <div class="detail-header">
+                        <h1 class="detail-title" id="detail-title">Judul Laporan</h1>
+                        <div class="detail-actions">
+                            <button class="action-button" id="back-button">
+                                <i class="fas fa-arrow-left"></i>
+                                <span>Kembali</span>
+                            </button>
+                            <button class="action-button" id="copy-button">
+                                <i class="fas fa-copy"></i>
+                                <span>Salin</span>
+                            </button>
+                            <button class="action-button" id="edit-button">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-body" id="detail-body">
+                        Konten laporan akan muncul di sini.
+                    </div>
+
+                    <div class="edit-form" id="edit-form">
+                        <div class="form-group">
+                            <label class="form-label" for="edit-title">Judul Laporan</label>
+                            <input type="text" class="form-input" id="edit-title-input" required>
+                        </div>
                         
-                        <div class="content-label">Informasi</div>
-                        <div class="content-value" id="content-text-value">Pilih menu dari grid di atas untuk melihat detailnya.</div>
-                    </div>
-                </div>
-                
-                <div class="edit-form" id="content-edit">
-                    <div class="form-group">
-                        <label class="form-label" for="edit-title">Judul Menu</label>
-                        <input type="text" class="form-input" id="edit-title" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="edit-content">Konten</label>
-                        <textarea class="form-textarea" id="edit-content" required></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button class="btn btn-secondary" id="cancel-btn">Batal</button>
-                        <button class="btn btn-primary" id="save-btn">Simpan</button>
+                        <div class="form-group">
+                            <label class="form-label" for="edit-content">Isi Laporan</label>
+                            <textarea class="form-textarea" id="edit-content-input" required></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" id="cancel-edit-btn">Batal</button>
+                            <button class="btn btn-primary" id="save-edit-btn">Simpan Perubahan</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -665,43 +552,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const DB_NAME = 'MenuDatabase';
+            const DB_NAME = 'ReportDatabase';
             const DB_VERSION = 1;
-            const STORE_NAME = 'menus';
+            const STORE_NAME = 'reports';
             const spreadsheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
             const sheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json`;
             
             let db;
-            let menuData = [];
-            let activeMenuIndex = -1;
+            let reportData = [];
+            let activeReportIndex = -1;
             let isEditingMode = false;
 
             // Sample data for demonstration
             const sampleData = [
-                {
-                    title: "Beranda",
-                    content: "Ini adalah halaman beranda dari aplikasi web interaktif kami. Di sini Anda dapat menemukan informasi terbaru dan fitur-fitur menarik."
-                },
-                {
-                    title: "Profil",
-                    content: "Halaman profil menampilkan informasi pengguna termasuk nama, email, dan preferensi pengaturan. Anda dapat mengedit informasi ini kapan saja."
-                },
-                {
-                    title: "Galeri",
-                    content: "Jelajahi koleksi gambar dan video kami di galeri. Kami memiliki berbagai konten visual yang menarik untuk dinikmati."
-                },
-                {
-                    title: "Kontak",
-                    content: "Hubungi kami melalui formulir kontak atau informasi yang tersedia. Kami senang mendengar dari Anda dan akan merespons secepatnya."
-                },
-                {
-                    title: "Tentang",
-                    content: "Pelajari lebih lanjut tentang perusahaan kami, visi, misi, dan tim yang berada di balik produk dan layanan yang kami tawarkan."
-                },
-                {
-                    title: "Layanan",
-                    content: "Temukan berbagai layanan yang kami tawarkan. Kami berkomitmen untuk memberikan solusi terbaik untuk kebutuhan Anda."
-                }
+                { title: "Laporan Keuangan Q1 2024", content: "Laporan ini merinci pendapatan, pengeluaran, dan laba bersih perusahaan untuk kuartal pertama tahun 2024. Analisis menunjukkan pertumbuhan pendapatan sebesar 15% dibandingkan dengan kuartal yang sama tahun lalu. Pengeluaran operasional berhasil ditekan sebesar 5%, sehingga margin laba meningkat secara signifikan." },
+                { title: "Analisis Pasar Produk Baru", content: "Penelitian pasar menyeluruh untuk peluncuran produk 'X'. Target pasar adalah demografi usia 18-35 tahun yang aktif secara digital. Potensi pasar diperkirakan sebesar 5 juta pengguna di tahun pertama. Strategi pemasaran akan fokus pada media sosial dan kolaborasi dengan influencer." },
+                { title: "Laporan Kegiatan Tim IT", content: "Dokumentasi kegiatan tim IT selama bulan Maret 2024. Fokus utama adalah migrasi server ke cloud, yang telah selesai 80%. Selain itu, dilakukan pembaruan keamanan pada seluruh sistem dan pelatihan untuk karyawan mengenai praktik keamanan siber yang baru." },
+                { title: "Evaluasi Kinerja Karyawan", content: "Hasil evaluasi kinerja semesteran. Secara keseluruhan, 85% karyawan memenuhi atau melebihi target yang ditetapkan. Area yang perlu diperbaiki adalah kolaborasi antar departemen. Program pelatihan timbuilding akan diadakan pada kuartal berikutnya." },
+                { title: "Rencana Pengembangan Website", content: "Proposal pengembangan website perusahaan untuk tahun fiskal 2024/2025. Rencana meliputi perombakan total UI/UX, integrasi dengan sistem CRM, dan pengoptimalan SEO. Proyek diperkirakan akan memakan waktu 6 bulan dengan anggaran yang telah disetujui." },
+                { title: "Laporan Kunjungan Client", content: "Ringkasan kunjungan ke klien-klien utama selama bulan April. Umpan balik secara umum positif, terkait kualitas produk dan layanan purnajual. Beberapa masukan mengenai waktu pengiriman akan menjadi fokus perbaikan untuk departemen logistik." }
             ];
 
             // --- IndexedDB Functions ---
@@ -724,7 +593,7 @@
                 return new Promise((resolve, reject) => {
                     const transaction = db.transaction([STORE_NAME], 'readwrite');
                     const store = transaction.objectStore(STORE_NAME);
-                    store.clear(); // Clear old data
+                    store.clear();
                     data.forEach(item => store.add(item));
                     transaction.oncomplete = () => resolve();
                     transaction.onerror = () => reject(transaction.error);
@@ -755,91 +624,56 @@
                 setTimeout(() => notification.classList.remove('show'), duration);
             }
 
-            function renderMenu() {
-                const menuContainer = document.getElementById('menu-container');
-                if (menuData.length === 0) {
-                    menuContainer.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            function renderMenuList(dataToRender = reportData) {
+                const menuListContainer = document.getElementById('menu-list-container');
+                if (dataToRender.length === 0) {
+                    menuListContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-inbox"></i>
+                            <p>Tidak ada laporan yang ditemukan.</p>
+                        </div>
+                    `;
                     return;
                 }
                 
-                menuContainer.innerHTML = '';
-                
-                menuData.forEach((item, index) => {
-                    const menuCard = document.createElement('div');
-                    menuCard.className = 'menu-card';
-                    menuCard.dataset.index = index;
+                menuListContainer.innerHTML = '';
+                dataToRender.forEach((item, index) => {
+                    const originalIndex = reportData.indexOf(item); // Get original index for actions
+                    const menuItem = document.createElement('div');
+                    menuItem.className = 'menu-item';
+                    menuItem.dataset.originalIndex = originalIndex;
                     
-                    const menuHeader = document.createElement('div');
-                    menuHeader.className = 'menu-header';
+                    menuItem.innerHTML = `
+                        <div class="menu-item-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-title">${item.title}</div>
+                            <div class="menu-item-preview">${item.content}</div>
+                        </div>
+                    `;
                     
-                    const menuIcon = document.createElement('div');
-                    menuIcon.className = 'menu-icon';
-                    menuIcon.innerHTML = `<i class="fas fa-${getMenuIcon(item.title)}"></i>`;
-                    
-                    const menuActions = document.createElement('div');
-                    menuActions.className = 'menu-actions';
-                    
-                    const editBtn = document.createElement('button');
-                    editBtn.className = 'menu-action-btn';
-                    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-                    editBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        enterEditMode(index);
-                    });
-                    
-                    menuActions.appendChild(editBtn);
-                    menuHeader.appendChild(menuIcon);
-                    menuHeader.appendChild(menuActions);
-                    
-                    const menuTitle = document.createElement('h3');
-                    menuTitle.className = 'menu-title';
-                    menuTitle.textContent = item.title;
-                    
-                    const menuDescription = document.createElement('p');
-                    menuDescription.className = 'menu-description';
-                    menuDescription.textContent = item.content;
-                    
-                    menuCard.appendChild(menuHeader);
-                    menuCard.appendChild(menuTitle);
-                    menuCard.appendChild(menuDescription);
-                    
-                    menuCard.addEventListener('click', () => {
-                        if (!isEditingMode) selectMenu(index);
-                    });
-                    
-                    menuContainer.appendChild(menuCard);
+                    menuItem.addEventListener('click', () => showContentDetailView(originalIndex));
+                    menuListContainer.appendChild(menuItem);
                 });
             }
             
-            function getMenuIcon(title) {
-                const iconMap = {
-                    'Beranda': 'home',
-                    'Profil': 'user',
-                    'Galeri': 'images',
-                    'Kontak': 'envelope',
-                    'Tentang': 'info-circle',
-                    'Layanan': 'cogs'
-                };
-                
-                return iconMap[title] || 'file';
-            }
-            
-            function selectMenu(index) {
-                if (index < 0 || index >= menuData.length) return;
+            function showMenuListView() {
+                document.getElementById('menu-list-view').classList.remove('hidden');
+                document.getElementById('content-detail-view').classList.remove('active');
                 if (isEditingMode) exitEditMode();
+            }
+
+            function showContentDetailView(index) {
+                if (index < 0 || index >= reportData.length) return;
+                activeReportIndex = index;
+                const item = reportData[index];
                 
-                document.querySelectorAll('.menu-card').forEach(card => card.classList.remove('active'));
-                const selectedCard = document.querySelector(`.menu-card[data-index="${index}"]`);
-                if (selectedCard) {
-                    selectedCard.classList.add('active');
-                    selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
+                document.getElementById('detail-title').textContent = item.title;
+                document.getElementById('detail-body').textContent = item.content;
                 
-                const item = menuData[index];
-                document.getElementById('content-title').textContent = item.title;
-                document.getElementById('content-title-value').textContent = item.title;
-                document.getElementById('content-text-value').textContent = item.content;
-                activeMenuIndex = index;
+                document.getElementById('menu-list-view').classList.add('hidden');
+                document.getElementById('content-detail-view').classList.add('active');
             }
 
             // --- Data Loading and Syncing ---
@@ -848,28 +682,21 @@
                     db = await openDB();
                     const localData = await getDataFromDB();
                     if (localData.length > 0) {
-                        menuData = localData;
-                        renderMenu();
-                        selectMenu(0);
+                        reportData = localData;
+                        renderMenuList();
                         showNotification('Berhasil', 'Memuat data dari penyimpanan lokal...');
                     } else {
-                        // Use sample data if no local data
-                        menuData = sampleData;
-                        renderMenu();
-                        selectMenu(0);
-                        saveDataToDB(menuData);
+                        reportData = sampleData;
+                        renderMenuList();
+                        saveDataToDB(reportData);
                         showNotification('Berhasil', 'Menggunakan data sampel...');
                     }
-                    
-                    // Try to sync in the background
                     syncWithSheet(true); 
                 } catch (error) {
                     console.error("IndexedDB failed, using sample data:", error);
-                    // If IndexedDB fails, use sample data
-                    menuData = sampleData;
-                    renderMenu();
-                    selectMenu(0);
-                    showNotification('Peringatan', 'Menggunakan data sampel karena IndexedDB tidak tersedia.');
+                    reportData = sampleData;
+                    renderMenuList();
+                    showNotification('Peringatan', 'Menggunakan data sampel.');
                 }
             }
 
@@ -881,7 +708,7 @@
 
                 try {
                     const response = await fetch(sheetUrl);
-                    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                    if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
                     const text = await response.text();
                     const json = JSON.parse(text.substring(47).slice(0, -2));
                     
@@ -891,18 +718,17 @@
                     })).filter(item => item.title);
 
                     if (fetchedData.length > 0) {
-                        menuData = fetchedData;
-                        renderMenu();
-                        if (menuData.length > 0) selectMenu(0);
-                        await saveDataToDB(menuData);
-                        showNotification('Berhasil', isBackgroundSync ? 'Data berhasil diperbarui di latar belakang.' : 'Data berhasil disinkronkan!');
+                        reportData = fetchedData;
+                        renderMenuList();
+                        await saveDataToDB(reportData);
+                        showNotification('Berhasil', isBackgroundSync ? 'Data diperbarui.' : 'Data berhasil disinkronkan!');
                     } else {
-                        if(!isBackgroundSync) showNotification('Info', 'Google Sheet kosong atau tidak ada data valid.');
+                        if(!isBackgroundSync) showNotification('Info', 'Google Sheet kosong.');
                     }
                 } catch (error) {
                     console.error("Sync failed:", error);
                     if (!isBackgroundSync) {
-                        showNotification('Error', 'Gagal sinkronisasi. Periksa koneksi internet dan pastikan Sheet dipublikasikan.');
+                        showNotification('Error', 'Gagal sinkronisasi. Periksa koneksi.');
                     }
                 } finally {
                     syncButton.disabled = false;
@@ -911,86 +737,75 @@
             }
 
             // --- Edit Mode ---
-            function enterEditMode(index) {
+            function enterEditMode() {
+                if (activeReportIndex < 0) return;
                 isEditingMode = true;
-                activeMenuIndex = index;
-                const item = menuData[index];
-                document.getElementById('edit-title').value = item.title;
-                document.getElementById('edit-content').value = item.content;
-                document.getElementById('content-view').style.display = 'none';
-                document.getElementById('content-edit').style.display = 'block';
+                const item = reportData[activeReportIndex];
+                document.getElementById('edit-title-input').value = item.title;
+                document.getElementById('edit-content-input').value = item.content;
+                document.getElementById('detail-body').style.display = 'none';
+                document.getElementById('edit-form').classList.add('active');
             }
 
             function exitEditMode() {
                 isEditingMode = false;
-                document.getElementById('content-view').style.display = 'block';
-                document.getElementById('content-edit').style.display = 'none';
+                document.getElementById('detail-body').style.display = 'block';
+                document.getElementById('edit-form').classList.remove('active');
             }
 
             // --- Event Listeners ---
-            document.getElementById('save-btn').addEventListener('click', async () => {
-                const newTitle = document.getElementById('edit-title').value;
-                const newContent = document.getElementById('edit-content').value;
+            document.getElementById('back-button').addEventListener('click', showMenuListView);
 
-                menuData[activeMenuIndex].title = newTitle;
-                menuData[activeMenuIndex].content = newContent;
+            document.getElementById('edit-button').addEventListener('click', enterEditMode);
+            
+            document.getElementById('save-edit-btn').addEventListener('click', async () => {
+                const newTitle = document.getElementById('edit-title-input').value;
+                const newContent = document.getElementById('edit-content-input').value;
+
+                reportData[activeReportIndex].title = newTitle;
+                reportData[activeReportIndex].content = newContent;
 
                 try {
                     if (db) {
                         const transaction = db.transaction([STORE_NAME], 'readwrite');
                         const store = transaction.objectStore(STORE_NAME);
-                        store.put(menuData[activeMenuIndex]);
+                        store.put(reportData[activeReportIndex]);
                     }
-                    renderMenu();
-                    selectMenu(activeMenuIndex);
+                    renderMenuList(); // Re-render list to show updated title
+                    showContentDetailView(activeReportIndex); // Refresh detail view
                     exitEditMode();
-                    showNotification('Berhasil', 'Perubahan berhasil disimpan secara lokal!');
+                    showNotification('Berhasil', 'Perubahan disimpan!');
                 } catch (error) {
-                    console.error("Failed to save to IndexedDB:", error);
-                    showNotification('Error', 'Gagal menyimpan perubahan secara lokal.');
+                    console.error("Failed to save:", error);
+                    showNotification('Error', 'Gagal menyimpan perubahan.');
                 }
             });
 
-            document.getElementById('cancel-btn').addEventListener('click', exitEditMode);
-            document.getElementById('edit-button').addEventListener('click', () => {
-                if (activeMenuIndex >= 0) {
-                    enterEditMode(activeMenuIndex);
-                }
-            });
+            document.getElementById('cancel-edit-btn').addEventListener('click', exitEditMode);
             document.getElementById('sync-button').addEventListener('click', () => syncWithSheet(false));
 
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase().trim();
-                let foundIndex = -1;
                 if (searchTerm === "") {
-                    if (menuData.length > 0) selectMenu(0);
+                    renderMenuList();
                     return;
                 }
-                for (let i = 0; i < menuData.length; i++) {
-                    if (menuData[i].title.toLowerCase().includes(searchTerm)) {
-                        foundIndex = i;
-                        break;
-                    }
-                }
-                if (foundIndex !== -1) {
-                    selectMenu(foundIndex);
-                } else {
-                    document.getElementById('content-title').textContent = 'Tidak Ditemukan';
-                    document.getElementById('content-title-value').textContent = '-';
-                    document.getElementById('content-text-value').textContent = `Tidak ada menu yang cocok dengan "${searchTerm}".`;
-                    document.querySelectorAll('.menu-card').forEach(card => card.classList.remove('active'));
-                }
+                const filteredData = reportData.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm) || 
+                    item.content.toLowerCase().includes(searchTerm)
+                );
+                renderMenuList(filteredData);
             });
             
             document.getElementById('copy-button').addEventListener('click', function() {
-                if (activeMenuIndex < 0 || isEditingMode) return;
-                const content = menuData[activeMenuIndex].content;
+                if (activeReportIndex < 0 || isEditingMode) return;
+                const content = reportData[activeReportIndex].content;
                 navigator.clipboard.writeText(content).then(() => {
                     showNotification('Berhasil', 'Konten berhasil disalin!');
                 }).catch(err => {
                     console.error('Gagal menyalin teks: ', err);
-                    showNotification('Error', 'Gagal menyalin, coba lagi.');
+                    showNotification('Error', 'Gagal menyalin.');
                 });
             });
 
