@@ -3,21 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Interaktif dengan Penyimpanan Lokal</title>
+    <title>Menu Interaktif Modern</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
         :root {
-            --primary-pink: #ff4081;
-            --light-pink: #ff80ab;
-            --dark-pink: #c51162;
-            --accent-pink: #f50057;
-            --white: #ffffff;
-            --text-dark: #333;
-            --text-light: #f0f0f0;
-            --glass-bg: rgba(255, 255, 255, 0.15);
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --text: #334155;
+            --text-light: #64748b;
+            --glass: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow-color: rgba(245, 0, 87, 0.4);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
         * {
@@ -28,418 +34,450 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            color: var(--text-dark);
+            color: var(--text);
             position: relative;
             overflow-x: hidden;
         }
-        
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(255, 119, 187, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 187, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(255, 64, 129, 0.2) 0%, transparent 50%);
-            pointer-events: none;
-        }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .stars {
+        .background-pattern {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .star {
-            position: absolute;
-            background-color: #ffeb3b;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            animation: twinkle 3s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1); }
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: -1;
         }
 
         .container {
             display: flex;
-            width: 100%;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .navbar-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
-            gap: 20px;
-            z-index: 1;
-            position: relative;
-        }
-
-        .sidebar {
-            width: 320px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 var(--shadow-color);
-            padding: 25px;
-            overflow-y: auto;
-            height: calc(100vh - 40px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar h2 {
-            color: var(--white);
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 700;
-            font-size: 24px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            letter-spacing: 1px;
-        }
-
-        .search-container {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        #search-input {
-            width: 100%;
-            padding: 12px 45px 12px 18px;
-            border-radius: 50px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-            color: var(--white);
-            font-size: 15px;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        #search-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .search-container:focus-within {
-            box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.5);
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            fill: rgba(255, 255, 255, 0.8);
-        }
-        
-        .sync-button {
-            width: 100%;
-            padding: 10px;
-            border-radius: 50px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--white);
-            font-size: 14px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .sync-button:hover:not(:disabled) {
-            background: var(--primary-pink);
-            transform: scale(1.02);
-        }
-        .sync-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .menu-item {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .menu-item-content {
-            flex-grow: 1;
-            overflow: hidden;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .menu-item::before {
+        .logo i {
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 1rem;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            color: white;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            width: 250px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .sync-button {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 2rem;
+            padding: 0.5rem 1.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sync-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .sync-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .content-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .content-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .menu-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .menu-card::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .menu-item:hover::before {
-            left: 100%;
+        .menu-card:hover::before {
+            opacity: 1;
         }
 
-        .menu-item:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(245, 0, 87, 0.4);
-            background: rgba(255, 255, 255, 0.3);
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
 
-        .menu-item.active {
-            background: linear-gradient(135deg, var(--accent-pink), var(--primary-pink));
-            color: var(--white);
-            font-weight: 600;
-            box-shadow: 0 0 25px rgba(245, 0, 87, 0.6), inset 0 0 10px rgba(255,255,255,0.3);
-            animation: pulse 2s infinite;
+        .menu-card.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 25px rgba(245, 0, 87, 0.6), inset 0 0 10px rgba(255,255,255,0.3); }
-            50% { box-shadow: 0 0 35px rgba(245, 0, 87, 0.8), inset 0 0 15px rgba(255,255,255,0.4); }
-            100% { box-shadow: 0 0 25px rgba(245, 0, 87, 0.6), inset 0 0 10px rgba(255,255,255,0.3); }
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
 
-        .menu-title {
-            font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .menu-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
         }
 
-        .menu-preview {
-            font-size: 14px;
-            opacity: 0.85;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .menu-actions {
+            display: flex;
+            gap: 0.5rem;
         }
 
-        .edit-button {
-            background: rgba(255, 255, 255, 0.3);
-            border: none;
+        .menu-action-btn {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-left: 10px;
-            flex-shrink: 0;
         }
 
-        .edit-button:hover {
-            background: var(--primary-pink);
+        .menu-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
             transform: scale(1.1);
         }
 
-        .content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+        .menu-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
         }
 
-        .content-wrapper {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px;
+        .menu-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Content Panel */
+        .content-panel {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 1rem;
             border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 var(--shadow-color);
-            padding: 30px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            padding: 2rem;
+            box-shadow: var(--shadow);
             position: relative;
         }
 
-        .content-header {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 20px;
-            margin-bottom: 20px;
+        .content-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
         }
 
-        .content-header h1 {
-            color: var(--white);
-            font-weight: 700;
-            font-size: 32px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        .content-panel-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .content-panel-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .panel-action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .panel-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
         }
 
         .content-body {
-            flex: 1;
-            position: relative;
-            color: var(--text-light);
-            line-height: 1.8;
-            font-size: 16px;
-            overflow-y: auto;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.7;
         }
 
-        .content-table {
+        .content-info {
             display: grid;
             grid-template-columns: 120px 1fr;
-            gap: 15px 25px;
-            align-items: start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .content-label {
             font-weight: 600;
-            color: var(--white);
-            padding-top: 5px;
+            color: white;
         }
 
         .content-value {
             background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
             white-space: pre-wrap;
         }
 
-        #content-edit {
+        .edit-form {
             display: none;
         }
-        .edit-form {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 15px 25px;
-            align-items: start;
+
+        .form-group {
+            margin-bottom: 1.5rem;
         }
-        .edit-form label {
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
             font-weight: 600;
-            color: var(--white);
-            padding-top: 12px;
+            color: white;
         }
-        .edit-form input, .edit-form textarea {
+
+        .form-input, .form-textarea {
             width: 100%;
-            padding: 12px;
-            border-radius: 10px;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
             border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--white);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
             font-family: 'Poppins', sans-serif;
-            font-size: 16px;
-            outline: none;
             transition: all 0.3s ease;
         }
-        .edit-form input:focus, .edit-form textarea:focus {
-            box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.5);
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
         }
-        .edit-form textarea {
+
+        .form-textarea {
             min-height: 200px;
             resize: vertical;
         }
-        .edit-actions {
-            grid-column: 2;
+
+        .form-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 1rem;
+            justify-content: flex-end;
         }
-        .btn-save, .btn-cancel {
-            padding: 10px 20px;
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
             border: none;
-            border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .btn-save {
-            background: linear-gradient(135deg, #4caf50, #8bc34a);
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
             color: white;
         }
-        .btn-cancel {
-            background: rgba(255, 255, 255, 0.3);
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
             color: white;
         }
-        .btn-save:hover, .btn-cancel:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
-        .copy-button {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            background: linear-gradient(135deg, var(--primary-pink), var(--accent-pink));
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .copy-button:hover {
-            transform: scale(1.1) rotate(10deg);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .copy-button:active {
-            transform: scale(0.95);
-        }
-        
-        .copy-button.copied {
-            background: linear-gradient(135deg, #4caf50, #8bc34a);
-        }
-
+        /* Notification */
         .notification {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--dark-pink);
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--dark);
             color: white;
-            padding: 18px 28px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
             transform: translateY(150%);
             opacity: 0;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: all 0.3s ease;
             z-index: 1000;
-            font-weight: 500;
+            max-width: 300px;
         }
 
         .notification.show {
@@ -447,19 +485,30 @@
             opacity: 1;
         }
 
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Loading */
         .loading {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100%;
+            height: 200px;
         }
 
         .spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: var(--white);
+            border-top-color: white;
             animation: spin 1s ease-in-out infinite;
         }
 
@@ -467,113 +516,152 @@
             to { transform: rotate(360deg); }
         }
 
-        .error-message {
-            background: rgba(255, 0, 0, 0.2);
-            border-left: 4px solid #ff4d4d;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
-            color: white;
-            backdrop-filter: blur(10px);
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .container {
+            .navbar-container {
                 flex-direction: column;
-                padding: 10px;
+                gap: 1rem;
             }
-            
-            .sidebar {
-                width: 100%;
-                height: auto;
-                max-height: 250px;
+
+            .nav-menu {
+                flex-wrap: wrap;
+                justify-content: center;
             }
-            .content-table, .edit-form {
+
+            .search-input {
+                width: 150px;
+            }
+
+            .search-input:focus {
+                width: 180px;
+            }
+
+            .menu-grid {
                 grid-template-columns: 1fr;
             }
-            .content-label, .edit-form label {
-                padding-top: 0;
-                margin-bottom: 5px;
-            }
-            .edit-actions {
-                grid-column: 1;
+
+            .content-info {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="stars-container"></div>
-
+    <div class="background-pattern"></div>
+    
     <div class="container">
-        <aside class="sidebar">
-            <h2>✨ Menu ✨</h2>
-            
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Cari menu...">
-                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="#" class="logo">
+                    <i class="fas fa-rocket"></i>
+                    <span>Menu Interaktif</span>
+                </a>
+                
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <i class="fas fa-home"></i>
+                            <span>Beranda</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-th-large"></i>
+                            <span>Semua Menu</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-star"></i>
+                            <span>Favorit</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>Pengaturan</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="search-input" placeholder="Cari menu...">
+                    </div>
+                    
+                    <button id="sync-button" class="sync-button">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Sync</span>
+                    </button>
+                </div>
             </div>
-
-            <button id="sync-button" class="sync-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                <span id="sync-text">Sync dengan Google Sheet</span>
-            </button>
-
-            <div id="menu-container">
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="content-title">Menu Interaktif</h1>
+                <p class="content-subtitle">Jelajahi berbagai menu menarik dengan tampilan yang modern</p>
+            </div>
+            
+            <!-- Menu Grid -->
+            <div class="menu-grid" id="menu-container">
                 <div class="loading">
                     <div class="spinner"></div>
                 </div>
             </div>
-        </aside>
-        
-        <main class="content">
-            <div class="content-wrapper">
-                <div class="content-header">
-                    <h1 id="content-title">Selamat Datang</h1>
-                </div>
-                <div class="content-body">
-                    <button id="copy-button" class="copy-button" title="Salin Konten">
-                        <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                        </svg>
-                        <svg id="check-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none; pointer-events: none;">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    </button>
-
-                    <div id="content-view">
-                        <div class="content-table">
-                            <div class="content-label">Menu</div>
-                            <div class="content-value" id="content-title-value">-</div>
-                            
-                            <div class="content-label">Informasi</div>
-                            <div class="content-value" id="content-text-value">-</div>
-                        </div>
+            
+            <!-- Content Panel -->
+            <div class="content-panel">
+                <div class="content-panel-header">
+                    <h2 class="content-panel-title" id="content-title">Pilih Menu</h2>
+                    <div class="content-panel-actions">
+                        <button class="panel-action-btn" id="copy-button" title="Salin Konten">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="panel-action-btn" id="edit-button" title="Edit Konten">
+                            <i class="fas fa-edit"></i>
+                        </button>
                     </div>
-
-                    <div id="content-edit">
-                        <form class="edit-form" onsubmit="return false;">
-                            <label for="edit-title">Menu</label>
-                            <input type="text" id="edit-title" required>
-                            
-                            <label for="edit-content">Informasi</label>
-                            <textarea id="edit-content" required></textarea>
-                            
-                            <div class="edit-actions">
-                                <button type="button" class="btn-save" id="save-btn">Simpan</button>
-                                <button type="button" class="btn-cancel" id="cancel-btn">Batal</button>
-                            </div>
-                        </form>
+                </div>
+                
+                <div class="content-body" id="content-view">
+                    <div class="content-info">
+                        <div class="content-label">Menu</div>
+                        <div class="content-value" id="content-title-value">-</div>
+                        
+                        <div class="content-label">Informasi</div>
+                        <div class="content-value" id="content-text-value">Pilih menu dari grid di atas untuk melihat detailnya.</div>
+                    </div>
+                </div>
+                
+                <div class="edit-form" id="content-edit">
+                    <div class="form-group">
+                        <label class="form-label" for="edit-title">Judul Menu</label>
+                        <input type="text" class="form-input" id="edit-title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="edit-content">Konten</label>
+                        <textarea class="form-textarea" id="edit-content" required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" id="cancel-btn">Batal</button>
+                        <button class="btn btn-primary" id="save-btn">Simpan</button>
                     </div>
                 </div>
             </div>
         </main>
     </div>
     
-    <div id="notification" class="notification"></div>
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-title">Notifikasi</div>
+        <div class="notification-message" id="notification-message">Pesan notifikasi</div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -587,6 +675,34 @@
             let menuData = [];
             let activeMenuIndex = -1;
             let isEditingMode = false;
+
+            // Sample data for demonstration
+            const sampleData = [
+                {
+                    title: "Beranda",
+                    content: "Ini adalah halaman beranda dari aplikasi web interaktif kami. Di sini Anda dapat menemukan informasi terbaru dan fitur-fitur menarik."
+                },
+                {
+                    title: "Profil",
+                    content: "Halaman profil menampilkan informasi pengguna termasuk nama, email, dan preferensi pengaturan. Anda dapat mengedit informasi ini kapan saja."
+                },
+                {
+                    title: "Galeri",
+                    content: "Jelajahi koleksi gambar dan video kami di galeri. Kami memiliki berbagai konten visual yang menarik untuk dinikmati."
+                },
+                {
+                    title: "Kontak",
+                    content: "Hubungi kami melalui formulir kontak atau informasi yang tersedia. Kami senang mendengar dari Anda dan akan merespons secepatnya."
+                },
+                {
+                    title: "Tentang",
+                    content: "Pelajari lebih lanjut tentang perusahaan kami, visi, misi, dan tim yang berada di balik produk dan layanan yang kami tawarkan."
+                },
+                {
+                    title: "Layanan",
+                    content: "Temukan berbagai layanan yang kami tawarkan. Kami berkomitmen untuk memberikan solusi terbaik untuk kebutuhan Anda."
+                }
+            ];
 
             // --- IndexedDB Functions ---
             function openDB() {
@@ -627,81 +743,96 @@
             }
 
             // --- UI Functions ---
-            function createStars() {
-                const starsContainer = document.getElementById('stars-container');
-                for (let i = 0; i < 50; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'star';
-                    const size = Math.random() * 3 + 2 + 'px';
-                    star.style.width = size;
-                    star.style.height = size;
-                    star.style.left = Math.random() * 100 + '%';
-                    star.style.top = Math.random() * 100 + '%';
-                    star.style.animationDelay = Math.random() * 3 + 's';
-                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    starsContainer.appendChild(star);
-                }
-            }
-            createStars();
-
-            function showNotification(message, duration = 3000) {
+            function showNotification(title, message, duration = 3000) {
                 const notification = document.getElementById('notification');
-                notification.textContent = message;
+                const notificationTitle = notification.querySelector('.notification-title');
+                const notificationMessage = document.getElementById('notification-message');
+                
+                notificationTitle.textContent = title;
+                notificationMessage.textContent = message;
                 notification.classList.add('show');
+                
                 setTimeout(() => notification.classList.remove('show'), duration);
             }
 
             function renderMenu() {
                 const menuContainer = document.getElementById('menu-container');
                 if (menuData.length === 0) {
-                    menuContainer.innerHTML = '<div class="error-message">Tidak ada data menu. Coba sinkronkan dengan Google Sheet.</div>';
+                    menuContainer.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
                     return;
                 }
+                
                 menuContainer.innerHTML = '';
                 
                 menuData.forEach((item, index) => {
-                    const menuItem = document.createElement('div');
-                    menuItem.className = 'menu-item';
-                    menuItem.dataset.index = index;
+                    const menuCard = document.createElement('div');
+                    menuCard.className = 'menu-card';
+                    menuCard.dataset.index = index;
                     
-                    const menuItemContent = document.createElement('div');
-                    menuItemContent.className = 'menu-item-content';
-                    const menuTitle = document.createElement('div');
-                    menuTitle.className = 'menu-title';
-                    menuTitle.textContent = item.title;
-                    const menuPreview = document.createElement('div');
-                    menuPreview.className = 'menu-preview';
-                    menuPreview.textContent = item.content.substring(0, 60) + (item.content.length > 60 ? '...' : '');
-
-                    menuItemContent.appendChild(menuTitle);
-                    menuItemContent.appendChild(menuPreview);
-
+                    const menuHeader = document.createElement('div');
+                    menuHeader.className = 'menu-header';
+                    
+                    const menuIcon = document.createElement('div');
+                    menuIcon.className = 'menu-icon';
+                    menuIcon.innerHTML = `<i class="fas fa-${getMenuIcon(item.title)}"></i>`;
+                    
+                    const menuActions = document.createElement('div');
+                    menuActions.className = 'menu-actions';
+                    
                     const editBtn = document.createElement('button');
-                    editBtn.className = 'edit-button';
-                    editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+                    editBtn.className = 'menu-action-btn';
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
                     editBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         enterEditMode(index);
                     });
-
-                    menuItem.appendChild(menuItemContent);
-                    menuItem.appendChild(editBtn);
-                    menuItem.addEventListener('click', () => {
+                    
+                    menuActions.appendChild(editBtn);
+                    menuHeader.appendChild(menuIcon);
+                    menuHeader.appendChild(menuActions);
+                    
+                    const menuTitle = document.createElement('h3');
+                    menuTitle.className = 'menu-title';
+                    menuTitle.textContent = item.title;
+                    
+                    const menuDescription = document.createElement('p');
+                    menuDescription.className = 'menu-description';
+                    menuDescription.textContent = item.content;
+                    
+                    menuCard.appendChild(menuHeader);
+                    menuCard.appendChild(menuTitle);
+                    menuCard.appendChild(menuDescription);
+                    
+                    menuCard.addEventListener('click', () => {
                         if (!isEditingMode) selectMenu(index);
                     });
-                    menuContainer.appendChild(menuItem);
+                    
+                    menuContainer.appendChild(menuCard);
                 });
+            }
+            
+            function getMenuIcon(title) {
+                const iconMap = {
+                    'Beranda': 'home',
+                    'Profil': 'user',
+                    'Galeri': 'images',
+                    'Kontak': 'envelope',
+                    'Tentang': 'info-circle',
+                    'Layanan': 'cogs'
+                };
+                
+                return iconMap[title] || 'file';
             }
             
             function selectMenu(index) {
                 if (index < 0 || index >= menuData.length) return;
                 if (isEditingMode) exitEditMode();
                 
-                document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-                const selectedMenuItem = document.querySelector(`.menu-item[data-index="${index}"]`);
-                if (selectedMenuItem) {
-                    selectedMenuItem.classList.add('active');
-                    selectedMenuItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.querySelectorAll('.menu-card').forEach(card => card.classList.remove('active'));
+                const selectedCard = document.querySelector(`.menu-card[data-index="${index}"]`);
+                if (selectedCard) {
+                    selectedCard.classList.add('active');
+                    selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 
                 const item = menuData[index];
@@ -720,20 +851,31 @@
                         menuData = localData;
                         renderMenu();
                         selectMenu(0);
-                        showNotification('Memuat data dari penyimpanan lokal...');
+                        showNotification('Berhasil', 'Memuat data dari penyimpanan lokal...');
+                    } else {
+                        // Use sample data if no local data
+                        menuData = sampleData;
+                        renderMenu();
+                        selectMenu(0);
+                        saveDataToDB(menuData);
+                        showNotification('Berhasil', 'Menggunakan data sampel...');
                     }
-                    // Always try to sync in the background to get the latest data
+                    
+                    // Try to sync in the background
                     syncWithSheet(true); 
                 } catch (error) {
-                    console.error("IndexedDB failed, falling back to network:", error);
-                    // If IndexedDB fails, try to fetch directly from the sheet
-                    syncWithSheet(false);
+                    console.error("IndexedDB failed, using sample data:", error);
+                    // If IndexedDB fails, use sample data
+                    menuData = sampleData;
+                    renderMenu();
+                    selectMenu(0);
+                    showNotification('Peringatan', 'Menggunakan data sampel karena IndexedDB tidak tersedia.');
                 }
             }
 
             async function syncWithSheet(isBackgroundSync) {
                 const syncButton = document.getElementById('sync-button');
-                const syncText = document.getElementById('sync-text');
+                const syncText = syncButton.querySelector('span');
                 syncButton.disabled = true;
                 syncText.textContent = isBackgroundSync ? 'Menyinkronkan...' : 'Mengambil data...';
 
@@ -753,18 +895,18 @@
                         renderMenu();
                         if (menuData.length > 0) selectMenu(0);
                         await saveDataToDB(menuData);
-                        showNotification(isBackgroundSync ? 'Data berhasil diperbarui di latar belakang.' : 'Data berhasil disinkronkan!');
+                        showNotification('Berhasil', isBackgroundSync ? 'Data berhasil diperbarui di latar belakang.' : 'Data berhasil disinkronkan!');
                     } else {
-                        if(!isBackgroundSync) showNotification('Google Sheet kosong atau tidak ada data valid.');
+                        if(!isBackgroundSync) showNotification('Info', 'Google Sheet kosong atau tidak ada data valid.');
                     }
                 } catch (error) {
                     console.error("Sync failed:", error);
                     if (!isBackgroundSync) {
-                        showNotification('Gagal sinkronisasi. Periksa koneksi internet dan pastikan Sheet dipublikasikan.');
+                        showNotification('Error', 'Gagal sinkronisasi. Periksa koneksi internet dan pastikan Sheet dipublikasikan.');
                     }
                 } finally {
                     syncButton.disabled = false;
-                    syncText.textContent = 'Sync dengan Google Sheet';
+                    syncText.textContent = 'Sync';
                 }
             }
 
@@ -777,14 +919,12 @@
                 document.getElementById('edit-content').value = item.content;
                 document.getElementById('content-view').style.display = 'none';
                 document.getElementById('content-edit').style.display = 'block';
-                document.getElementById('copy-button').style.display = 'none';
             }
 
             function exitEditMode() {
                 isEditingMode = false;
                 document.getElementById('content-view').style.display = 'block';
                 document.getElementById('content-edit').style.display = 'none';
-                document.getElementById('copy-button').style.display = 'flex';
             }
 
             // --- Event Listeners ---
@@ -804,14 +944,19 @@
                     renderMenu();
                     selectMenu(activeMenuIndex);
                     exitEditMode();
-                    showNotification('Perubahan berhasil disimpan secara lokal!');
+                    showNotification('Berhasil', 'Perubahan berhasil disimpan secara lokal!');
                 } catch (error) {
                     console.error("Failed to save to IndexedDB:", error);
-                    showNotification('Gagal menyimpan perubahan secara lokal.');
+                    showNotification('Error', 'Gagal menyimpan perubahan secara lokal.');
                 }
             });
 
             document.getElementById('cancel-btn').addEventListener('click', exitEditMode);
+            document.getElementById('edit-button').addEventListener('click', () => {
+                if (activeMenuIndex >= 0) {
+                    enterEditMode(activeMenuIndex);
+                }
+            });
             document.getElementById('sync-button').addEventListener('click', () => syncWithSheet(false));
 
             const searchInput = document.getElementById('search-input');
@@ -834,7 +979,7 @@
                     document.getElementById('content-title').textContent = 'Tidak Ditemukan';
                     document.getElementById('content-title-value').textContent = '-';
                     document.getElementById('content-text-value').textContent = `Tidak ada menu yang cocok dengan "${searchTerm}".`;
-                    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+                    document.querySelectorAll('.menu-card').forEach(card => card.classList.remove('active'));
                 }
             });
             
@@ -842,20 +987,10 @@
                 if (activeMenuIndex < 0 || isEditingMode) return;
                 const content = menuData[activeMenuIndex].content;
                 navigator.clipboard.writeText(content).then(() => {
-                    showNotification('Konten berhasil disalin! 🎉');
-                    const copyIcon = document.getElementById('copy-icon');
-                    const checkIcon = document.getElementById('check-icon');
-                    this.classList.add('copied');
-                    copyIcon.style.display = 'none';
-                    checkIcon.style.display = 'block';
-                    setTimeout(() => {
-                        this.classList.remove('copied');
-                        copyIcon.style.display = 'block';
-                        checkIcon.style.display = 'none';
-                    }, 2500);
+                    showNotification('Berhasil', 'Konten berhasil disalin!');
                 }).catch(err => {
                     console.error('Gagal menyalin teks: ', err);
-                    showNotification('Gagal menyalin, coba lagi.');
+                    showNotification('Error', 'Gagal menyalin, coba lagi.');
                 });
             });
 
