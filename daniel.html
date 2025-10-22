@@ -624,40 +624,44 @@
 
             // --- Data Loading and Syncing ---
             async function loadData() {
+                // 1. Tampilkan spinner loading
+                document.getElementById('reportan-loading').classList.add('active');
+                document.getElementById('informasi-loading').classList.add('active');
+                
                 try {
-                    document.getElementById('reportan-loading').classList.add('active');
-                    document.getElementById('informasi-loading').classList.add('active');
-                    
+                    // 2. Buka database
                     db = await openDB();
                     
-                    const localReportanData = await getDataFromDB('reportan');
-                    const localInformasiData = await getDataFromDB('informasi');
-                    
-                    if (localReportanData.length > 0) {
-                        reportanItems = localReportanData;
-                        renderSidebarMenu('reportan-list', reportanItems);
-                    }
-                    
-                    if (localInformasiData.length > 0) {
-                        informasiItems = localInformasiData;
-                        renderSidebarMenu('informasi-list', informasiItems);
-                    }
-                    
-                    syncWithSheets(true); 
+                    // 3. Lakukan sinkronisasi penuh saat halaman dimuat
+                    // Parameter 'true' menandakan ini adalah proses auto-sync
+                    await syncWithSheets(true);
+
                 } catch (error) {
-                    console.error("Error loading data:", error);
-                    showNotification('Error', 'Gagal memuat data. Silakan coba lagi.');
+                    console.error("Error during initial load:", error);
+                    showNotification('Error', 'Gagal memuat data awal. Akan mencoba menggunakan cache.');
+                    // Fallback: coba muat dari cache jika semua gagal
+                    try {
+                        const cachedReportan = await getDataFromDB('reportan');
+                        const cachedInformasi = await getDataFromDB('informasi');
+                        if(cachedReportan.length > 0) renderSidebarMenu('reportan-list', cachedReportan);
+                        if(cachedInformasi.length > 0) renderSidebarMenu('informasi-list', cachedInformasi);
+                    } catch (cacheError) {
+                        console.error("Cache also failed:", cacheError);
+                    }
                 } finally {
+                    // 4. Sembunyikan spinner loading
                     document.getElementById('reportan-loading').classList.remove('active');
                     document.getElementById('informasi-loading').classList.remove('active');
                 }
             }
 
-            async function syncWithSheets(isBackgroundSync) {
+            async function syncWithSheets(isInitialLoad = false) {
                 const syncButton = document.getElementById('sync-button');
                 const syncText = syncButton.querySelector('span');
+                
+                // Nonaktifkan tombol dan ubah teks
                 syncButton.disabled = true;
-                syncText.textContent = isBackgroundSync ? 'Menyinkronkan...' : 'Mengambil data...';
+                syncText.textContent = isInitialLoad ? 'Memuat...' : 'Mengambil data...';
 
                 let reportanSuccess = false;
                 let informasiSuccess = false;
@@ -672,7 +676,7 @@
                     const fetchedReportanData = reportanJson.table.rows.map((row, index) => {
                         const title = row.c[0] ? row.c[0].v : '';
                         const content = row.c[1] ? row.c[1].v : '';
-                        return { id: `reportan_${index + 1}`, title, content };
+                        return { id: `reportan_${Date.now()}_${index}`, title, content };
                     }).filter(item => item.title);
                     
                     if (fetchedReportanData.length > 0) {
@@ -683,7 +687,12 @@
                     }
                 } catch (error) {
                     console.error("Reportan sync failed:", error);
-                    if (!isBackgroundSync) showNotification('Error', `Gagal sinkronisasi Reportan: ${error.message}`);
+                    // Jika gagal, coba muat dari cache
+                    const cachedReportan = await getDataFromDB('reportan');
+                    if (cachedReportan.length > 0) {
+                        reportanItems = cachedReportan;
+                        renderSidebarMenu('reportan-list', reportanItems);
+                    }
                 }
 
                 // Sync Informasi
@@ -691,16 +700,12 @@
                     const informasiResponse = await fetch(informasiSheetUrl);
                     if (!informasiResponse.ok) throw new Error(`Informasi network error: ${informasiResponse.statusText}`);
                     const informasiText = await informasiResponse.text();
-                    
-                    // Log the raw response for debugging
-                    console.log("Informasi raw response:", informasiText.substring(0, 200));
-
                     const informasiJson = JSON.parse(informasiText.substring(47).slice(0, -2));
                     
                     const fetchedInformasiData = informasiJson.table.rows.map((row, index) => {
                         const title = row.c[0] ? row.c[0].v : '';
                         const content = row.c[1] ? row.c[1].v : '';
-                        return { id: `informasi_${index + 1}`, title, content };
+                        return { id: `informasi_${Date.now()}_${index}`, title, content };
                     }).filter(item => item.title);
 
                     if (fetchedInformasiData.length > 0) {
@@ -711,20 +716,22 @@
                     }
                 } catch (error) {
                     console.error("Informasi sync failed:", error);
-                    // Provide a more user-friendly error message
-                    if (!isBackgroundSync) {
-                        let message = 'Gagal sinkronisasi Informasi.';
-                        if (error.message.includes('Failed to fetch')) {
-                            message += ' Pastikan sheet Informasi dibagikan secara publik (Anyone with the link).';
-                        } else {
-                            message += ` Error: ${error.message}`;
-                        }
-                        showNotification('Error', message);
+                    // Jika gagal, coba muat dari cache
+                    const cachedInformasi = await getDataFromDB('informasi');
+                    if (cachedInformasi.length > 0) {
+                        informasiItems = cachedInformasi;
+                        renderSidebarMenu('informasi-list', informasiItems);
                     }
                 }
                 
-                // Final notifications
-                if (!isBackgroundSync) {
+                // Tampilkan notifikasi berdasarkan hasil
+                if (isInitialLoad) {
+                    if (reportanSuccess || informasiSuccess) {
+                        showNotification('Berhasil', 'Data berhasil dimuat.');
+                    } else {
+                        showNotification('Offline', 'Tidak dapat menghubungi server. Menggunakan data cache.');
+                    }
+                } else { // Manual sync
                     if (reportanSuccess) showNotification('Berhasil', 'Data Reportan berhasil disinkronkan!');
                     if (informasiSuccess) showNotification('Berhasil', 'Data Informasi berhasil disinkronkan!');
                     if (!reportanSuccess && !informasiSuccess) {
@@ -732,6 +739,7 @@
                     }
                 }
 
+                // Kembalikan tombol sync ke keadaan semula
                 syncButton.disabled = false;
                 syncText.textContent = 'Sync';
             }
