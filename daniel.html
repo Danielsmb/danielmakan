@@ -14,10 +14,10 @@
             --accent-pink: #f50057;
             --white: #ffffff;
             --text-dark: #333;
-            --text-light: #f0f0f0;
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow-color: rgba(245, 0, 87, 0.4);
+            --text-light: #555;
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --shadow-color: rgba(245, 0, 87, 0.3);
         }
 
         * {
@@ -58,29 +58,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Starry Effect */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .star {
-            position: absolute;
-            background-color: #ffeb3b; /* Yellow color */
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            animation: twinkle 3s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1); }
-        }
-
         .container {
             display: flex;
             width: 100%;
@@ -89,7 +66,6 @@
             padding: 20px;
             gap: 20px;
             z-index: 1;
-            position: relative;
         }
 
         .sidebar {
@@ -117,6 +93,7 @@
             letter-spacing: 1px;
         }
 
+        /* Search Bar Styles */
         .search-container {
             position: relative;
             margin-bottom: 20px;
@@ -154,22 +131,14 @@
         }
 
         .menu-item {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 15px;
-            padding: 15px;
+            padding: 18px;
             margin-bottom: 15px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid rgba(255, 255, 255, 0.2);
             position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .menu-item-content {
-            flex-grow: 1;
             overflow: hidden;
         }
 
@@ -191,7 +160,7 @@
         .menu-item:hover {
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 15px 30px rgba(245, 0, 87, 0.4);
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
         }
 
         .menu-item.active {
@@ -212,9 +181,19 @@
             font-weight: 600;
             font-size: 18px;
             margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-title::before {
+            content: '▶';
+            margin-right: 10px;
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .menu-item.active .menu-title::before {
+            transform: rotate(90deg);
         }
 
         .menu-preview {
@@ -223,26 +202,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        .edit-button {
-            background: rgba(255, 255, 255, 0.3);
-            border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-left: 10px;
-            flex-shrink: 0;
-        }
-
-        .edit-button:hover {
-            background: var(--primary-pink);
-            transform: scale(1.1);
+            padding-left: 22px;
         }
 
         .content {
@@ -287,87 +247,9 @@
             overflow-y: auto;
         }
 
-        /* Tampilan Tabel yang Lebih Rapi */
-        .content-table {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 15px 25px;
-            align-items: start;
-        }
-
-        .content-label {
-            font-weight: 600;
-            color: var(--white);
-            padding-top: 5px;
-        }
-
-        .content-value {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .content-text {
             white-space: pre-wrap;
-        }
-
-        /* Form Edit */
-        #content-edit {
-            display: none; /* Hidden by default */
-        }
-        .edit-form {
-            display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 15px 25px;
-            align-items: start;
-        }
-        .edit-form label {
-            font-weight: 600;
-            color: var(--white);
-            padding-top: 12px;
-        }
-        .edit-form input, .edit-form textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--white);
-            font-family: 'Poppins', sans-serif;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        .edit-form input:focus, .edit-form textarea:focus {
-            box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.5);
-        }
-        .edit-form textarea {
-            min-height: 200px;
-            resize: vertical;
-        }
-        .edit-actions {
-            grid-column: 2;
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .btn-save, .btn-cancel {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .btn-save {
-            background: linear-gradient(135deg, #4caf50, #8bc34a);
-            color: white;
-        }
-        .btn-cancel {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-        .btn-save:hover, .btn-cancel:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding-right: 20px;
         }
 
         .copy-button {
@@ -464,27 +346,15 @@
                 height: auto;
                 max-height: 250px;
             }
-            .content-table, .edit-form {
-                grid-template-columns: 1fr;
-            }
-            .content-label, .edit-form label {
-                padding-top: 0;
-                margin-bottom: 5px;
-            }
-            .edit-actions {
-                grid-column: 1;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Efek Bintang -->
-    <div class="stars" id="stars-container"></div>
-
     <div class="container">
         <aside class="sidebar">
             <h2>✨ Menu ✨</h2>
             
+            <!-- Search Bar -->
             <div class="search-container">
                 <input type="text" id="search-input" placeholder="Cari menu...">
                 <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -506,7 +376,6 @@
                     <h1 id="content-title">Selamat Datang</h1>
                 </div>
                 <div class="content-body">
-                    <!-- Tombol Salin -->
                     <button id="copy-button" class="copy-button" title="Salin Konten">
                         <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -516,39 +385,17 @@
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                     </button>
-
-                    <!-- Tampilan Konten (Mode Tabel) -->
-                    <div id="content-view">
-                        <div class="content-table">
-                            <div class="content-label">Menu</div>
-                            <div class="content-value" id="content-title-value">-</div>
-                            
-                            <div class="content-label">Informasi</div>
-                            <div class="content-value" id="content-text-value">-</div>
-                        </div>
-                    </div>
-
-                    <!-- Form Edit (Tersembunyi) -->
-                    <div id="content-edit">
-                        <form class="edit-form" onsubmit="return false;">
-                            <label for="edit-title">Menu</label>
-                            <input type="text" id="edit-title" required>
-                            
-                            <label for="edit-content">Informasi</label>
-                            <textarea id="edit-content" required></textarea>
-                            
-                            <div class="edit-actions">
-                                <button type="button" class="btn-save" id="save-btn">Simpan</button>
-                                <button type="button" class="btn-cancel" id="cancel-btn">Batal</button>
-                            </div>
-                        </form>
+                    <div id="content-text" class="content-text">
+                        Silakan pilih menu dari sidebar atau gunakan kolom pencarian untuk menemukan konten yang Anda inginkan.
                     </div>
                 </div>
             </div>
         </main>
     </div>
     
-    <div id="notification" class="notification"></div>
+    <div id="notification" class="notification">
+        Konten berhasil disalin!
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -557,32 +404,8 @@
             
             let menuData = [];
             let activeMenuIndex = -1;
-            let isEditingMode = false;
-
-            // --- Generate Stars ---
-            function createStars() {
-                const starsContainer = document.getElementById('stars-container');
-                const numberOfStars = 50;
-                for (let i = 0; i < numberOfStars; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'star';
-                    
-                    const size = Math.random() * 3 + 2 + 'px';
-                    star.style.width = size;
-                    star.style.height = size;
-                    
-                    star.style.left = Math.random() * 100 + '%';
-                    star.style.top = Math.random() * 100 + '%';
-                    
-                    star.style.animationDelay = Math.random() * 3 + 's';
-                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    
-                    starsContainer.appendChild(star);
-                }
-            }
-            createStars();
-
-            // --- Fetch Data ---
+            
+            // Fetch data dari Google Sheets
             fetch(url)
                 .then(response => response.text())
                 .then(text => {
@@ -594,7 +417,7 @@
                             title: row.c[0] ? row.c[0].v : '',
                             content: row.c[1] ? row.c[1].v : ''
                         };
-                    }).filter(item => item.title);
+                    }).filter(item => item.title); // Filter out empty rows
                     
                     renderMenu();
                     
@@ -611,7 +434,7 @@
                     `;
                 });
             
-            // --- Render Menu ---
+            // Render menu di sidebar
             function renderMenu() {
                 const menuContainer = document.getElementById('menu-container');
                 menuContainer.innerHTML = '';
@@ -621,9 +444,6 @@
                     menuItem.className = 'menu-item';
                     menuItem.dataset.index = index;
                     
-                    const menuItemContent = document.createElement('div');
-                    menuItemContent.className = 'menu-item-content';
-
                     const menuTitle = document.createElement('div');
                     menuTitle.className = 'menu-title';
                     menuTitle.textContent = item.title;
@@ -631,136 +451,77 @@
                     const menuPreview = document.createElement('div');
                     menuPreview.className = 'menu-preview';
                     menuPreview.textContent = item.content.substring(0, 60) + (item.content.length > 60 ? '...' : '');
-
-                    menuItemContent.appendChild(menuTitle);
-                    menuItemContent.appendChild(menuPreview);
-
-                    const editBtn = document.createElement('button');
-                    editBtn.className = 'edit-button';
-                    editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
-                    editBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        enterEditMode(index);
-                    });
-
-                    menuItem.appendChild(menuItemContent);
-                    menuItem.appendChild(editBtn);
                     
-                    menuItem.addEventListener('click', () => {
-                        if (!isEditingMode) {
-                            selectMenu(index);
-                        }
-                    });
+                    menuItem.appendChild(menuTitle);
+                    menuItem.appendChild(menuPreview);
+                    
+                    menuItem.addEventListener('click', () => selectMenu(index));
                     
                     menuContainer.appendChild(menuItem);
                 });
             }
             
-            // --- Select Menu ---
+            // Fungsi untuk memilih menu
             function selectMenu(index) {
                 if (index < 0 || index >= menuData.length) return;
                 
-                if (isEditingMode) {
-                    exitEditMode();
-                }
-                
+                // Update active menu
                 document.querySelectorAll('.menu-item').forEach(item => {
                     item.classList.remove('active');
                 });
                 const selectedMenuItem = document.querySelector(`.menu-item[data-index="${index}"]`);
                 if (selectedMenuItem) {
                     selectedMenuItem.classList.add('active');
+                    // Scroll to the selected menu item
                     selectedMenuItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 
-                // Update view
+                // Update content
                 document.getElementById('content-title').textContent = menuData[index].title;
-                document.getElementById('content-title-value').textContent = menuData[index].title;
-                document.getElementById('content-text-value').textContent = menuData[index].content;
+                document.getElementById('content-text').textContent = menuData[index].content;
                 
                 activeMenuIndex = index;
             }
-
-            // --- Edit Mode Functions ---
-            function enterEditMode(index) {
-                isEditingMode = true;
-                activeMenuIndex = index;
-                
-                // Populate form
-                document.getElementById('edit-title').value = menuData[index].title;
-                document.getElementById('edit-content').value = menuData[index].content;
-                
-                // Switch view
-                document.getElementById('content-view').style.display = 'none';
-                document.getElementById('content-edit').style.display = 'block';
-                document.getElementById('copy-button').style.display = 'none';
-            }
-
-            function exitEditMode() {
-                isEditingMode = false;
-                
-                // Switch view
-                document.getElementById('content-view').style.display = 'block';
-                document.getElementById('content-edit').style.display = 'none';
-                document.getElementById('copy-button').style.display = 'flex';
-            }
-
-            // --- Save and Cancel Listeners ---
-            document.getElementById('save-btn').addEventListener('click', () => {
-                const newTitle = document.getElementById('edit-title').value;
-                const newContent = document.getElementById('edit-content').value;
-
-                // Update local data
-                menuData[activeMenuIndex].title = newTitle;
-                menuData[activeMenuIndex].content = newContent;
-
-                // Re-render menu and content
-                renderMenu();
-                selectMenu(activeMenuIndex); // Re-select to update view
-                exitEditMode();
-                
-                showNotification('Perubahan berhasil disimpan (lokal)!');
-            });
-
-            document.getElementById('cancel-btn').addEventListener('click', () => {
-                exitEditMode();
-            });
             
-            // --- Search functionality ---
+            // Search functionality
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase().trim();
                 let foundIndex = -1;
 
                 if (searchTerm === "") {
+                    // If search is empty, select the first menu item
                     if (menuData.length > 0) {
                         selectMenu(0);
                     }
                     return;
                 }
 
+                // Loop through menuData to find a match
                 for (let i = 0; i < menuData.length; i++) {
+                    // Check if the search term is included in the menu title
                     if (menuData[i].title.toLowerCase().includes(searchTerm)) {
                         foundIndex = i;
-                        break;
+                        break; // Stop after finding the first match
                     }
                 }
 
                 if (foundIndex !== -1) {
                     selectMenu(foundIndex);
                 } else {
+                    // If no match is found, display a not found message
                     document.getElementById('content-title').textContent = 'Tidak Ditemukan';
-                    document.getElementById('content-title-value').textContent = '-';
-                    document.getElementById('content-text-value').textContent = `Tidak ada menu yang cocok dengan "${searchTerm}".`;
+                    document.getElementById('content-text').textContent = `Tidak ada menu yang cocok dengan "${searchTerm}". Coba kata kunci lain.`;
+                    // Remove active class from all menu items
                     document.querySelectorAll('.menu-item').forEach(item => {
                         item.classList.remove('active');
                     });
                 }
             });
             
-            // --- Copy functionality ---
+            // Fungsi untuk menyalin konten
             document.getElementById('copy-button').addEventListener('click', function() {
-                if (activeMenuIndex < 0 || isEditingMode) return;
+                if (activeMenuIndex < 0) return;
                 
                 const content = menuData[activeMenuIndex].content;
                 
@@ -787,7 +548,7 @@
                     });
             });
             
-            // --- Notification ---
+            // Fungsi untuk menampilkan notifikasi
             function showNotification(message) {
                 const notification = document.getElementById('notification');
                 notification.textContent = message;
