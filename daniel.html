@@ -512,26 +512,20 @@
             const DB_VERSION = 1;
             const STORE_NAME = 'menus';
             const spreadsheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
-            const sheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json`;
+            
+            // GID untuk setiap sheet
+            const reportanGid = '0';
+            const informasiGid = '867686987';
+            
+            // URL untuk setiap sheet
+            const reportanSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${reportanGid}&tqx=out:json`;
+            const informasiSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${informasiGid}&tqx=out:json`;
             
             let db;
-            let allMenuData = [];
             let reportanItems = [];
             let informasiItems = [];
             let activeItem = null;
             let isEditingMode = false;
-
-            // Sample data with new keywords
-            const sampleData = [
-                { id: 1, title: "Laporan Reportan Keuangan Q1 2024", content: "Laporan ini merinci pendapatan, pengeluaran, dan laba bersih perusahaan untuk kuartal pertama tahun 2024. Analisis menunjukkan pertumbuhan pendapatan sebesar 15%." },
-                { id: 2, title: "Informasi Karyawan", content: "Berisi daftar seluruh karyawan, posisi, dan informasi kontak. Data ini diperbarui setiap bulan oleh HRD." },
-                { id: 3, title: "Analisis Reportan Pasar Produk Baru", content: "Penelitian pasar menyeluruh untuk peluncuran produk 'X'. Target pasar adalah demografi usia 18-35 tahun yang aktif secara digital." },
-                { id: 4, title: "Informasi Kontak Perusahaan", content: "Alamat: Jl. Contoh No. 123, Jakarta. Email: info@perusahaan.com. Telepon: (021) 123-4567." },
-                { id: 5, title: "Reportan Kegiatan Tim IT", content: "Dokumentasi kegiatan tim IT selama bulan Maret 2024. Fokus utama adalah migrasi server ke cloud, yang telah selesai 80%." },
-                { id: 6, title: "Informasi Umum Kantor", content: "Jam kerja: Senin - Jumat, 09:00 - 18:00. Fasilitas: Kantin, Parkir, Ruang Istirahat." },
-                { id: 7, title: "Laporan Reportan Evaluasi Kinerja", content: "Hasil evaluasi kinerja semesteran. Secara keseluruhan, 85% karyawan memenuhi atau melebihi target yang ditetapkan." },
-                { id: 8, title: "Informasi Kebijakan Perusahaan", content: "Dokumen ini berisi semua kebijakan yang berlaku di perusahaan, termasuk kode etik, kebijakan cuti, dan aturan lainnya." }
-            ];
 
             // --- IndexedDB Functions ---
             function openDB() {
@@ -549,23 +543,34 @@
                         if (!db.objectStoreNames.contains(STORE_NAME)) {
                             const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
                             store.createIndex('title', 'title', { unique: false });
+                            store.createIndex('type', 'type', { unique: false });
                         }
                     };
                 });
             }
 
-            function saveDataToDB(data) {
+            function saveDataToDB(data, type) {
                 return new Promise((resolve, reject) => {
                     if (!db) return reject('Database not initialized');
                     
                     const transaction = db.transaction([STORE_NAME], 'readwrite');
                     const store = transaction.objectStore(STORE_NAME);
                     
-                    // Clear existing data
-                    store.clear();
+                    // Clear existing data of this type
+                    const index = store.index('type');
+                    const request = index.openCursor(IDBKeyRange.only(type));
+                    
+                    request.onsuccess = function(event) {
+                        const cursor = event.target.result;
+                        if (cursor) {
+                            store.delete(cursor.primaryKey);
+                            cursor.continue();
+                        }
+                    };
                     
                     // Add new data
                     data.forEach(item => {
+                        item.type = type; // Add type to identify the source
                         store.add(item);
                     });
                     
@@ -574,13 +579,14 @@
                 });
             }
 
-            function getDataFromDB() {
+            function getDataFromDB(type) {
                 return new Promise((resolve, reject) => {
                     if (!db) return reject('Database not initialized');
                     
                     const transaction = db.transaction([STORE_NAME], 'readonly');
                     const store = transaction.objectStore(STORE_NAME);
-                    const request = store.getAll();
+                    const index = store.index('type');
+                    const request = index.getAll(type);
                     
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
@@ -594,26 +600,6 @@
                 document.getElementById('notification-message').textContent = message;
                 notification.classList.add('show');
                 setTimeout(() => notification.classList.remove('show'), duration);
-            }
-
-            function categorizeAndRenderMenus(data) {
-                reportanItems = [];
-                informasiItems = [];
-                
-                data.forEach(item => {
-                    const titleLower = item.title.toLowerCase();
-                    if (titleLower.includes('reportan')) {
-                        reportanItems.push(item);
-                    } else if (titleLower.includes('informasi')) {
-                        informasiItems.push(item);
-                    } else {
-                        // Default to Informasi if it doesn't match
-                        informasiItems.push(item);
-                    }
-                });
-                
-                renderSidebarMenu('reportan-list', reportanItems);
-                renderSidebarMenu('informasi-list', informasiItems);
             }
 
             function renderSidebarMenu(listId, items) {
@@ -662,26 +648,28 @@
                     document.getElementById('informasi-loading').classList.add('active');
                     
                     db = await openDB();
-                    const localData = await getDataFromDB();
                     
-                    if (localData.length > 0) {
-                        allMenuData = localData;
-                        categorizeAndRenderMenus(allMenuData);
-                        showNotification('Berhasil', 'Memuat data dari penyimpanan lokal...');
-                    } else {
-                        allMenuData = sampleData;
-                        categorizeAndRenderMenus(allMenuData);
-                        await saveDataToDB(allMenuData);
-                        showNotification('Berhasil', 'Menggunakan data sampel...');
+                    // Try to get data from IndexedDB first
+                    const localReportanData = await getDataFromDB('reportan');
+                    const localInformasiData = await getDataFromDB('informasi');
+                    
+                    if (localReportanData.length > 0) {
+                        reportanItems = localReportanData;
+                        renderSidebarMenu('reportan-list', reportanItems);
+                        showNotification('Berhasil', 'Memuat data Reportan dari penyimpanan lokal...');
                     }
                     
-                    // Try to sync with sheet in background
-                    syncWithSheet(true); 
+                    if (localInformasiData.length > 0) {
+                        informasiItems = localInformasiData;
+                        renderSidebarMenu('informasi-list', informasiItems);
+                        showNotification('Berhasil', 'Memuat data Informasi dari penyimpanan lokal...');
+                    }
+                    
+                    // Try to sync with sheets in background
+                    syncWithSheets(true); 
                 } catch (error) {
-                    console.error("IndexedDB failed, using sample data:", error);
-                    allMenuData = sampleData;
-                    categorizeAndRenderMenus(allMenuData);
-                    showNotification('Peringatan', 'Menggunakan data sampel.');
+                    console.error("Error loading data:", error);
+                    showNotification('Error', 'Gagal memuat data. Silakan coba lagi.');
                 } finally {
                     // Hide loading spinners
                     document.getElementById('reportan-loading').classList.remove('active');
@@ -689,40 +677,71 @@
                 }
             }
 
-            async function syncWithSheet(isBackgroundSync) {
+            async function syncWithSheets(isBackgroundSync) {
                 const syncButton = document.getElementById('sync-button');
                 const syncText = syncButton.querySelector('span');
                 syncButton.disabled = true;
                 syncText.textContent = isBackgroundSync ? 'Menyinkronkan...' : 'Mengambil data...';
 
                 try {
-                    const response = await fetch(sheetUrl);
-                    if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
-                    const text = await response.text();
+                    // Fetch Reportan data
+                    const reportanResponse = await fetch(reportanSheetUrl);
+                    if (!reportanResponse.ok) throw new Error(`Reportan network error: ${reportanResponse.statusText}`);
+                    const reportanText = await reportanResponse.text();
                     
                     // Parse the Google Sheets response
-                    const json = JSON.parse(text.substring(47).slice(0, -2));
+                    const reportanJson = JSON.parse(reportanText.substring(47).slice(0, -2));
                     
                     // Extract data from the response
-                    const fetchedData = json.table.rows.map((row, index) => {
+                    const fetchedReportanData = reportanJson.table.rows.map((row, index) => {
                         // Assuming first column is title and second is content
                         const title = row.c[0] ? row.c[0].v : '';
                         const content = row.c[1] ? row.c[1].v : '';
                         
                         return {
-                            id: index + 1, // Use index as ID
+                            id: `reportan_${index + 1}`, // Use index as ID with prefix
+                            title: title,
+                            content: content
+                        };
+                    }).filter(item => item.title); // Filter out empty rows
+                    
+                    // Fetch Informasi data
+                    const informasiResponse = await fetch(informasiSheetUrl);
+                    if (!informasiResponse.ok) throw new Error(`Informasi network error: ${informasiResponse.statusText}`);
+                    const informasiText = await informasiResponse.text();
+                    
+                    // Parse the Google Sheets response
+                    const informasiJson = JSON.parse(informasiText.substring(47).slice(0, -2));
+                    
+                    // Extract data from the response
+                    const fetchedInformasiData = informasiJson.table.rows.map((row, index) => {
+                        // Assuming first column is title and second is content
+                        const title = row.c[0] ? row.c[0].v : '';
+                        const content = row.c[1] ? row.c[1].v : '';
+                        
+                        return {
+                            id: `informasi_${index + 1}`, // Use index as ID with prefix
                             title: title,
                             content: content
                         };
                     }).filter(item => item.title); // Filter out empty rows
 
-                    if (fetchedData.length > 0) {
-                        allMenuData = fetchedData;
-                        categorizeAndRenderMenus(allMenuData);
-                        await saveDataToDB(allMenuData);
-                        showNotification('Berhasil', isBackgroundSync ? 'Data diperbarui.' : 'Data berhasil disinkronkan!');
+                    if (fetchedReportanData.length > 0) {
+                        reportanItems = fetchedReportanData;
+                        renderSidebarMenu('reportan-list', reportanItems);
+                        await saveDataToDB(reportanItems, 'reportan');
+                        showNotification('Berhasil', 'Data Reportan berhasil disinkronkan!');
                     } else {
-                        showNotification('Peringatan', 'Tidak ada data ditemukan di Google Sheet.');
+                        showNotification('Peringatan', 'Tidak ada data Reportan ditemukan di Google Sheet.');
+                    }
+                    
+                    if (fetchedInformasiData.length > 0) {
+                        informasiItems = fetchedInformasiData;
+                        renderSidebarMenu('informasi-list', informasiItems);
+                        await saveDataToDB(informasiItems, 'informasi');
+                        showNotification('Berhasil', 'Data Informasi berhasil disinkronkan!');
+                    } else {
+                        showNotification('Peringatan', 'Tidak ada data Informasi ditemukan di Google Sheet.');
                     }
                 } catch (error) {
                     console.error("Sync failed:", error);
@@ -759,13 +778,26 @@
                 activeItem.content = document.getElementById('edit-content-input').value;
 
                 try {
+                    // Determine the type based on ID prefix
+                    const type = activeItem.id.startsWith('reportan_') ? 'reportan' : 'informasi';
+                    
                     if (db) {
                         const transaction = db.transaction([STORE_NAME], 'readwrite');
                         const store = transaction.objectStore(STORE_NAME);
                         store.put(activeItem);
                     }
                     
-                    categorizeAndRenderMenus(allMenuData); // Re-render both sidebars
+                    // Update the appropriate array
+                    if (type === 'reportan') {
+                        const index = reportanItems.findIndex(item => item.id === activeItem.id);
+                        if (index !== -1) reportanItems[index] = activeItem;
+                        renderSidebarMenu('reportan-list', reportanItems);
+                    } else {
+                        const index = informasiItems.findIndex(item => item.id === activeItem.id);
+                        if (index !== -1) informasiItems[index] = activeItem;
+                        renderSidebarMenu('informasi-list', informasiItems);
+                    }
+                    
                     showContent(activeItem); // Refresh main view
                     exitEditMode();
                     showNotification('Berhasil', 'Perubahan disimpan!');
@@ -776,14 +808,15 @@
             });
             
             document.getElementById('cancel-edit-btn').addEventListener('click', exitEditMode);
-            document.getElementById('sync-button').addEventListener('click', () => syncWithSheet(false));
+            document.getElementById('sync-button').addEventListener('click', () => syncWithSheets(false));
 
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase().trim();
                 
                 if (searchTerm === "") {
-                    categorizeAndRenderMenus(allMenuData);
+                    renderSidebarMenu('reportan-list', reportanItems);
+                    renderSidebarMenu('informasi-list', informasiItems);
                     return;
                 }
                 
