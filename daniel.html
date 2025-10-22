@@ -119,6 +119,10 @@
             flex-direction: column;
             backdrop-filter: blur(5px);
         }
+        .sidebar:last-child {
+            border-right: none;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+        }
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
         .sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 3px; }
@@ -854,6 +858,23 @@
             </div>
             <div class="loading-spinner" id="informasi-loading"></div>
         </aside>
+
+        <!-- Sidebar Kanan Baru: Menu Baru -->
+        <aside class="sidebar" id="menu-baru-sidebar">
+            <div class="collapsible-menu" id="menu-baru-collapsible">
+                <div class="menu-header" data-target="menu-baru-list">
+                    <h2 class="sidebar-title">
+                        <i class="material-icons">folder_special</i>
+                        Menu Baru
+                    </h2>
+                    <i class="material-icons menu-chevron">expand_more</i>
+                </div>
+                <ul class="menu-list" id="menu-baru-list">
+                    <!-- Menu items will be injected here -->
+                </ul>
+            </div>
+            <div class="loading-spinner" id="menu-baru-loading"></div>
+        </aside>
     </div>
     
     <div class="notification" id="notification">
@@ -893,13 +914,16 @@
             
             const reportanGid = '0';
             const informasiGid = '867686987';
+            const menuBaruGid = '216314114'; // GID dari link yang Anda berikan
             
             const reportanSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${reportanGid}&tqx=out:json`;
             const informasiSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${informasiGid}&tqx=out:json`;
+            const menuBaruSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${menuBaruGid}&tqx=out:json`;
             
             let db;
             let reportanItems = [];
             let informasiItems = [];
+            let menuBaruItems = [];
             let activeItem = null;
             let isEditingMode = false;
 
@@ -1007,6 +1031,7 @@
             async function loadData() {
                 document.getElementById('reportan-loading').classList.add('active');
                 document.getElementById('informasi-loading').classList.add('active');
+                document.getElementById('menu-baru-loading').classList.add('active');
                 
                 try {
                     db = await openDB();
@@ -1023,8 +1048,13 @@
                         informasiItems = await getDataFromDB('informasi');
                         renderSidebarMenu('informasi-list', informasiItems);
                     }
+                    if (!syncStatus.menuBaru) {
+                        console.log("Menu Baru sync failed, loading from cache.");
+                        menuBaruItems = await getDataFromDB('menuBaru');
+                        renderSidebarMenu('menu-baru-list', menuBaruItems);
+                    }
 
-                    if (syncStatus.reportan || syncStatus.informasi) {
+                    if (syncStatus.reportan || syncStatus.informasi || syncStatus.menuBaru) {
                         showNotification('Berhasil', 'Data berhasil dimuat.');
                     } else {
                         showNotification('Offline', 'Gagal mengambil data. Menggunakan data cache.');
@@ -1036,8 +1066,10 @@
                     try {
                         reportanItems = await getDataFromDB('reportan');
                         informasiItems = await getDataFromDB('informasi');
+                        menuBaruItems = await getDataFromDB('menuBaru');
                         renderSidebarMenu('reportan-list', reportanItems);
                         renderSidebarMenu('informasi-list', informasiItems);
+                        renderSidebarMenu('menu-baru-list', menuBaruItems);
                     } catch (cacheError) {
                         console.error("Cache also failed:", cacheError);
                         showNotification('Error', 'Gagal memuat data dari cache juga.');
@@ -1045,6 +1077,7 @@
                 } finally {
                     document.getElementById('reportan-loading').classList.remove('active');
                     document.getElementById('informasi-loading').classList.remove('active');
+                    document.getElementById('menu-baru-loading').classList.remove('active');
                 }
             }
 
@@ -1056,6 +1089,7 @@
 
                 let reportanSuccess = false;
                 let informasiSuccess = false;
+                let menuBaruSuccess = false;
 
                 try {
                     console.log(`Fetching Reportan from: ${reportanSheetUrl}`);
@@ -1106,18 +1140,44 @@
                     console.error("Informasi sync failed:", error);
                     informasiSuccess = false;
                 }
+
+                try {
+                    console.log(`Fetching Menu Baru from: ${menuBaruSheetUrl}`);
+                    const menuBaruResponse = await fetch(menuBaruSheetUrl);
+                    if (!menuBaruResponse.ok) throw new Error(`Network error: ${menuBaruResponse.statusText}`);
+                    const menuBaruText = await menuBaruResponse.text();
+                    const menuBaruJson = JSON.parse(menuBaruText.substring(47).slice(0, -2));
+                    
+                    const fetchedMenuBaruData = menuBaruJson.table.rows.map((row, index) => {
+                        const title = row.c[0] ? row.c[0].v : '';
+                        const content = row.c[1] ? row.c[1].v : '';
+                        return { id: `menuBaru_${Date.now()}_${index}`, title, content };
+                    }).filter(item => item.title);
+
+                    if (fetchedMenuBaruData.length > 0) {
+                        menuBaruItems = fetchedMenuBaruData;
+                        renderSidebarMenu('menu-baru-list', menuBaruItems);
+                        await saveDataToDB(menuBaruItems, 'menuBaru');
+                        menuBaruSuccess = true;
+                        console.log("Menu Baru sync successful.");
+                    }
+                } catch (error) {
+                    console.error("Menu Baru sync failed:", error);
+                    menuBaruSuccess = false;
+                }
                 
                 if (!isInitialLoad) {
                     if (reportanSuccess) showNotification('Berhasil', 'Data Reportan berhasil disinkronkan!');
                     if (informasiSuccess) showNotification('Berhasil', 'Data Informasi berhasil disinkronkan!');
-                    if (!reportanSuccess && !informasiSuccess) {
+                    if (menuBaruSuccess) showNotification('Berhasil', 'Data Menu Baru berhasil disinkronkan!');
+                    if (!reportanSuccess && !informasiSuccess && !menuBaruSuccess) {
                         showNotification('Gagal', 'Tidak ada data yang berhasil disinkronkan. Periksa console untuk detail.');
                     }
                 }
 
                 syncButton.disabled = false;
                 syncText.textContent = 'Sync';
-                return { reportan: reportanSuccess, informasi: informasiSuccess };
+                return { reportan: reportanSuccess, informasi: informasiSuccess, menuBaru: menuBaruSuccess };
             }
 
             // --- Edit Mode ---
@@ -1148,7 +1208,8 @@
                 activeItem.title = document.getElementById('edit-title-input').value;
                 activeItem.content = document.getElementById('edit-content-input').value;
                 try {
-                    const type = activeItem.id.startsWith('reportan_') ? 'reportan' : 'informasi';
+                    const type = activeItem.id.startsWith('reportan_') ? 'reportan' : 
+                                 activeItem.id.startsWith('informasi_') ? 'informasi' : 'menuBaru';
                     if (db) {
                         const transaction = db.transaction([STORE_NAME], 'readwrite');
                         const store = transaction.objectStore(STORE_NAME);
@@ -1158,10 +1219,14 @@
                         const index = reportanItems.findIndex(item => item.id === activeItem.id);
                         if (index !== -1) reportanItems[index] = activeItem;
                         renderSidebarMenu('reportan-list', reportanItems);
-                    } else {
+                    } else if (type === 'informasi') {
                         const index = informasiItems.findIndex(item => item.id === activeItem.id);
                         if (index !== -1) informasiItems[index] = activeItem;
                         renderSidebarMenu('informasi-list', informasiItems);
+                    } else {
+                        const index = menuBaruItems.findIndex(item => item.id === activeItem.id);
+                        if (index !== -1) menuBaruItems[index] = activeItem;
+                        renderSidebarMenu('menu-baru-list', menuBaruItems);
                     }
                     showContent(activeItem);
                     exitEditMode();
@@ -1180,6 +1245,7 @@
                 if (searchTerm === "") {
                     renderSidebarMenu('reportan-list', reportanItems);
                     renderSidebarMenu('informasi-list', informasiItems);
+                    renderSidebarMenu('menu-baru-list', menuBaruItems);
                     return;
                 }
                 const filteredReportan = reportanItems.filter(item => 
@@ -1190,8 +1256,13 @@
                     item.title.toLowerCase().includes(searchTerm) || 
                     item.content.toLowerCase().includes(searchTerm)
                 );
+                const filteredMenuBaru = menuBaruItems.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm) || 
+                    item.content.toLowerCase().includes(searchTerm)
+                );
                 renderSidebarMenu('reportan-list', filteredReportan);
                 renderSidebarMenu('informasi-list', filteredInformasi);
+                renderSidebarMenu('menu-baru-list', filteredMenuBaru);
             });
             
             document.getElementById('copy-button').addEventListener('click', function() {
@@ -1258,7 +1329,7 @@
             };
             
             const findAndProvideAnswer = (userText) => {
-                const allData = [...reportanItems, ...informasiItems];
+                const allData = [...reportanItems, ...informasiItems, ...menuBaruItems];
                 const lowerText = userText.toLowerCase();
                 
                 const keywords = lowerText.replace(/(apa|siapa|dimana|kapan|bagaimana|berapa|kenapa|adalah|tentang|cari|informasi|reportan|laporan|data|konten)/g, '').trim();
@@ -1301,7 +1372,7 @@
                     return "Sama-sama! Senang bisa membantu Anda.";
                 }
                 if (lowerText.includes('bantuan') || lowerText.includes('help')) {
-                    return "Anda bisa menanyakan apa saja kepada saya. Saya akan mencari jawabannya dari data Reportan dan Informasi yang tersedia. Contoh: 'Apa kebijakan perusahaan?' atau 'Berapa laporan keuangan terakhir?'";
+                    return "Anda bisa menanyakan apa saja kepada saya. Saya akan mencari jawabannya dari data Reportan, Informasi, dan Menu Baru yang tersedia. Contoh: 'Apa kebijakan perusahaan?' atau 'Berapa laporan keuangan terakhir?'";
                 }
 
                 return findAndProvideAnswer(userText);
@@ -1332,7 +1403,7 @@
             messagesContainer.addEventListener('click', (event) => {
                 if (event.target.classList.contains('bot-result-title')) {
                     const itemId = event.target.dataset.id;
-                    const item = [...reportanItems, ...informasiItems].find(i => i.id === itemId);
+                    const item = [...reportanItems, ...informasiItems, ...menuBaruItems].find(i => i.id === itemId);
                     if (item) {
                         showContent(item);
                     }
