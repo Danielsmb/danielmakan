@@ -579,11 +579,16 @@
         }
         
         .image-container img {
-            width: 100%;
-            height: 100%;
+            max-width: 70%;
+            max-height: 70%;
             object-fit: contain;
             border-radius: 1rem;
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .image-container img:hover {
+            transform: scale(1.02);
         }
 
         /* Chatbot Styles */
@@ -931,7 +936,7 @@
                 <div class="content-body" id="content-view">
                     <!-- Empty by default, will show image when no menu is selected -->
                     <div class="image-container" id="image-container">
-                        <img src="https://z-cdn-media.chatglm.cn/files/2586e647-89c2-4ce6-a148-f5575b743edf_pasted_image_1761163337961.png?auth_key=1792699419-fbd4f90d91404fb9809d71f98e7dcecc-0-5780080d8770b00d6aa0b33b78681b4a" alt="Portal Image">
+                        <img src="https://z-cdn-media.chatglm.cn/files/b0fa78f7-8495-44e2-a63b-2dc6af365ffe_pasted_image_1761260310822.png?auth_key=1792796329-e37288f1eadd4785950dffbbc19bb1a5-0-4dff74496de8f0823874f1490e228820" alt="Military Personnel Saluting">
                     </div>
                 </div>
 
