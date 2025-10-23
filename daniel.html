@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -866,11 +865,11 @@
     <div class="chatbot-container">
         <div class="chatbot-window" id="chatbot-window">
             <div class="chatbot-header">
-                <h3><i class="material-icons">smart_toy</i> Bantuan AI</h3>
+                <h3><i class="material-icons">smart_toy</i> Asisten AI Z.ai</h3>
                 <button class="chatbot-close-btn" id="chatbot-close-btn"><i class="material-icons">close</i></button>
             </div>
             <div class="chatbot-messages" id="chatbot-messages">
-                <div class="message bot">Halo! Saya asisten virtual Anda. Tanyakan saja apa saja tentang reportan atau informasi. Contoh: "Apa kebijakan perusahaan?" atau "Bagaimana laporan keuangan Q1?"</div>
+                <div class="message bot">Halo! Saya adalah asisten AI yang diperkuat oleh Z.ai. Saya bisa menjawab pertanyaan Anda berdasarkan data yang ada, atau memberikan informasi umum. Ada yang bisa saya bantu?</div>
             </div>
             <div class="typing-indicator" id="typing-indicator">
                 <span></span><span></span><span></span>
@@ -1217,7 +1216,7 @@
                 });
             });
 
-            // --- Chatbot Logic ---
+            // --- Chatbot Logic (Updated) ---
             const launcher = document.getElementById('chatbot-launcher');
             const chatWindow = document.getElementById('chatbot-window');
             const closeBtn = document.getElementById('chatbot-close-btn');
@@ -1244,6 +1243,7 @@
             const addMessage = (text, sender) => {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message', sender);
+                // Use innerHTML to allow for rendered HTML from the bot
                 messageDiv.innerHTML = text;
                 messagesContainer.appendChild(messageDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -1258,57 +1258,105 @@
                 typingIndicator.classList.remove('active');
             };
             
-            const findAndProvideAnswer = (userText) => {
-                const allData = [...reportanItems, ...informasiItems];
-                const lowerText = userText.toLowerCase();
+            /**
+             * Fungsi untuk memanggil API Z.ai (atau API lainnya).
+             * Saat ini, ini adalah simulasi.
+             * 
+             * @param {string} userText - Pesan dari pengguna.
+             * @returns {Promise<string>} - Respon dari AI.
+             */
+            async function callZaiAPI(userText) {
+                // --- AWAL DARI SIMULASI ---
+                // Di bagian ini, kita akan memanggil API yang sesungguhnya.
+                // Karena ini adalah demo, kita akan mensimulasikan respons AI.
                 
-                const keywords = lowerText.replace(/(apa|siapa|dimana|kapan|bagaimana|berapa|kenapa|adalah|tentang|cari|informasi|reportan|laporan|data|konten)/g, '').trim();
+                console.log(`Mengirim pertanyaan ke Z.ai: "${userText}"`);
 
-                if (keywords === "") {
-                    return "Maaf, saya tidak yakin apa yang Anda tanyakan. Bisakah Anda lebih spesifik?";
-                }
+                // Simulasi delay jaringan
+                await new Promise(resolve => setTimeout(resolve, 1500));
 
-                const results = allData.filter(item => 
-                    item.title.toLowerCase().includes(keywords) || 
-                    item.content.toLowerCase().includes(keywords)
-                );
-
-                if (results.length > 0) {
-                    let responseText = `Saya menemukan ${results.length} informasi yang relevan:`;
-                    results.forEach(item => {
-                        responseText += `
-                            <div class="bot-result-item">
-                                <div class="bot-result-title" data-id="${item.id}">${item.title}</div>
-                                <div class="bot-result-content">${item.content}</div>
-                                <div class="bot-result-actions">
-                                    <button class="bot-copy-btn" data-content="${item.content.replace(/"/g, '&quot;')}">Salin</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    return responseText;
-                } else {
-                    return `Maaf, saya tidak menemukan informasi tentang "<strong>${keywords}</strong>" di database. Coba gunakan kata kunci lain.`;
-                }
-            };
-
-            const processBotResponse = (userText) => {
                 const lowerText = userText.toLowerCase();
 
+                // Jika pertanyaan tentang data, cari di database lokal
+                if (lowerText.includes('cari') || lowerText.includes('apa') || lowerText.includes('siapa') || lowerText.includes('dimana') || lowerText.includes('laporan') || lowerText.includes('informasi')) {
+                    const allData = [...reportanItems, ...informasiItems];
+                    const keywords = lowerText.replace(/(apa|siapa|dimana|kapan|bagaimana|berapa|kenapa|adalah|tentang|cari|informasi|reportan|laporan|data|konten)/g, '').trim();
+                    const results = allData.filter(item => 
+                        item.title.toLowerCase().includes(keywords) || 
+                        item.content.toLowerCase().includes(keywords)
+                    );
+
+                    if (results.length > 0) {
+                        let responseText = `Saya menemukan ${results.length} informasi yang relevan dari database lokal:`;
+                        results.forEach(item => {
+                            responseText += `
+                                <div class="bot-result-item">
+                                    <div class="bot-result-title" data-id="${item.id}">${item.title}</div>
+                                    <div class="bot-result-content">${item.content}</div>
+                                    <div class="bot-result-actions">
+                                        <button class="bot-copy-btn" data-content="${item.content.replace(/"/g, '&quot;')}">Salin</button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        return responseText;
+                    } else {
+                        // Jika tidak ditemukan, lempar ke AI untuk jawaban umum
+                        return `Maaf, saya tidak menemukan informasi spesifik tentang "<strong>${keywords}</strong>" di database. Mungkin saya bisa membantu dengan pertanyaan lain?`;
+                    }
+                }
+
+                // Respon fallback untuk pertanyaan umum atau sapaan
                 if (lowerText.includes('halo') || lowerText.includes('hai')) {
-                    return "Halo lagi! Ada yang bisa saya bantu hari ini?";
+                    return "Halo! Ada yang bisa saya bantu terkait reportan atau informasi hari ini?";
                 }
                 if (lowerText.includes('terima kasih') || lowerText.includes('makasih')) {
                     return "Sama-sama! Senang bisa membantu Anda.";
                 }
                 if (lowerText.includes('bantuan') || lowerText.includes('help')) {
-                    return "Anda bisa menanyakan apa saja kepada saya. Saya akan mencari jawabannya dari data Reportan dan Informasi yang tersedia. Contoh: 'Apa kebijakan perusahaan?' atau 'Berapa laporan keuangan terakhir?'";
+                    return "Saya adalah asisten AI. Anda bisa menanyakan sesuatu kepada saya, dan saya akan mencoba menjawab berdasarkan data yang ada atau pengetahuan umum saya. Contoh: 'Cari kebijakan perusahaan' atau 'Apa itu AI?'.";
+                }
+                
+                // Contoh respons AI untuk pertanyaan umum
+                if (lowerText.includes('apa itu ai')) {
+                    return "AI (Kecerdasan Buatan) adalah simulasi kecerdasan manusia dalam mesin yang diprogram untuk berpikir dan belajar. Ini mencakup berbagai teknologi seperti pembelajaran mesin, pemrosesan bahasa alami, dan penglihatan komputer.";
                 }
 
-                return findAndProvideAnswer(userText);
-            };
+                return "Pertanyaan yang menarik. Sebagai AI, saya terus belajar. Bisakah Anda ajukan pertanyaan dengan cara lain atau coba cari informasi spesifik di database saya?";
+                // --- AKHIR DARI SIMULASI ---
 
-            const handleUserInput = () => {
+
+                /*
+                // --- CONTOH IMPLEMENTASI API NYATA (HARUS DILAKUKAN DI BACKEND) ---
+                // PERINGATAN: JANGAN PERNAH MENARUH API KEY DI KODE FRONTEND!
+                // Kode ini hanya untuk ilustrasi. Gunakan backend (Node.js, Python, dll) untuk memanggil API.
+                
+                const response = await fetch('https://api.z.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer YOUR_API_KEY_HERE' // API Key harus aman di backend
+                    },
+                    body: JSON.stringify({
+                        model: "zai-model", // Ganti dengan model yang sesuai
+                        messages: [
+                            { role: "system", content: "Anda adalah asisten AI yang cerdas dan membantu." },
+                            { role: "user", content: userText }
+                        ],
+                        max_tokens: 150
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Gagal menghubungi API Z.ai');
+                }
+
+                const data = await response.json();
+                return data.choices[0].message.content;
+                */
+            }
+
+            const handleUserInput = async () => {
                 const userText = inputField.value.trim();
                 if (userText === '') return;
 
@@ -1316,11 +1364,15 @@
                 inputField.value = '';
                 showTypingIndicator();
 
-                setTimeout(() => {
+                try {
+                    const botResponse = await callZaiAPI(userText);
                     hideTypingIndicator();
-                    const botResponse = processBotResponse(userText);
                     addMessage(botResponse, 'bot');
-                }, 1000 + Math.random() * 1000);
+                } catch (error) {
+                    hideTypingIndicator();
+                    console.error("Error dari bot:", error);
+                    addMessage("Maaf, terjadi kesalahan saat saya mencoba memproses permintaan Anda. Silakan coba lagi nanti.", 'bot');
+                }
             };
 
             sendBtn.addEventListener('click', handleUserInput);
