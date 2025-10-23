@@ -567,7 +567,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Image Container Styles */
+        /* Image Container Styles - Modified for larger image */
         .image-container {
             display: flex;
             flex-direction: column;
@@ -576,11 +576,12 @@
             height: 100%;
             width: 100%;
             position: relative;
+            padding: 0;
         }
         
         .image-container img {
-            max-width: 70%;
-            max-height: 70%;
+            width: 95%;
+            height: 95%;
             object-fit: contain;
             border-radius: 1rem;
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
