@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -21,6 +20,125 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+        }
+        
+        /* Login Screen Styles */
+        .login-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0a0a14, #1a1a2e);
+            z-index: 10000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .login-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .login-form {
+            background: rgba(20, 20, 40, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(30, 30, 50, 0.7);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: none;
+            background: linear-gradient(45deg, #ffffff, #5390d9);
+            color: #0a0a14;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .login-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .login-error {
+            color: #ff6b6b;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .login-loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .login-loading.active {
+            display: block;
         }
         
         .bg-grid {
@@ -104,9 +222,13 @@
         }
 
         .app-container {
-            display: flex;
+            display: none;
             height: 100vh;
             overflow: hidden;
+        }
+        
+        .app-container.active {
+            display: flex;
         }
 
         .sidebar {
@@ -430,6 +552,26 @@
         .sync-button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+        }
+        
+        .logout-button {
+            background: rgba(220, 53, 69, 0.8);
+            border: none;
+            border-radius: 2rem;
+            padding: 0.5rem 1.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+        .logout-button:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
         }
 
         .notification {
@@ -762,7 +904,37 @@
     <div class="data-point point-2"></div>
     <div class="data-point point-3"></div>
     
-    <div class="app-container">
+    <!-- Login Screen -->
+    <div class="login-container" id="login-container">
+        <div class="login-form">
+            <div class="login-header">
+                <h1 class="login-title">Portal Reportan & Informasi</h1>
+                <p class="login-subtitle">Silakan masuk untuk melanjutkan</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="username">ID Pengguna</label>
+                    <input type="text" class="form-input" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Kata Sandi</label>
+                    <input type="password" class="form-input" id="password" required>
+                </div>
+                <button type="submit" class="login-button" id="login-button">
+                    <span>Masuk</span>
+                </button>
+                <div class="login-error" id="login-error">
+                    ID atau kata sandi salah. Silakan coba lagi.
+                </div>
+                <div class="login-loading" id="login-loading">
+                    <div class="loading-spinner active"></div>
+                    <p>Memeriksa kredensial...</p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="app-container" id="app-container">
         <!-- Sidebar Kiri: Reportan -->
         <aside class="sidebar" id="reportan-sidebar">
             <div class="collapsible-menu" id="reportan-collapsible">
@@ -795,6 +967,10 @@
                     <button id="sync-button" class="sync-button">
                         <i class="material-icons">sync</i>
                         <span>Sync</span>
+                    </button>
+                    <button id="logout-button" class="logout-button">
+                        <i class="material-icons">logout</i>
+                        <span>Keluar</span>
                     </button>
                 </div>
             </div>
@@ -894,15 +1070,20 @@
             
             const reportanGid = '0';
             const informasiGid = '867686987';
+            const authGid = '1772247186'; // GID for authentication sheet
             
             const reportanSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${reportanGid}&tqx=out:json`;
             const informasiSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${informasiGid}&tqx=out:json`;
+            const authSheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?gid=${authGid}&tqx=out:json`;
             
             let db;
             let reportanItems = [];
             let informasiItems = [];
+            let authCredentials = [];
             let activeItem = null;
             let isEditingMode = false;
+            let sessionTimeout;
+            const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
 
             // --- IndexedDB Functions ---
             function openDB() {
@@ -962,6 +1143,64 @@
                 });
             }
 
+            // --- Authentication Functions ---
+            async function fetchAuthCredentials() {
+                try {
+                    const response = await fetch(authSheetUrl);
+                    if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
+                    const text = await response.text();
+                    const json = JSON.parse(text.substring(47).slice(0, -2));
+                    
+                    authCredentials = json.table.rows.map((row, index) => {
+                        const username = row.c[0] ? row.c[0].v : '';
+                        const password = row.c[1] ? row.c[1].v : '';
+                        return { username, password };
+                    }).filter(item => item.username && item.password);
+                    
+                    return authCredentials;
+                } catch (error) {
+                    console.error("Failed to fetch auth credentials:", error);
+                    return [];
+                }
+            }
+
+            async function authenticate(username, password) {
+                if (authCredentials.length === 0) {
+                    authCredentials = await fetchAuthCredentials();
+                }
+                
+                const user = authCredentials.find(cred => 
+                    cred.username === username && cred.password === password
+                );
+                
+                return user !== undefined;
+            }
+
+            function startSession() {
+                // Clear any existing timeout
+                if (sessionTimeout) clearTimeout(sessionTimeout);
+                
+                // Set new timeout
+                sessionTimeout = setTimeout(() => {
+                    logout();
+                    showNotification('Sesi Berakhir', 'Sesi Anda telah berakhir. Silakan masuk kembali.');
+                }, SESSION_DURATION);
+            }
+
+            function logout() {
+                // Clear session timeout
+                if (sessionTimeout) clearTimeout(sessionTimeout);
+                
+                // Hide app container and show login
+                document.getElementById('app-container').classList.remove('active');
+                document.getElementById('login-container').classList.remove('hidden');
+                
+                // Clear form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('login-error').style.display = 'none';
+            }
+
             // --- UI Functions ---
             function showNotification(title, message, duration = 3000) {
                 const notification = document.getElementById('notification');
@@ -1002,6 +1241,9 @@
                 // Hide image container and show content
                 document.getElementById('image-container').style.display = 'none';
                 document.getElementById('content-view').textContent = item.content;
+                
+                // Reset session timeout on user activity
+                startSession();
             }
 
             // --- Data Loading and Syncing ---
@@ -1174,6 +1416,7 @@
             });
             document.getElementById('cancel-edit-btn').addEventListener('click', exitEditMode);
             document.getElementById('sync-button').addEventListener('click', () => syncWithSheets(false));
+            document.getElementById('logout-button').addEventListener('click', logout);
 
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', function() {
@@ -1202,6 +1445,49 @@
                 }).catch(err => {
                     showNotification('Error', 'Gagal menyalin.');
                 });
+            });
+
+            // --- Login Form Event Listener ---
+            document.getElementById('login-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const loginButton = document.getElementById('login-button');
+                const loginError = document.getElementById('login-error');
+                const loginLoading = document.getElementById('login-loading');
+                
+                // Show loading state
+                loginButton.disabled = true;
+                loginError.style.display = 'none';
+                loginLoading.classList.add('active');
+                
+                try {
+                    const isAuthenticated = await authenticate(username, password);
+                    
+                    if (isAuthenticated) {
+                        // Hide login screen and show app
+                        document.getElementById('login-container').classList.add('hidden');
+                        document.getElementById('app-container').classList.add('active');
+                        
+                        // Start session timeout
+                        startSession();
+                        
+                        // Load data after successful login
+                        await loadData();
+                    } else {
+                        // Show error message
+                        loginError.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error("Authentication error:", error);
+                    loginError.textContent = 'Terjadi kesalahan saat memverifikasi kredensial. Silakan coba lagi.';
+                    loginError.style.display = 'block';
+                } finally {
+                    // Hide loading state
+                    loginButton.disabled = false;
+                    loginLoading.classList.remove('active');
+                }
             });
 
             // --- Collapsible Menu Logic ---
@@ -1358,8 +1644,9 @@
                 }
             });
 
-            // --- Start the App ---
-            loadData();
+            // Reset session timeout on user activity
+            document.addEventListener('click', startSession);
+            document.addEventListener('keydown', startSession);
         });
     </script>
 </body>
