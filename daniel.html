@@ -22,6 +22,31 @@
             position: relative;
         }
         
+        /* Custom Background Image */
+        .background-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('https://z-cdn-media.chatglm.cn/files/d0885b50-8357-4b65-90e0-b5d5f7f189d2_pasted_image_1761260101041.png?auth_key=1792796112-753de92aff22427b861bf2da5745cac8-0-effa06b101dddc13ba82da811ac6b4d0');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.7) contrast(1.1);
+        }
+        
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 20, 0.85) 0%, rgba(20, 20, 40, 0.75) 50%, rgba(10, 10, 30, 0.85) 100%);
+            z-index: -1;
+        }
+        
         /* Login Screen Styles */
         .login-container {
             position: fixed;
@@ -32,7 +57,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #0a0a14, #1a1a2e);
             z-index: 10000;
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
@@ -141,86 +165,6 @@
             display: block;
         }
         
-        .bg-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            z-index: -1;
-        }
-        
-        .bg-glow {
-            position: fixed;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(13, 27, 77, 0.2) 50%, transparent 70%);
-            filter: blur(50px);
-            z-index: -1;
-        }
-        
-        .glow-1 {
-            top: -100px;
-            right: -100px;
-        }
-        
-        .glow-2 {
-            bottom: -100px;
-            left: -100px;
-            background: radial-gradient(circle, rgba(0, 123, 255, 0.4) 0%, rgba(13, 27, 77, 0.2) 50%, transparent 70%);
-        }
-        
-        .circuit-line {
-            position: fixed;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-            height: 1px;
-            z-index: -1;
-        }
-        
-        .line-1 {
-            width: 200px;
-            top: 150px;
-            left: -50px;
-            transform: rotate(30deg);
-        }
-        
-        .line-2 {
-            width: 150px;
-            bottom: 200px;
-            right: -30px;
-            transform: rotate(-20deg);
-        }
-        
-        .data-point {
-            position: fixed;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #ffffff;
-            box-shadow: 0 0 10px #ffffff;
-            z-index: -1;
-        }
-        
-        .point-1 {
-            top: 150px;
-            left: 150px;
-        }
-        
-        .point-2 {
-            bottom: 200px;
-            right: 120px;
-        }
-        
-        .point-3 {
-            top: 300px;
-            right: 80px;
-        }
-
         .app-container {
             display: none;
             height: 100vh;
@@ -895,14 +839,9 @@
     </style>
 </head>
 <body>
-    <div class="bg-grid"></div>
-    <div class="bg-glow glow-1"></div>
-    <div class="bg-glow glow-2"></div>
-    <div class="circuit-line line-1"></div>
-    <div class="circuit-line line-2"></div>
-    <div class="data-point point-1"></div>
-    <div class="data-point point-2"></div>
-    <div class="data-point point-3"></div>
+    <!-- New Background with Custom Image -->
+    <div class="background-wrapper"></div>
+    <div class="background-overlay"></div>
     
     <!-- Login Screen -->
     <div class="login-container" id="login-container">
