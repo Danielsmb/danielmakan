@@ -1,718 +1,660 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Absensi Staff</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --danger: #f72585;
-            --warning: #f8961e;
-            --info: #4895ef;
-            --border-radius: 12px;
-            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYBERSEARCH - Mesin Pencari Cyberpunk</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+body {
+font-family: 'Courier New', monospace;
+background: #000;
+color: #06b6d4;
+min-height: 100vh;
+overflow-x: hidden;
+position: relative;
+}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: var(--dark);
-            min-height: 100vh;
-            padding: 20px;
-        }
+/* Background Grid */
+.bg-grid {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, #000 50%, rgba(6, 182, 212, 0.1) 100%);
+pointer-events: none;
+z-index: 1;
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.bg-grid::before {
+content: '';
+position: absolute;
+inset: 0;
+background-image:
+linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+background-size: 50px 50px;
+}
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
+/* Glitch Effect */
+@keyframes glitch {
+0%, 100% {
+text-shadow:
+0.05em 0 0 rgba(255, 0, 0, 0.75),
+-0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
+0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+}
+15% {
+text-shadow:
+-0.05em -0.025em 0 rgba(255, 0, 0, 0.75),
+0.025em 0.025em 0 rgba(0, 255, 0, 0.75),
+-0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+}
+50% {
+text-shadow:
+0.025em 0.05em 0 rgba(255, 0, 0, 0.75),
+0.05em 0 0 rgba(0, 255, 0, 0.75),
+0 -0.05em 0 rgba(0, 0, 255, 0.75);
+}
+}
 
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
+/* Neon Flicker */
+@keyframes neon-flicker {
+0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+opacity: 1;
+}
+20%, 22%, 24%, 55% {
+opacity: 0.5;
+}
+}
 
-        .logo i {
-            font-size: 2.5rem;
-            color: var(--primary);
-        }
+/* Scanline Effect */
+@keyframes scanline {
+0% {
+transform: translateY(-100%);
+}
+100% {
+transform: translateY(100%);
+}
+}
 
-        h1 {
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
+.glitch {
+animation: glitch 2.5s infinite;
+}
 
-        .subtitle {
-            color: #6c757d;
-            font-size: 1.1rem;
-        }
+.neon-flicker {
+animation: neon-flicker 1.5s infinite;
+}
 
-        .date-time {
-            background: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-top: 15px;
-            font-weight: 500;
-        }
+.scanline {
+position: relative;
+}
 
-        .tabs {
-            display: flex;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
+.scanline::before {
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 2px;
+background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.4), transparent);
+animation: scanline 8s linear infinite;
+pointer-events: none;
+}
 
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 18px 0;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: var(--transition);
-            position: relative;
-        }
+/* Main Container */
+.container {
+position: relative;
+z-index: 10;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+padding: 20px;
+}
 
-        .tab.active {
-            background: var(--primary);
-            color: white;
-        }
+/* Header */
+.header {
+text-align: center;
+margin-bottom: 48px;
+}
 
-        .tab:not(.active):hover {
-            background: rgba(67, 97, 238, 0.1);
-        }
+.logo-container {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 12px;
+margin-bottom: 24px;
+}
 
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 10px solid var(--light);
-        }
+.icon {
+width: 48px;
+height: 48px;
+position: relative;
+}
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
+.icon-cpu {
+color: #06b6d4;
+animation: pulse 2s infinite;
+}
 
-        .tab-content.active {
-            display: block;
-        }
+.icon-globe {
+color: #a855f7;
+animation: pulse 2s infinite;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+@keyframes pulse {
+0%, 100% {
+opacity: 1;
+}
+50% {
+opacity: 0.7;
+}
+}
 
-        .staff-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+.icon-glow {
+position: absolute;
+inset: 0;
+width: 48px;
+height: 48px;
+border-radius: 50%;
+filter: blur(20px);
+animation: pulse 2s infinite;
+}
 
-        .staff-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
+.cpu-glow {
+background: rgba(6, 182, 212, 0.2);
+}
 
-        .staff-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
+.globe-glow {
+background: rgba(168, 85, 247, 0.2);
+}
 
-        .staff-card.absent {
-            border-left: 5px solid var(--danger);
-        }
+.title {
+font-size: 4rem;
+font-weight: bold;
+background: linear-gradient(90deg, #06b6d4, #a855f7, #ec4899);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin: 0;
+letter-spacing: 2px;
+}
 
-        .staff-card.present {
-            border-left: 5px solid var(--success);
-        }
+.subtitle {
+color: rgba(6, 182, 212, 0.7);
+font-size: 1.125rem;
+margin-top: 16px;
+}
 
-        .staff-name {
-            font-weight: 600;
-            font-size: 1.3rem;
-            margin-bottom: 5px;
-            color: var(--dark);
-        }
+/* Search Form */
+.search-form {
+width: 100%;
+max-width: 672px;
+margin-bottom: 32px;
+}
 
-        .staff-position {
-            color: var(--primary);
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
+.search-container {
+position: relative;
+group: true;
+}
 
-        .staff-status {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
+.search-glow {
+position: absolute;
+inset: -4px;
+background: linear-gradient(90deg, #0891b2, #a855f7);
+border-radius: 8px;
+filter: blur(12px);
+opacity: 0.75;
+animation: pulse 2s infinite;
+}
 
-        .status-absent {
-            background: rgba(247, 37, 133, 0.1);
-            color: var(--danger);
-        }
+.search-wrapper {
+position: relative;
+display: flex;
+gap: 8px;
+}
 
-        .status-present {
-            background: rgba(76, 201, 240, 0.1);
-            color: var(--success);
-        }
+.search-input {
+flex: 1;
+background: rgba(0, 0, 0, 0.5);
+border: 1px solid rgba(6, 182, 212, 0.5);
+color: #06b6d4;
+font-family: 'Courier New', monospace;
+font-size: 1.125rem;
+padding: 16px 24px;
+border-radius: 8px;
+backdrop-filter: blur(4px);
+transition: all 0.3s ease;
+}
 
-        .action-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: auto;
-        }
+.search-input::placeholder {
+color: rgba(6, 182, 212, 0.5);
+}
 
-        .action-btn:hover {
-            background: var(--secondary);
-        }
+.search-input:focus {
+outline: none;
+border-color: #06b6d4;
+box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+}
 
-        .action-btn:disabled {
-            background: #adb5bd;
-            cursor: not-allowed;
-        }
+.search-button {
+background: linear-gradient(90deg, #0891b2, #a855f7);
+color: #000;
+font-weight: bold;
+padding: 16px 32px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s ease;
+font-family: 'Courier New', monospace;
+font-size: 1rem;
+}
 
-        .action-btn.absent {
-            background: var(--danger);
-        }
+.search-button:hover {
+background: linear-gradient(90deg, #06b6d4, #9333ea);
+transform: scale(1.05);
+}
 
-        .action-btn.absent:hover {
-            background: #e01e6d;
-        }
+.search-button:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none;
+}
 
-        .time-info {
-            font-size: 0.85rem;
-            color: #6c757d;
-            margin-top: 10px;
-            text-align: center;
-        }
+.loading-spinner {
+width: 16px;
+height: 16px;
+border: 2px solid #000;
+border-top: 2px solid transparent;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+display: inline-block;
+margin-right: 8px;
+}
 
-        .shift-info {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--box-shadow);
-            margin-bottom: 30px;
-        }
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
 
-        .shift-title {
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
+/* Results */
+.results-container {
+width: 100%;
+max-width: 896px;
+}
 
-        .shift-time {
-            color: #6c757d;
-            font-size: 0.95rem;
-        }
+.results-header {
+color: rgba(6, 182, 212, 0.7);
+font-family: 'Courier New', monospace;
+margin-bottom: 16px;
+}
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+.result-card {
+background: rgba(0, 0, 0, 0.5);
+border: 1px solid rgba(6, 182, 212, 0.3);
+border-radius: 8px;
+padding: 24px;
+margin-bottom: 16px;
+backdrop-filter: blur(4px);
+transition: all 0.3s ease;
+}
 
-        .stat-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--box-shadow);
-            text-align: center;
-        }
+.result-card:hover {
+border-color: rgba(6, 182, 212, 0.5);
+box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
+}
 
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
+.result-content {
+display: flex;
+align-items: flex-start;
+gap: 16px;
+}
 
-        .stat-label {
-            color: #6c757d;
-            font-size: 0.95rem;
-        }
+.result-bullet {
+width: 8px;
+height: 8px;
+background: #06b6d4;
+border-radius: 50%;
+margin-top: 8px;
+animation: pulse 2s infinite;
+}
 
-        .present-stat {
-            color: var(--success);
-        }
+.result-info {
+flex: 1;
+}
 
-        .absent-stat {
-            color: var(--danger);
-        }
+.result-title {
+color: #67e8f9;
+font-size: 1.125rem;
+font-weight: 600;
+margin-bottom: 8px;
+}
 
-        .total-stat {
-            color: var(--primary);
-        }
+.result-title a {
+color: inherit;
+text-decoration: none;
+display: flex;
+align-items: center;
+gap: 8px;
+}
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            transform: translateX(150%);
-            transition: transform 0.5s ease;
-        }
+.result-title a:hover {
+color: #a5f3fc;
+}
 
-        .notification.show {
-            transform: translateX(0);
-        }
+.result-url {
+color: rgba(6, 182, 212, 0.6);
+font-size: 0.875rem;
+margin-bottom: 8px;
+font-family: 'Courier New', monospace;
+}
 
-        .notification.success {
-            background: var(--success);
-        }
+.result-snippet {
+color: rgba(6, 182, 212, 0.8);
+line-height: 1.5;
+}
 
-        .notification.error {
-            background: var(--danger);
-        }
+.result-meta {
+display: flex;
+align-items: center;
+gap: 16px;
+margin-top: 12px;
+font-size: 0.75rem;
+color: rgba(6, 182, 212, 0.5);
+}
 
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
+.no-results {
+text-align: center;
+padding: 48px 0;
+}
 
-        @media (max-width: 768px) {
-            .tabs {
-                flex-direction: column;
-            }
-            
-            .staff-list {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+.no-results-title {
+color: rgba(6, 182, 212, 0.5);
+font-size: 1.125rem;
+font-family: 'Courier New', monospace;
+margin-bottom: 8px;
+}
+
+.no-results-subtitle {
+color: rgba(6, 182, 212, 0.3);
+font-size: 0.875rem;
+font-family: 'Courier New', monospace;
+}
+
+/* Footer */
+.footer {
+position: absolute;
+bottom: 16px;
+left: 0;
+right: 0;
+text-align: center;
+}
+
+.footer-text {
+color: rgba(6, 182, 212, 0.3);
+font-size: 0.75rem;
+font-family: 'Courier New', monospace;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+.title {
+font-size: 3rem;
+}
+
+.search-wrapper {
+flex-direction: column;
+}
+
+.search-button {
+width: 100%;
+}
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+width: 8px;
+}
+
+::-webkit-scrollbar-track {
+background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+background: linear-gradient(180deg, rgba(6, 182, 212, 0.6), rgba(168, 85, 247, 0.6));
+border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: linear-gradient(180deg, rgba(6, 182, 212, 0.8), rgba(168, 85, 247, 0.8));
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-clipboard-check"></i>
-                <h1>Sistem Absensi Staff</h1>
-            </div>
-            <p class="subtitle">Absensi digital dengan integrasi Google Sheets</p>
-            <div class="date-time" id="currentDateTime">
-                <!-- Date and time will be updated by JavaScript -->
-            </div>
-        </header>
+<div class="bg-grid"></div>
 
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value total-stat" id="totalStaff">0</div>
-                <div class="stat-label">Total Staff</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value present-stat" id="presentStaff">0</div>
-                <div class="stat-label">Hadir</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value absent-stat" id="absentStaff">0</div>
-                <div class="stat-label">Belum Absen</div>
-            </div>
-        </div>
+<div class="container scanline">
+<!-- Header -->
+<header class="header">
+<div class="logo-container">
+<div class="icon">
+<svg class="icon-cpu" fill="currentColor" viewBox="0 0 24 24">
+<path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm7 0h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
+</svg>
+<div class="icon-glow cpu-glow"></div>
+</div>
+<h1 class="title glitch">CYBERSEARCH</h1>
+<div class="icon">
+<svg class="icon-globe" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+</svg>
+<div class="icon-glow globe-glow"></div>
+</div>
+</div>
+<p class="subtitle neon-flicker">// AKSES FRONTIER DIGITAL //</p>
+</header>
 
-        <div class="shift-info">
-            <div class="shift-title" id="currentShiftTitle">Shift Pagi</div>
-            <div class="shift-time" id="currentShiftTime">07:00 - 15:00</div>
-        </div>
+<!-- Search Form -->
+<form class="search-form" onsubmit="handleSearch(event)">
+<div class="search-container">
+<div class="search-glow"></div>
+<div class="search-wrapper">
+<input
+type="text"
+class="search-input"
+id="searchInput"
+placeholder="INISIASI PROTOCOL PENCARIAN..."
+required
+>
+<button type="submit" class="search-button" id="searchButton">
+<span id="buttonText">
+<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+<path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+</svg>
+SEARCH
+</span>
+</button>
+</div>
+</div>
+</form>
 
-        <div class="tabs">
-            <div class="tab active" data-tab="shift-pagi">Shift Pagi</div>
-            <div class="tab" data-tab="shift-sore">Shift Sore</div>
-            <div class="tab" data-tab="shift-malam">Shift Malam</div>
-        </div>
+<!-- Results Container -->
+<div class="results-container" id="resultsContainer" style="display: none;">
+<div class="results-header" id="resultsHeader"></div>
+<div id="resultsList"></div>
+</div>
 
-        <div class="tab-content active" id="shift-pagi">
-            <div class="staff-list" id="staff-list-pagi">
-                <!-- Staff cards for shift pagi will be inserted here -->
-            </div>
-        </div>
+<!-- No Results -->
+<div class="no-results" id="noResults" style="display: none;">
+<div class="no-results-title">TIDAK ADA DATA YANG DITEMUKAN DALAM MATRIX</div>
+<div class="no-results-subtitle">COBA PARAMETER PENCARIAN YANG BERBEDA</div>
+</div>
 
-        <div class="tab-content" id="shift-sore">
-            <div class="staff-list" id="staff-list-sore">
-                <!-- Staff cards for shift sore will be inserted here -->
-            </div>
-        </div>
+<!-- Footer -->
+<footer class="footer">
+<p class="footer-text">&lt; CYBERSEARCH ENGINE v2.0.77 &gt;</p>
+</footer>
+</div>
 
-        <div class="tab-content" id="shift-malam">
-            <div class="staff-list" id="staff-list-malam">
-                <!-- Staff cards for shift malam will be inserted here -->
-            </div>
-        </div>
+<script>
+let isSearching = false;
 
-        <footer>
-            <p>© 2023 Sistem Absensi Staff. All rights reserved.</p>
-        </footer>
-    </div>
+async function handleSearch(event) {
+event.preventDefault();
 
-    <div class="notification" id="notification">
-        <!-- Notification content -->
-    </div>
+if (isSearching) return;
 
-    <script>
-        // Data contoh - nanti akan diganti dengan data dari Google Sheets
-        const staffData = {
-            'shift-pagi': [
-                { id: 1, name: 'Ahmad Rizki', position: 'Manager', status: 'present', time: '07:15' },
-                { id: 2, name: 'Siti Nurhaliza', position: 'Supervisor', status: 'present', time: '07:05' },
-                { id: 3, name: 'Budi Santoso', position: 'Staff IT', status: 'absent', time: '' },
-                { id: 4, name: 'Maya Sari', position: 'HR Staff', status: 'present', time: '07:20' },
-                { id: 5, name: 'Rizky Pratama', position: 'Admin', status: 'absent', time: '' },
-                { id: 6, name: 'Dewi Lestari', position: 'Marketing', status: 'present', time: '07:10' }
-            ],
-            'shift-sore': [
-                { id: 7, name: 'Fajar Nugroho', position: 'Manager', status: 'absent', time: '' },
-                { id: 8, name: 'Indah Permata', position: 'Supervisor', status: 'absent', time: '' },
-                { id: 9, name: 'Hendra Wijaya', position: 'Staff IT', status: 'absent', time: '' },
-                { id: 10, name: 'Lia Amelia', position: 'HR Staff', status: 'absent', time: '' }
-            ],
-            'shift-malam': [
-                { id: 11, name: 'Rudi Hartono', position: 'Manager', status: 'absent', time: '' },
-                { id: 12, name: 'Sari Indah', position: 'Supervisor', status: 'absent', time: '' },
-                { id: 13, name: 'Joko Susilo', position: 'Security', status: 'absent', time: '' }
-            ]
-        };
+const query = document.getElementById('searchInput').value.trim();
+if (!query) return;
 
-        // Inisialisasi aplikasi
-        document.addEventListener('DOMContentLoaded', function() {
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-            
-            loadStaffData();
-            setupTabs();
-            updateStats();
-        });
+isSearching = true;
+updateSearchButton(true);
+hideResults();
 
-        // Fungsi untuk memperbarui tanggal dan waktu
-        function updateDateTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('id-ID', options);
-        }
+try {
+// Simulasi pencarian (ganti dengan API endpoint yang sesuai)
+await simulateSearch(query);
 
-        // Fungsi untuk memuat data staff
-        function loadStaffData() {
-            for (const shift in staffData) {
-                const staffList = document.getElementById(`staff-list-${shift.split('-')[1]}`);
-                staffList.innerHTML = '';
-                
-                staffData[shift].forEach(staff => {
-                    const staffCard = document.createElement('div');
-                    staffCard.className = `staff-card ${staff.status}`;
-                    
-                    staffCard.innerHTML = `
-                        <div class="staff-name">${staff.name}</div>
-                        <div class="staff-position">${staff.position}</div>
-                        <div class="staff-status ${staff.status === 'present' ? 'status-present' : 'status-absent'}">
-                            ${staff.status === 'present' ? 'Sudah Absen' : 'Belum Absen'}
-                        </div>
-                        <button class="action-btn ${staff.status === 'present' ? 'absent' : ''}" 
-                                data-id="${staff.id}" data-shift="${shift}">
-                            <i class="fas ${staff.status === 'present' ? 'fa-undo' : 'fa-check'}"></i>
-                            ${staff.status === 'present' ? 'Batalkan' : 'Absen Sekarang'}
-                        </button>
-                        ${staff.status === 'present' ? `<div class="time-info">Waktu: ${staff.time}</div>` : ''}
-                    `;
-                    
-                    staffList.appendChild(staffCard);
-                });
-            }
-            
-            // Tambahkan event listener untuk tombol absen
-            document.querySelectorAll('.action-btn').forEach(button => {
-                button.addEventListener('click', handleAbsence);
-            });
-        }
+// Untuk implementasi nyata, gunakan:
+// const results = await performRealSearch(query);
+// displayResults(results, query);
 
-        // Fungsi untuk menangani absensi
-        function handleAbsence(event) {
-            const button = event.currentTarget;
-            const staffId = parseInt(button.getAttribute('data-id'));
-            const shift = button.getAttribute('data-shift');
-            
-            // Cari staff berdasarkan ID dan shift
-            const staff = staffData[shift].find(s => s.id === staffId);
-            
-            if (staff) {
-                if (staff.status === 'absent') {
-                    // Absen staff
-                    staff.status = 'present';
-                    staff.time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                    
-                    showNotification(`${staff.name} berhasil melakukan absensi`, 'success');
-                } else {
-                    // Batalkan absen
-                    staff.status = 'absent';
-                    staff.time = '';
-                    
-                    showNotification(`Absensi ${staff.name} dibatalkan`, 'error');
-                }
-                
-                // Perbarui UI
-                loadStaffData();
-                updateStats();
-                
-                // Di sini akan ada kode untuk mengirim data ke Google Sheets
-                // updateGoogleSheets(staff);
-            }
-        }
+} catch (error) {
+console.error('Search failed:', error);
+showNoResults();
+} finally {
+isSearching = false;
+updateSearchButton(false);
+}
+}
 
-        // Fungsi untuk mengatur tab
-        function setupTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Hapus kelas active dari semua tab dan konten
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    // Tambahkan kelas active ke tab yang diklik
-                    this.classList.add('active');
-                    
-                    // Tampilkan konten yang sesuai
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                    
-                    // Perbarui info shift
-                    updateShiftInfo(tabId);
-                });
-            });
-        }
+function updateSearchButton(searching) {
+const button = document.getElementById('searchButton');
+const buttonText = document.getElementById('buttonText');
 
-        // Fungsi untuk memperbarui info shift
-        function updateShiftInfo(shiftId) {
-            const shiftTitle = document.getElementById('currentShiftTitle');
-            const shiftTime = document.getElementById('currentShiftTime');
-            
-            switch(shiftId) {
-                case 'shift-pagi':
-                    shiftTitle.textContent = 'Shift Pagi';
-                    shiftTime.textContent = '07:00 - 15:00';
-                    break;
-                case 'shift-sore':
-                    shiftTitle.textContent = 'Shift Sore';
-                    shiftTime.textContent = '15:00 - 23:00';
-                    break;
-                case 'shift-malam':
-                    shiftTitle.textContent = 'Shift Malam';
-                    shiftTime.textContent = '23:00 - 07:00';
-                    break;
-            }
-        }
+if (searching) {
+button.disabled = true;
+buttonText.innerHTML = '<div class="loading-spinner"></div>SCANNING...';
+} else {
+button.disabled = false;
+buttonText.innerHTML = `
+<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+<path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+</svg>
+SEARCH
+`;
+}
+}
 
-        // Fungsi untuk memperbarui statistik
-        function updateStats() {
-            let total = 0;
-            let present = 0;
-            
-            for (const shift in staffData) {
-                total += staffData[shift].length;
-                present += staffData[shift].filter(staff => staff.status === 'present').length;
-            }
-            
-            document.getElementById('totalStaff').textContent = total;
-            document.getElementById('presentStaff').textContent = present;
-            document.getElementById('absentStaff').textContent = total - present;
-        }
+function hideResults() {
+document.getElementById('resultsContainer').style.display = 'none';
+document.getElementById('noResults').style.display = 'none';
+}
 
-        // Fungsi untuk menampilkan notifikasi
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type} show`;
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
+function showResults(results, query) {
+const container = document.getElementById('resultsContainer');
+const header = document.getElementById('resultsHeader');
+const list = document.getElementById('resultsList');
 
-        // Fungsi untuk mengambil data dari Google Sheets
-        // Ini adalah placeholder untuk integrasi dengan Google Sheets
-        async function fetchDataFromGoogleSheets() {
-            try {
-                // URL Google Sheets Anda
-                const sheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
-                const range = 'Sheet1'; // Ganti dengan nama sheet yang sesuai
-                
-                // Menggunakan Google Sheets API v4
-                // Anda perlu mengatur API key atau OAuth untuk akses
-                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=YOUR_API_KEY`);
-                
-                if (!response.ok) {
-                    throw new Error('Gagal mengambil data dari Google Sheets');
-                }
-                
-                const data = await response.json();
-                
-                // Proses data dari Google Sheets
-                // Format data: kolom A (Shift Pagi), E (Shift Sore), I (Shift Malam)
-                // Kolom N (NAMA), O (JABATAN), P (STATUS)
-                
-                // Reset data staff
-                staffData['shift-pagi'] = [];
-                staffData['shift-sore'] = [];
-                staffData['shift-malam'] = [];
-                
-                // Proses data dari Google Sheets
-                // Contoh implementasi:
-                // data.values.forEach((row, index) => {
-                //     if (index === 0) return; // Skip header
-                //     
-                //     // Ambil data untuk shift pagi (kolom A)
-                //     if (row[0]) {
-                //         staffData['shift-pagi'].push({
-                //             id: index * 3 - 2,
-                //             name: row[13] || 'Nama tidak tersedia', // Kolom N
-                //             position: row[14] || 'Jabatan tidak tersedia', // Kolom O
-                //             status: row[15] === 'Hadir' ? 'present' : 'absent', // Kolom P
-                //             time: row[15] === 'Hadir' ? new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : ''
-                //         });
-                //     }
-                //     
-                //     // Ambil data untuk shift sore (kolom E)
-                //     if (row[4]) {
-                //         staffData['shift-sore'].push({
-                //             id: index * 3 - 1,
-                //             name: row[13] || 'Nama tidak tersedia',
-                //             position: row[14] || 'Jabatan tidak tersedia',
-                //             status: row[15] === 'Hadir' ? 'present' : 'absent',
-                //             time: row[15] === 'Hadir' ? new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : ''
-                //         });
-                //     }
-                //     
-                //     // Ambil data untuk shift malam (kolom I)
-                //     if (row[8]) {
-                //         staffData['shift-malam'].push({
-                //             id: index * 3,
-                //             name: row[13] || 'Nama tidak tersedia',
-                //             position: row[14] || 'Jabatan tidak tersedia',
-                //             status: row[15] === 'Hadir' ? 'present' : 'absent',
-                //             time: row[15] === 'Hadir' ? new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : ''
-                //         });
-                //     }
-                // });
-                
-                // Perbarui UI dengan data baru
-                loadStaffData();
-                updateStats();
-                
-            } catch (error) {
-                console.error('Error mengambil data dari Google Sheets:', error);
-                showNotification('Gagal mengambil data dari Google Sheets', 'error');
-            }
-        }
+header.textContent = `MENEMUKAN ${results.length} HASIL DI RUANG DIGITAL`;
 
-        // Fungsi untuk memperbarui Google Sheets
-        // Ini adalah placeholder untuk integrasi dengan Google Sheets
-        async function updateGoogleSheets(staff) {
-            try {
-                // URL Google Sheets Anda
-                const sheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
-                
-                // Data yang akan dikirim
-                const data = {
-                    values: [
-                        [staff.name, staff.position, staff.status === 'present' ? 'Hadir' : 'Tidak Hadir', new Date().toLocaleString('id-ID')]
-                    ]
-                };
-                
-                // Menggunakan Google Sheets API v4
-                // Anda perlu mengatur API key atau OAuth untuk akses
-                const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!N2:append?valueInputOption=RAW&key=YOUR_API_KEY`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Gagal mengirim data ke Google Sheets');
-                }
-                
-                console.log('Data berhasil dikirim ke Google Sheets');
-                
-            } catch (error) {
-                console.error('Error mengirim data ke Google Sheets:', error);
-                showNotification('Gagal mengirim data ke Google Sheets', 'error');
-            }
-        }
-    </script>
+list.innerHTML = results.map(result => `
+<div class="result-card">
+<div class="result-content">
+<div class="result-bullet"></div>
+<div class="result-info">
+<h3 class="result-title">
+<a href="${result.url}" target="_blank" rel="noopener noreferrer">
+<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+<path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+</svg>
+${result.name}
+</a>
+</h3>
+<div class="result-url">${result.url}</div>
+<div class="result-snippet">${result.snippet}</div>
+<div class="result-meta">
+<span>${result.host_name}</span>
+<span>•</span>
+<span>${result.date}</span>
+</div>
+</div>
+</div>
+</div>
+`).join('');
+
+container.style.display = 'block';
+}
+
+function showNoResults() {
+document.getElementById('noResults').style.display = 'block';
+}
+
+// Simulasi fungsi pencarian
+async function simulateSearch(query) {
+// Simulasi delay
+await new Promise(resolve => setTimeout(resolve, 2000));
+
+// Data contoh
+const mockResults = [
+{
+name: `${query} - Hasil Pencarian 1`,
+url: `https://example.com/${query}`,
+snippet: `Ini adalah hasil pencarian untuk "${query}" dengan deskripsi yang relevan dan informatif tentang topik yang Anda cari.`,
+host_name: "example.com",
+date: "2024"
+},
+{
+name: `${query} - Informasi Lengkap`,
+url: `https://info.com/${query}`,
+snippet: `Temukan informasi lengkap tentang ${query} di sini. Kami menyediakan data yang akurat dan terpercaya.`,
+host_name: "info.com",
+date: "2024"
+},
+{
+name: `Panduan ${query} untuk Pemula`,
+url: `https://guide.com/${query}`,
+snippet: `Panduan lengkap untuk memahami ${query} dari dasar hingga tingkat lanjut. Cocok untuk pemula.`,
+host_name: "guide.com",
+date: "2024"
+}
+];
+
+// Simulasi random hasil
+const hasResults = Math.random() > 0.2;
+
+if (hasResults) {
+showResults(mockResults, query);
+} else {
+showNoResults();
+}
+}
+
+// Fungsi untuk implementasi API nyata (jika diperlukan)
+async function performRealSearch(query) {
+const response = await fetch('/api/search', {
+method: 'POST',
+headers: {
+Content-Type': 'application/json',
+},
+body: JSON.stringify({ query }),
+});
+
+if (!response.ok) {
+throw new Error('Search failed');
+}
+
+const data = await response.json();
+return data.results || [];
+}
+</script>
 </body>
 </html>
