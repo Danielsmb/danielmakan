@@ -582,7 +582,7 @@ async function handleSearch(event) {
     hideResults();
 
     try {
-        // Search for exact match in sheet data
+        // Search for partial match in sheet data
         const results = searchSheetData(query);
         
         if (results.length > 0) {
@@ -600,10 +600,18 @@ async function handleSearch(event) {
 }
 
 function searchSheetData(query) {
-    // Find exact matches in the title column (case-insensitive)
-    const results = sheetData.filter(item => 
-        item.title.toLowerCase() === query.toLowerCase()
-    );
+    // Ubah query menjadi array kata-kata yang sudah di lowercase
+    const queryWords = query.toLowerCase().split(' ');
+
+    // Filter data dari sheet
+    const results = sheetData.filter(item => {
+        // Ubah judul dari sheet menjadi lowercase
+        const title = item.title.toLowerCase();
+
+        // Periksa apakah SALAH SATU kata dari query ada di dalam judul
+        // .some() akan berhenti dan mengembalikan true segera setelah ada kecocokan
+        return queryWords.some(queryWord => title.includes(queryWord));
+    });
     
     return results;
 }
