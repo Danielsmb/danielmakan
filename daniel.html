@@ -33,7 +33,7 @@ position: relative;
 /* Import Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
 
-/* Animated Background */
+/* Animated Background - Enhanced */
 .bg-animation {
 position: fixed;
 top: 0;
@@ -59,6 +59,14 @@ background: var(--primary-color);
 border-radius: 50%;
 opacity: 0.3;
 animation: float 20s infinite linear;
+}
+
+.particle:nth-child(2n) {
+background: var(--secondary-color);
+}
+
+.particle:nth-child(3n) {
+background: var(--accent-color);
 }
 
 @keyframes float {
@@ -100,7 +108,7 @@ transform: translate(40px, 40px);
 }
 }
 
-/* Glitch Effect */
+/* Enhanced Glitch Effect */
 @keyframes glitch {
 0%, 100% {
 text-shadow:
@@ -122,17 +130,19 @@ text-shadow:
 }
 }
 
-/* Neon Flicker */
+/* Enhanced Neon Flicker */
 @keyframes neon-flicker {
 0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
 opacity: 1;
+text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
 }
 20%, 22%, 24%, 55% {
 opacity: 0.5;
+text-shadow: 0 0 2px currentColor;
 }
 }
 
-/* Scanline Effect */
+/* Enhanced Scanline Effect */
 @keyframes scanline {
 0% {
 transform: translateY(-100%);
@@ -154,7 +164,7 @@ transform: scale(0.95);
 }
 }
 
-/* Glow Animation */
+/* Enhanced Glow Animation */
 @keyframes glow {
 0%, 100% {
 box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color);
@@ -176,7 +186,7 @@ min-height: 100vh;
 padding: 20px;
 }
 
-/* Header */
+/* Enhanced Header */
 .header {
 text-align: center;
 margin-bottom: 48px;
@@ -277,7 +287,7 @@ letter-spacing: 2px;
 text-transform: uppercase;
 }
 
-/* Search Form */
+/* Enhanced Search Form */
 .search-form {
 width: 100%;
 max-width: 720px;
@@ -308,6 +318,12 @@ border-radius: 12px;
 padding: 4px;
 backdrop-filter: blur(10px);
 border: 1px solid rgba(0, 255, 255, 0.2);
+transition: all 0.3s ease;
+}
+
+.search-wrapper:focus-within {
+border-color: rgba(0, 255, 255, 0.5);
+box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
 .search-input {
@@ -390,7 +406,7 @@ margin-right: 8px;
 100% { transform: rotate(360deg); }
 }
 
-/* Results */
+/* Enhanced Results */
 .results-container {
 width: 100%;
 max-width: 960px;
@@ -406,6 +422,7 @@ letter-spacing: 1px;
 display: flex;
 align-items: center;
 gap: 10px;
+position: relative;
 }
 
 .results-header::before {
@@ -569,7 +586,7 @@ font-family: 'Orbitron', monospace;
 opacity: 0.7;
 }
 
-/* Footer */
+/* Enhanced Footer */
 .footer {
 position: absolute;
 bottom: 20px;
@@ -587,7 +604,7 @@ letter-spacing: 1px;
 opacity: 0.7;
 }
 
-/* Responsive */
+/* Enhanced Responsive */
 @media (max-width: 768px) {
 .title {
 font-size: 3rem;
@@ -624,7 +641,7 @@ border-radius: 5px;
 background: linear-gradient(180deg, var(--secondary-color), var(--primary-color));
 }
 
-/* Scanline Effect */
+/* Enhanced Scanline Effect */
 .scanline {
 position: relative;
 }
@@ -641,14 +658,90 @@ animation: scanline 8s linear infinite;
 pointer-events: none;
 }
 
-/* Glitch Text */
+/* Enhanced Glitch Text */
 .glitch {
 animation: glitch 2.5s infinite;
 }
 
-/* Neon Flicker */
+/* Enhanced Neon Flicker */
 .neon-flicker {
 animation: neon-flicker 1.5s infinite;
+}
+
+/* New Elements */
+.status-bar {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+background: rgba(10, 10, 30, 0.8);
+padding: 8px 20px;
+display: flex;
+justify-content: space-between;
+font-size: 0.75rem;
+text-transform: uppercase;
+letter-spacing: 1px;
+z-index: 100;
+backdrop-filter: blur(10px);
+border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.system-time {
+color: var(--primary-color);
+}
+
+.system-status {
+color: var(--accent-color);
+}
+
+.terminal-output {
+background: rgba(10, 10, 30, 0.5);
+border: 1px solid rgba(0, 255, 255, 0.2);
+border-radius: 8px;
+padding: 16px;
+margin-top: 20px;
+font-family: 'Courier New', monospace;
+font-size: 0.875rem;
+max-height: 200px;
+overflow-y: auto;
+display: none;
+}
+
+.terminal-line {
+margin-bottom: 8px;
+color: var(--accent-color);
+}
+
+.terminal-prompt {
+color: var(--primary-color);
+}
+
+.data-badge {
+display: inline-block;
+background: rgba(0, 255, 255, 0.1);
+color: var(--primary-color);
+padding: 4px 8px;
+border-radius: 4px;
+font-size: 0.75rem;
+margin-left: 8px;
+vertical-align: middle;
+}
+
+/* New Animations */
+@keyframes typing {
+from { width: 0 }
+to { width: 100% }
+}
+
+@keyframes blink {
+0%, 100% { opacity: 1 }
+50% { opacity: 0 }
+}
+
+.typing-animation {
+overflow: hidden;
+white-space: nowrap;
+animation: typing 3.5s steps(40, end), blink 1s step-end infinite;
 }
 </style>
 </head>
@@ -656,6 +749,12 @@ animation: neon-flicker 1.5s infinite;
 <div class="bg-animation">
 <div class="particles" id="particles"></div>
 <div class="grid-overlay"></div>
+</div>
+
+<!-- Status Bar -->
+<div class="status-bar">
+<div class="system-time" id="systemTime">--:--:--</div>
+<div class="system-status">SISTEM ONLINE</div>
 </div>
 
 <div class="container scanline">
@@ -705,6 +804,13 @@ SEARCH
 </div>
 </form>
 
+<!-- Terminal Output -->
+<div class="terminal-output" id="terminalOutput">
+<div class="terminal-line"><span class="terminal-prompt">SYSTEM></span> Initializing CYBERSEARCH Engine v2.0.77</div>
+<div class="terminal-line"><span class="terminal-prompt">SYSTEM></span> Neural network connection established</div>
+<div class="terminal-line"><span class="terminal-prompt">SYSTEM></span> Ready for query input...</div>
+</div>
+
 <!-- Results Container -->
 <div class="results-container" id="resultsContainer" style="display: none;">
 <div class="results-header" id="resultsHeader"></div>
@@ -730,14 +836,14 @@ let sheetData = [];
 // Create particle effect
 function createParticles() {
     const particlesContainer = document.getElementById('particles');
-    const particleCount = 50;
+    const particleCount = 80;
     
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
         
         // Random size
-        const size = Math.random() * 5 + 1;
+        const size = Math.random() * 8 + 1;
         particle.style.width = `${size}px`;
         particle.style.height = `${size}px`;
         
@@ -754,9 +860,35 @@ function createParticles() {
     }
 }
 
+// Update system time
+function updateSystemTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('id-ID', { hour12: false });
+    document.getElementById('systemTime').textContent = timeString;
+}
+
+// Show terminal output
+function showTerminalOutput() {
+    const terminal = document.getElementById('terminalOutput');
+    terminal.style.display = 'block';
+}
+
+// Add line to terminal
+function addTerminalLine(text) {
+    const terminal = document.getElementById('terminalOutput');
+    const line = document.createElement('div');
+    line.classList.add('terminal-line');
+    line.innerHTML = `<span class="terminal-prompt">SYSTEM></span> ${text}`;
+    terminal.appendChild(line);
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
 // Fetch data from Google Sheets when page loads
 window.onload = function() {
     createParticles();
+    updateSystemTime();
+    setInterval(updateSystemTime, 1000);
+    showTerminalOutput();
     fetchSheetData();
 };
 
@@ -765,6 +897,8 @@ async function fetchSheetData() {
         const sheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
         const sheetName = 'REPORTAN';
         const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+        
+        addTerminalLine('Fetching data from database...');
         
         const response = await fetch(url);
         if (!response.ok) {
@@ -793,9 +927,12 @@ async function fetchSheetData() {
             }
         }
         
+        addTerminalLine(`Database loaded: ${sheetData.length} entries indexed`);
         console.log('Data loaded successfully:', sheetData.length, 'entries.');
     } catch (error) {
         console.error('Error fetching sheet data:', error);
+        addTerminalLine(`ERROR: Failed to load database - ${error.message}`);
+        
         // Optionally, show an error message to the user on the page
         const noResults = document.getElementById('noResults');
         noResults.querySelector('.no-results-title').textContent = 'GAGAL MEMUAT DATA';
@@ -815,10 +952,14 @@ async function handleSearch(event) {
     isSearching = true;
     updateSearchButton(true);
     hideResults();
+    
+    addTerminalLine(`Executing search query: "${query}"`);
 
     try {
         // Search for partial match in sheet data
         const results = searchSheetData(query);
+        
+        addTerminalLine(`Search completed: ${results.length} results found`);
         
         if (results.length > 0) {
             displayResults(results, query);
@@ -827,6 +968,7 @@ async function handleSearch(event) {
         }
     } catch (error) {
         console.error('Search failed:', error);
+        addTerminalLine(`ERROR: Search failed - ${error.message}`);
         showNoResults();
     } finally {
         isSearching = false;
@@ -879,7 +1021,7 @@ function displayResults(results, query) {
     const header = document.getElementById('resultsHeader');
     const list = document.getElementById('resultsList');
 
-    header.textContent = `MENEMUKAN ${results.length} HASIL UNTUK "${query.toUpperCase()}"`;
+    header.innerHTML = `MENEMUKAN ${results.length} HASIL UNTUK "${query.toUpperCase()}" <span class="data-badge">${new Date().toLocaleTimeString('id-ID')}</span>`;
 
     list.innerHTML = results.map((result, index) => `
         <div class="result-card">
@@ -919,6 +1061,9 @@ function copyToClipboard(text, index) {
         // Show success message
         const successElement = document.getElementById(`copySuccess${index}`);
         successElement.classList.add('show');
+        
+        // Add to terminal
+        addTerminalLine(`Data copied to clipboard: ${text.substring(0, 50)}${text.length > 50 ? '...' : ''}`);
         
         // Hide success message after 2 seconds
         setTimeout(() => {
