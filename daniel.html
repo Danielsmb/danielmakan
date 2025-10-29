@@ -184,6 +184,7 @@ align-items: center;
 justify-content: center;
 min-height: 100vh;
 padding: 20px;
+padding-top: 60px; /* Added padding for status bar */
 }
 
 /* Enhanced Header */
@@ -716,6 +717,18 @@ color: var(--accent-color);
 color: var(--primary-color);
 }
 
+.terminal-error {
+color: #ff4444;
+}
+
+.terminal-success {
+color: var(--accent-color);
+}
+
+.terminal-warning {
+color: #ffaa00;
+}
+
 .data-badge {
 display: inline-block;
 background: rgba(0, 255, 255, 0.1);
@@ -725,6 +738,57 @@ border-radius: 4px;
 font-size: 0.75rem;
 margin-left: 8px;
 vertical-align: middle;
+}
+
+/* Debug Panel */
+.debug-panel {
+position: fixed;
+bottom: 60px;
+right: 20px;
+background: rgba(10, 10, 30, 0.9);
+border: 1px solid rgba(0, 255, 255, 0.3);
+border-radius: 8px;
+padding: 12px;
+font-family: 'Courier New', monospace;
+font-size: 0.75rem;
+max-width: 300px;
+z-index: 100;
+display: none;
+}
+
+.debug-panel.show {
+display: block;
+}
+
+.debug-title {
+color: var(--primary-color);
+margin-bottom: 8px;
+font-weight: bold;
+}
+
+.debug-info {
+color: var(--text-secondary);
+margin-bottom: 4px;
+}
+
+.debug-toggle {
+position: fixed;
+bottom: 20px;
+right: 20px;
+background: rgba(0, 255, 255, 0.2);
+border: 1px solid var(--primary-color);
+color: var(--primary-color);
+padding: 8px 12px;
+border-radius: 6px;
+cursor: pointer;
+font-family: 'Orbitron', monospace;
+font-size: 0.75rem;
+text-transform: uppercase;
+z-index: 100;
+}
+
+.debug-toggle:hover {
+background: rgba(0, 255, 255, 0.3);
 }
 
 /* New Animations */
@@ -754,7 +818,7 @@ animation: typing 3.5s steps(40, end), blink 1s step-end infinite;
 <!-- Status Bar -->
 <div class="status-bar">
 <div class="system-time" id="systemTime">--:--:--</div>
-<div class="system-status">SISTEM ONLINE</div>
+<div class="system-status" id="systemStatus">SISTEM INISIALISASI</div>
 </div>
 
 <div class="container scanline">
@@ -829,9 +893,20 @@ SEARCH
 </footer>
 </div>
 
+<!-- Debug Toggle -->
+<button class="debug-toggle" id="debugToggle">DEBUG</button>
+
+<!-- Debug Panel -->
+<div class="debug-panel" id="debugPanel">
+<div class="debug-title">DEBUG INFO</div>
+<div class="debug-info" id="debugInfo">Loading...</div>
+</div>
+
 <script>
 let isSearching = false;
 let sheetData = [];
+let currentResults = [];
+let debugMode = false;
 
 // Create particle effect
 function createParticles() {
@@ -867,6 +942,18 @@ function updateSystemTime() {
     document.getElementById('systemTime').textContent = timeString;
 }
 
+// Update system status
+function updateSystemStatus(status, type = 'normal') {
+    const statusElement = document.getElementById('systemStatus');
+    statusElement.textContent = status;
+    
+    // Add color based on type
+    statusElement.style.color = type === 'error' ? '#ff4444' : 
+                               type === 'success' ? 'var(--accent-color)' : 
+                               type === 'warning' ? '#ffaa00' : 
+                               'var(--primary-color)';
+}
+
 // Show terminal output
 function showTerminalOutput() {
     const terminal = document.getElementById('terminalOutput');
@@ -874,72 +961,242 @@ function showTerminalOutput() {
 }
 
 // Add line to terminal
-function addTerminalLine(text) {
+function addTerminalLine(text, type = 'normal') {
     const terminal = document.getElementById('terminalOutput');
     const line = document.createElement('div');
     line.classList.add('terminal-line');
-    line.innerHTML = `<span class="terminal-prompt">SYSTEM></span> ${text}`;
+    
+    let className = 'terminal-prompt';
+    if (type === 'error') className = 'terminal-error';
+    else if (type === 'success') className = 'terminal-success';
+    else if (type === 'warning') className = 'terminal-warning';
+    
+    line.innerHTML = `<span class="${className}">SYSTEM></span> ${text}`;
     terminal.appendChild(line);
     terminal.scrollTop = terminal.scrollHeight;
 }
 
-// Fetch data from Google Sheets when page loads
-window.onload = function() {
-    createParticles();
-    updateSystemTime();
-    setInterval(updateSystemTime, 1000);
-    showTerminalOutput();
-    fetchSheetData();
-};
+// Update debug info
+function updateDebugInfo() {
+    if (!debugMode) return;
+    
+    const debugInfo = document.getElementById('debugInfo');
+    debugInfo.innerHTML = `
+        <div>Total Data: ${sheetData.length}</div>
+        <div>Current Results: ${currentResults.length}</div>
+        <div>Search Status: ${isSearching ? 'Searching...' : 'Idle'}</div>
+        <div>Last Query: ${document.getElementById('searchInput').value || 'None'}</div>
+        <div>Cache: ${localStorage.getItem('cybersearch_data') ? 'Available' : 'Empty'}</div>
+    `;
+}
 
+// Fetch data from Google Sheets with multiple fallback methods
 async function fetchSheetData() {
+    const sheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
+    
+    updateSystemStatus('MENGAMBIL DATA...', 'warning');
+    addTerminalLine('Attempting to connect to database...', 'warning');
+    
+    // Method 1: Try to access the first sheet by gid=0
     try {
-        const sheetId = '1k5U_YwloyQsad7PT_DmXobkNycJ6bsV0zhE00TLmSIg';
-        const sheetName = 'REPORTAN';
-        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
-        
-        addTerminalLine('Fetching data from database...');
+        addTerminalLine('Method 1: Accessing sheet by gid=0...', 'normal');
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=0`;
         
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
         const text = await response.text();
         
-        // Parse the JSON response
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        
-        // Extract data from the response
-        const rows = json.table.rows;
-        sheetData = [];
-        
-        // Skip header row (A1 and B1)
-        for (let i = 1; i < rows.length; i++) {
-            const titleCell = rows[i].c[0];
-            const infoCell = rows[i].c[1];
+        // Check if we got valid data
+        if (text.includes('google.visualization.Query.setResponse')) {
+            const json = JSON.parse(text.substring(47).slice(0, -2));
+            const rows = json.table.rows;
             
-            // Ensure cells are not null or undefined before accessing 'v'
-            const title = titleCell && titleCell.v ? String(titleCell.v) : '';
-            const info = infoCell && infoCell.v ? String(infoCell.v) : '';
+            sheetData = [];
+            for (let i = 0; i < rows.length; i++) {
+                const titleCell = rows[i].c[0];
+                const infoCell = rows[i].c[1];
+                
+                const title = titleCell && titleCell.v ? String(titleCell.v) : '';
+                const info = infoCell && infoCell.v ? String(infoCell.v) : '';
+                
+                if (title) {
+                    sheetData.push({ title: title.trim(), info: info.trim() });
+                }
+            }
             
-            if (title) { // Only add rows that have a title (keyword)
-                sheetData.push({ title: title.trim(), info: info.trim() });
+            if (sheetData.length > 0) {
+                addTerminalLine(`SUCCESS: Loaded ${sheetData.length} entries from database`, 'success');
+                updateSystemStatus('SISTEM ONLINE', 'success');
+                localStorage.setItem('cybersearch_data', JSON.stringify(sheetData));
+                localStorage.setItem('cybersearch_timestamp', new Date().toISOString());
+                updateDebugInfo();
+                return;
             }
         }
-        
-        addTerminalLine(`Database loaded: ${sheetData.length} entries indexed`);
-        console.log('Data loaded successfully:', sheetData.length, 'entries.');
     } catch (error) {
-        console.error('Error fetching sheet data:', error);
-        addTerminalLine(`ERROR: Failed to load database - ${error.message}`);
-        
-        // Optionally, show an error message to the user on the page
-        const noResults = document.getElementById('noResults');
-        noResults.querySelector('.no-results-title').textContent = 'GAGAL MEMUAT DATA';
-        noResults.querySelector('.no-results-subtitle').textContent = 'Periksa koneksi internet atau link Google Sheets.';
-        noResults.style.display = 'block';
+        addTerminalLine(`Method 1 failed: ${error.message}`, 'error');
+        console.error('Method 1 error:', error);
     }
+    
+    // Method 2: Try to access by sheet name "REPORTAN"
+    try {
+        addTerminalLine('Method 2: Accessing sheet by name "REPORTAN"...', 'normal');
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=REPORTAN`;
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        
+        // Check if we got valid data
+        if (text.includes('google.visualization.Query.setResponse')) {
+            const json = JSON.parse(text.substring(47).slice(0, -2));
+            const rows = json.table.rows;
+            
+            sheetData = [];
+            for (let i = 0; i < rows.length; i++) {
+                const titleCell = rows[i].c[0];
+                const infoCell = rows[i].c[1];
+                
+                const title = titleCell && titleCell.v ? String(titleCell.v) : '';
+                const info = infoCell && infoCell.v ? String(infoCell.v) : '';
+                
+                if (title) {
+                    sheetData.push({ title: title.trim(), info: info.trim() });
+                }
+            }
+            
+            if (sheetData.length > 0) {
+                addTerminalLine(`SUCCESS: Loaded ${sheetData.length} entries from REPORTAN sheet`, 'success');
+                updateSystemStatus('SISTEM ONLINE', 'success');
+                localStorage.setItem('cybersearch_data', JSON.stringify(sheetData));
+                localStorage.setItem('cybersearch_timestamp', new Date().toISOString());
+                updateDebugInfo();
+                return;
+            }
+        }
+    } catch (error) {
+        addTerminalLine(`Method 2 failed: ${error.message}`, 'error');
+        console.error('Method 2 error:', error);
+    }
+    
+    // Method 3: Try to get all sheets and access the first one
+    try {
+        addTerminalLine('Method 3: Getting all sheets...', 'normal');
+        const feedUrl = `https://spreadsheets.google.com/feeds/worksheets/${sheetId}/public/basic?alt=json`;
+        
+        const response = await fetch(feedUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const feedJson = await response.json();
+        if (feedJson.feed && feedJson.feed.entry && feedJson.feed.entry.length > 0) {
+            // Get the first sheet
+            const firstSheet = feedJson.feed.entry[0];
+            const sheetName = firstSheet.title.$t;
+            
+            addTerminalLine(`Found sheet: ${sheetName}`, 'normal');
+            
+            // Now try to access this sheet
+            const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+            
+            const sheetResponse = await fetch(url);
+            if (!sheetResponse.ok) {
+                throw new Error(`HTTP error! status: ${sheetResponse.status}`);
+            }
+            
+            const sheetText = await sheetResponse.text();
+            
+            // Check if we got valid data
+            if (sheetText.includes('google.visualization.Query.setResponse')) {
+                const json = JSON.parse(sheetText.substring(47).slice(0, -2));
+                const rows = json.table.rows;
+                
+                sheetData = [];
+                for (let i = 0; i < rows.length; i++) {
+                    const titleCell = rows[i].c[0];
+                    const infoCell = rows[i].c[1];
+                    
+                    const title = titleCell && titleCell.v ? String(titleCell.v) : '';
+                    const info = infoCell && infoCell.v ? String(infoCell.v) : '';
+                    
+                    if (title) {
+                        sheetData.push({ title: title.trim(), info: info.trim() });
+                    }
+                }
+                
+                if (sheetData.length > 0) {
+                    addTerminalLine(`SUCCESS: Loaded ${sheetData.length} entries from ${sheetName} sheet`, 'success');
+                    updateSystemStatus('SISTEM ONLINE', 'success');
+                    localStorage.setItem('cybersearch_data', JSON.stringify(sheetData));
+                    localStorage.setItem('cybersearch_timestamp', new Date().toISOString());
+                    updateDebugInfo();
+                    return;
+                }
+            }
+        }
+    } catch (error) {
+        addTerminalLine(`Method 3 failed: ${error.message}`, 'error');
+        console.error('Method 3 error:', error);
+    }
+    
+    // Method 4: Try to load from cache
+    try {
+        addTerminalLine('Method 4: Loading from cache...', 'normal');
+        const cachedData = localStorage.getItem('cybersearch_data');
+        if (cachedData) {
+            sheetData = JSON.parse(cachedData);
+            const timestamp = localStorage.getItem('cybersearch_timestamp');
+            addTerminalLine(`SUCCESS: Loaded ${sheetData.length} entries from cache (${new Date(timestamp).toLocaleString()})`, 'success');
+            updateSystemStatus('SISTEM ONLINE (OFFLINE)', 'warning');
+            updateDebugInfo();
+            return;
+        }
+    } catch (error) {
+        addTerminalLine(`Method 4 failed: ${error.message}`, 'error');
+        console.error('Method 4 error:', error);
+    }
+    
+    // Method 5: Use sample data as last resort
+    addTerminalLine('Method 5: Using sample data...', 'warning');
+    sheetData = [
+        { title: "SAMPLE DATA 1", info: "This is sample data because the database could not be reached. Please check your internet connection or the spreadsheet URL." },
+        { title: "SAMPLE DATA 2", info: "The system is currently running in offline mode with limited functionality." },
+        { title: "CONNECTION ERROR", info: "Unable to connect to the Google Sheets database. Please verify the spreadsheet ID and ensure it's publicly accessible." }
+    ];
+    
+    addTerminalLine(`WARNING: Using ${sheetData.length} sample entries`, 'warning');
+    updateSystemStatus('SISTEM OFFLINE', 'error');
+    updateDebugInfo();
 }
+
+// Fetch data when page loads
+window.onload = function() {
+    createParticles();
+    updateSystemTime();
+    setInterval(updateSystemTime, 1000);
+    showTerminalOutput();
+    
+    // Debug toggle
+    document.getElementById('debugToggle').addEventListener('click', function() {
+        debugMode = !debugMode;
+        const debugPanel = document.getElementById('debugPanel');
+        debugPanel.classList.toggle('show', debugMode);
+        updateDebugInfo();
+    });
+    
+    // Update debug info periodically
+    setInterval(updateDebugInfo, 1000);
+    
+    // Fetch data
+    fetchSheetData();
+};
 
 async function handleSearch(event) {
     event.preventDefault();
@@ -954,12 +1211,15 @@ async function handleSearch(event) {
     hideResults();
     
     addTerminalLine(`Executing search query: "${query}"`);
+    updateDebugInfo();
 
     try {
         // Search for partial match in sheet data
         const results = searchSheetData(query);
+        currentResults = results;
         
-        addTerminalLine(`Search completed: ${results.length} results found`);
+        addTerminalLine(`Search completed: ${results.length} results found`, results.length > 0 ? 'success' : 'warning');
+        updateDebugInfo();
         
         if (results.length > 0) {
             displayResults(results, query);
@@ -968,26 +1228,34 @@ async function handleSearch(event) {
         }
     } catch (error) {
         console.error('Search failed:', error);
-        addTerminalLine(`ERROR: Search failed - ${error.message}`);
+        addTerminalLine(`ERROR: Search failed - ${error.message}`, 'error');
         showNoResults();
     } finally {
         isSearching = false;
         updateSearchButton(false);
+        updateDebugInfo();
     }
 }
 
 function searchSheetData(query) {
+    if (sheetData.length === 0) {
+        addTerminalLine('WARNING: No data available for search', 'warning');
+        return [];
+    }
+    
     // Ubah query menjadi array kata-kata yang sudah di lowercase
-    const queryWords = query.toLowerCase().split(' ');
+    const queryWords = query.toLowerCase().split(' ').filter(word => word.length > 0);
 
     // Filter data dari sheet
     const results = sheetData.filter(item => {
         // Ubah judul dari sheet menjadi lowercase
         const title = item.title.toLowerCase();
+        const info = item.info.toLowerCase();
 
-        // Periksa apakah SALAH SATU kata dari query ada di dalam judul
-        // .some() akan berhenti dan mengembalikan true segera setelah ada kecocokan
-        return queryWords.some(queryWord => title.includes(queryWord));
+        // Periksa apakah SALAH SATU kata dari query ada di dalam judul atau info
+        return queryWords.some(queryWord => 
+            title.includes(queryWord) || info.includes(queryWord)
+        );
     });
     
     return results;
@@ -1063,7 +1331,7 @@ function copyToClipboard(text, index) {
         successElement.classList.add('show');
         
         // Add to terminal
-        addTerminalLine(`Data copied to clipboard: ${text.substring(0, 50)}${text.length > 50 ? '...' : ''}`);
+        addTerminalLine(`Data copied to clipboard: ${text.substring(0, 50)}${text.length > 50 ? '...' : ''}`, 'success');
         
         // Hide success message after 2 seconds
         setTimeout(() => {
@@ -1071,7 +1339,7 @@ function copyToClipboard(text, index) {
         }, 2000);
     }).catch(err => {
         console.error('Failed to copy: ', err);
-        alert('Gagal menyalin teks. Silakan salin secara manual.');
+        addTerminalLine(`ERROR: Failed to copy text - ${err.message}`, 'error');
     });
 }
 
