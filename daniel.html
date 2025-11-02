@@ -801,6 +801,36 @@ font-family: 'Orbitron', monospace;
 text-transform: uppercase;
 letter-spacing: 1px;
 }
+
+/* Filter hint */
+.filter-hint {
+position: absolute;
+bottom: -24px;
+left: 24px;
+font-size: 0.75rem;
+color: var(--text-secondary);
+opacity: 0.7;
+}
+
+/* Match indicator */
+.match-indicator {
+position: absolute;
+top: 8px;
+right: 8px;
+background: rgba(0, 255, 136, 0.2);
+color: var(--accent-color);
+padding: 2px 6px;
+border-radius: 4px;
+font-size: 0.625rem;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+
+.menu-card:hover .match-indicator {
+opacity: 1;
+}
 </style>
 </head>
 <body>
@@ -844,9 +874,10 @@ letter-spacing: 1px;
 type="text"
 class="filter-input"
 id="filterInput"
-placeholder="FILTER MENU..."
+placeholder="FILTER MENU (FLEXIBLE)..."
 autocomplete="off"
 >
+<span class="filter-hint">Filter cerdas dengan toleransi kesalahan ketik</span>
 </div>
 </div>
 
@@ -998,6 +1029,89 @@ function updateDebugInfo() {
         <div>Current Detail: ${currentDetail ? currentDetail.title : 'None'}</div>
         <div>Cache: ${localStorage.getItem('cybersearch_data') ? 'Available' : 'Empty'}</div>
     `;
+}
+
+// Levenshtein distance algorithm for fuzzy matching
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+    
+    return matrix[str2.length][str1.length];
+}
+
+// Calculate similarity percentage
+function calculateSimilarity(str1, str2) {
+    const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+    
+    if (longer.length === 0) return 100;
+    
+    return Math.round(((longer.length - distance) / longer.length) * 100);
+}
+
+// Enhanced fuzzy matching function
+function fuzzyMatch(query, text) {
+    const queryLower = query.toLowerCase();
+    const textLower = text.toLowerCase();
+    
+    // Direct match (highest priority)
+    if (textLower.includes(queryLower)) {
+        return { match: true, score: 100, type: 'exact' };
+    }
+    
+    // Split text into words
+    const words = textLower.split(/\s+/);
+    
+    // Check each word for fuzzy match
+    let bestMatch = { match: false, score: 0, type: 'none' };
+    
+    for (const word of words) {
+        // Check if word starts with query
+        if (word.startsWith(queryLower)) {
+            const score = Math.round((queryLower.length / word.length) * 100);
+            if (score > bestMatch.score) {
+                bestMatch = { match: true, score, type: 'prefix' };
+            }
+        }
+        
+        // Check fuzzy similarity
+        const similarity = calculateSimilarity(queryLower, word);
+        if (similarity >= 60 && similarity > bestMatch.score) { // 60% similarity threshold
+            bestMatch = { match: true, score: similarity, type: 'fuzzy' };
+        }
+        
+        // Check if query is contained in word
+        if (word.includes(queryLower)) {
+            const score = Math.round((queryLower.length / word.length) * 90);
+            if (score > bestMatch.score) {
+                bestMatch = { match: true, score, type: 'contains' };
+            }
+        }
+    }
+    
+    return bestMatch;
 }
 
 // Fetch data from Google Sheets with multiple fallback methods
@@ -1215,6 +1329,7 @@ function displayMenuItems() {
     
     container.innerHTML = filteredData.map((item, index) => `
         <div class="menu-card" data-index="${index}">
+            <div class="match-indicator">${item.matchType || 'MATCH'}</div>
             <div class="menu-icon">
                 <svg fill="currentColor" viewBox="0 0 24 24">
                     <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
@@ -1281,23 +1396,46 @@ function copyToClipboard() {
     });
 }
 
-// Filter menu items
+// Enhanced filter menu items with fuzzy matching
 function filterMenuItems() {
-    const query = document.getElementById('filterInput').value.trim().toLowerCase();
+    const query = document.getElementById('filterInput').value.trim();
     
     if (query === '') {
-        filteredData = [...sheetData];
+        filteredData = sheetData.map(item => ({ ...item }));
     } else {
-        filteredData = sheetData.filter(item => 
-            item.title.toLowerCase().includes(query) || 
-            item.info.toLowerCase().includes(query)
-        );
+        const results = [];
+        
+        for (const item of sheetData) {
+            // Check title match
+            const titleMatch = fuzzyMatch(query, item.title);
+            
+            // Check info match
+            const infoMatch = fuzzyMatch(query, item.info);
+            
+            // Use the best match
+            const bestMatch = titleMatch.score > infoMatch.score ? titleMatch : infoMatch;
+            
+            if (bestMatch.match) {
+                // Add match type and score to item
+                const enhancedItem = {
+                    ...item,
+                    matchScore: bestMatch.score,
+                    matchType: bestMatch.type.toUpperCase()
+                };
+                results.push(enhancedItem);
+            }
+        }
+        
+        // Sort by score (highest first)
+        results.sort((a, b) => b.matchScore - a.matchScore);
+        
+        filteredData = results;
     }
     
     displayMenuItems();
     updateDebugInfo();
     
-    addTerminalLine(`Filter applied: ${query} (${filteredData.length} results)`, 'normal');
+    addTerminalLine(`Fuzzy filter applied: "${query}" (${filteredData.length} results)`, 'normal');
 }
 
 // Fetch data when page loads
@@ -1318,8 +1456,12 @@ window.onload = function() {
     // Update debug info periodically
     setInterval(updateDebugInfo, 1000);
     
-    // Filter input
-    document.getElementById('filterInput').addEventListener('input', filterMenuItems);
+    // Filter input with debouncing
+    let debounceTimer;
+    document.getElementById('filterInput').addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(filterMenuItems, 300);
+    });
     
     // Detail modal close button
     document.getElementById('detailClose').addEventListener('click', hideDetail);
