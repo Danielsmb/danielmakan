@@ -12,13 +12,16 @@ box-sizing: border-box;
 }
 
 :root {
---primary-color: #00ffff;
+--primary-color: #00d4ff;
 --secondary-color: #ff00ff;
 --accent-color: #00ff88;
 --dark-bg: #0a0a0f;
 --card-bg: rgba(15, 15, 30, 0.7);
 --text-primary: #e0e0ff;
 --text-secondary: #a0a0c0;
+--gradient-1: linear-gradient(135deg, #00d4ff, #ff00ff);
+--gradient-2: linear-gradient(135deg, #ff00ff, #00ff88);
+--gradient-3: linear-gradient(135deg, #00ff88, #00d4ff);
 }
 
 body {
@@ -831,12 +834,464 @@ transition: opacity 0.3s ease;
 .menu-card:hover .match-indicator {
 opacity: 1;
 }
+
+/* Enhanced Theme Additions */
+.floating-shapes {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+overflow: hidden;
+}
+
+.shape {
+position: absolute;
+opacity: 0.1;
+animation: float-shape 20s infinite linear;
+}
+
+.shape-1 {
+width: 300px;
+height: 300px;
+background: var(--gradient-1);
+border-radius: 50%;
+top: 10%;
+left: 10%;
+animation-duration: 25s;
+}
+
+.shape-2 {
+width: 200px;
+height: 200px;
+background: var(--gradient-2);
+border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+top: 60%;
+right: 10%;
+animation-duration: 30s;
+}
+
+.shape-3 {
+width: 250px;
+height: 250px;
+background: var(--gradient-3);
+clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+bottom: 10%;
+left: 50%;
+animation-duration: 35s;
+}
+
+@keyframes float-shape {
+0% {
+transform: translateY(0) rotate(0deg);
+}
+50% {
+transform: translateY(-20px) rotate(180deg);
+}
+100% {
+transform: translateY(0) rotate(360deg);
+}
+}
+
+/* Enhanced Card Design */
+.menu-card {
+background: linear-gradient(135deg, rgba(15, 15, 30, 0.8), rgba(10, 10, 20, 0.8));
+border: 1px solid rgba(0, 255, 255, 0.2);
+border-radius: 16px;
+padding: 24px;
+backdrop-filter: blur(10px);
+transition: all 0.3s ease;
+position: relative;
+overflow: hidden;
+cursor: pointer;
+height: 100%;
+display: flex;
+flex-direction: column;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.menu-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+
+.menu-card:hover::before {
+opacity: 1;
+}
+
+.menu-card::after {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 4px;
+height: 100%;
+background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+}
+
+.menu-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+border-color: rgba(0, 255, 255, 0.4);
+}
+
+/* Enhanced Button Design */
+.copy-button {
+background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+color: var(--dark-bg);
+font-weight: 700;
+padding: 10px 20px;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.3s ease;
+font-family: 'Orbitron', monospace;
+font-size: 0.875rem;
+text-transform: uppercase;
+letter-spacing: 1px;
+position: relative;
+overflow: hidden;
+box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+}
+
+.copy-button::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+transition: left 0.5s;
+}
+
+.copy-button:hover::before {
+left: 100%;
+}
+
+.copy-button:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+}
+
+/* Enhanced Modal Design */
+.detail-content {
+background: linear-gradient(135deg, rgba(15, 15, 30, 0.9), rgba(10, 10, 20, 0.9));
+border: 1px solid rgba(0, 255, 255, 0.3);
+border-radius: 16px;
+max-width: 800px;
+width: 100%;
+max-height: 80vh;
+overflow-y: auto;
+position: relative;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Enhanced Filter Input */
+.filter-container {
+position: relative;
+display: flex;
+gap: 12px;
+background: linear-gradient(135deg, rgba(10, 10, 30, 0.7), rgba(15, 15, 30, 0.7));
+border-radius: 16px;
+padding: 4px;
+backdrop-filter: blur(10px);
+border: 1px solid rgba(0, 255, 255, 0.2);
+transition: all 0.3s ease;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.filter-container:focus-within {
+border-color: rgba(0, 255, 255, 0.5);
+box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+/* Enhanced Status Bar */
+.status-bar {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+background: linear-gradient(90deg, rgba(10, 10, 30, 0.8), rgba(15, 15, 30, 0.8));
+padding: 8px 20px;
+display: flex;
+justify-content: space-between;
+font-size: 0.75rem;
+text-transform: uppercase;
+letter-spacing: 1px;
+z-index: 100;
+backdrop-filter: blur(10px);
+border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced Header */
+.header {
+text-align: center;
+margin-bottom: 48px;
+position: relative;
+}
+
+.logo-container {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 16px;
+margin-bottom: 24px;
+position: relative;
+}
+
+.hexagon-bg {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 200px;
+height: 200px;
+background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, rgba(0, 255, 255, 0) 70%);
+z-index: -1;
+animation: pulse 4s infinite;
+}
+
+/* Enhanced Title */
+.title {
+font-size: 4.5rem;
+font-weight: 900;
+background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin: 0;
+letter-spacing: 4px;
+text-transform: uppercase;
+position: relative;
+text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.title::after {
+content: 'CYBERSEARCH';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+z-index: -1;
+opacity: 0.5;
+filter: blur(3px);
+}
+
+/* Enhanced Subtitle */
+.subtitle {
+color: var(--text-secondary);
+font-size: 1.125rem;
+margin-top: 16px;
+letter-spacing: 2px;
+text-transform: uppercase;
+text-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+/* Enhanced Loading Spinner */
+.loading-spinner {
+width: 40px;
+height: 40px;
+border: 3px solid rgba(0, 255, 255, 0.3);
+border-top: 3px solid var(--primary-color);
+border-radius: 50%;
+animation: spin 1s linear infinite;
+margin-bottom: 16px;
+box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+/* Enhanced No Menu */
+.no-menu {
+text-align: center;
+padding: 60px 0;
+width: 100%;
+max-width: 960px;
+}
+
+.no-menu-title {
+color: var(--text-secondary);
+font-size: 1.5rem;
+font-family: 'Orbitron', monospace;
+margin-bottom: 16px;
+text-transform: uppercase;
+letter-spacing: 2px;
+text-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.no-menu-subtitle {
+color: var(--text-secondary);
+font-size: 1rem;
+font-family: 'Orbitron', monospace;
+opacity: 0.7;
+text-shadow: 0 0 5px rgba(0, 255, 255, 0.1);
+}
+
+/* Enhanced Footer */
+.footer {
+position: absolute;
+bottom: 20px;
+left: 0;
+right: 0;
+text-align: center;
+}
+
+.footer-text {
+color: var(--text-secondary);
+font-size: 0.875rem;
+font-family: 'Orbitron', monospace;
+text-transform: uppercase;
+letter-spacing: 1px;
+opacity: 0.7;
+text-shadow: 0 0 5px rgba(0, 255, 255, 0.1);
+}
+
+/* Enhanced Debug Panel */
+.debug-panel {
+position: fixed;
+bottom: 60px;
+right: 20px;
+background: linear-gradient(135deg, rgba(10, 10, 30, 0.9), rgba(15, 15, 30, 0.9));
+border: 1px solid rgba(0, 255, 255, 0.3);
+border-radius: 8px;
+padding: 12px;
+font-family: 'Courier New', monospace;
+font-size: 0.75rem;
+max-width: 300px;
+z-index: 100;
+display: none;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.debug-panel.show {
+display: block;
+}
+
+.debug-title {
+color: var(--primary-color);
+margin-bottom: 8px;
+font-weight: bold;
+text-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
+}
+
+.debug-info {
+color: var(--text-secondary);
+margin-bottom: 4px;
+}
+
+/* Enhanced Debug Toggle */
+.debug-toggle {
+position: fixed;
+bottom: 20px;
+right: 20px;
+background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+border: 1px solid var(--primary-color);
+color: var(--primary-color);
+padding: 8px 12px;
+border-radius: 6px;
+cursor: pointer;
+font-family: 'Orbitron', monospace;
+font-size: 0.75rem;
+text-transform: uppercase;
+z-index: 100;
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+transition: all 0.3s ease;
+}
+
+.debug-toggle:hover {
+background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(255, 0, 255, 0.3));
+transform: translateY(-2px);
+box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+}
+
+/* Enhanced Terminal Output */
+.terminal-output {
+background: linear-gradient(135deg, rgba(10, 10, 30, 0.5), rgba(15, 15, 30, 0.5));
+border: 1px solid rgba(0, 255, 255, 0.2);
+border-radius: 8px;
+padding: 16px;
+margin-top: 20px;
+font-family: 'Courier New', monospace;
+font-size: 0.875rem;
+max-height: 200px;
+overflow-y: auto;
+display: none;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.terminal-line {
+margin-bottom: 8px;
+color: var(--accent-color);
+}
+
+.terminal-prompt {
+color: var(--primary-color);
+}
+
+.terminal-error {
+color: #ff4444;
+}
+
+.terminal-success {
+color: var(--accent-color);
+}
+
+.terminal-warning {
+color: #ffaa00;
+}
+
+/* Enhanced Responsive */
+@media (max-width: 768px) {
+.title {
+font-size: 3rem;
+}
+
+.menu-container {
+grid-template-columns: 1fr;
+}
+}
+
+/* Enhanced Custom Scrollbar */
+::-webkit-scrollbar {
+width: 10px;
+}
+
+::-webkit-scrollbar-track {
+background: linear-gradient(180deg, rgba(10, 10, 30, 0.5), rgba(15, 15, 30, 0.5));
+}
+
+::-webkit-scrollbar-thumb {
+background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: linear-gradient(180deg, var(--secondary-color), var(--primary-color));
+}
 </style>
 </head>
 <body>
 <div class="bg-animation">
 <div class="particles" id="particles"></div>
 <div class="grid-overlay"></div>
+<div class="floating-shapes">
+<div class="shape shape-1"></div>
+<div class="shape shape-2"></div>
+<div class="shape shape-3"></div>
+</div>
 </div>
 
 <!-- Status Bar -->
