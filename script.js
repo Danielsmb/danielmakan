@@ -4,6 +4,8 @@ let filteredData = [];
 let currentDetail = null;
 let editingId = null;
 let debugMode = false;
+let currentView = 'menu';
+let snowInterval = null;
 
 // Calculator state
 let calculatorState = {
@@ -14,26 +16,29 @@ let calculatorState = {
     waitingForOperand: false
 };
 
-// API Endpoint (Vercel Serverless Function)
+// API Endpoint
 const API_ENDPOINT = '/api/menu';
 
-// ===== PARTICLE EFFECT =====
-function createParticles() {
-    const particlesContainer = document.getElementById('particles');
-    const particleCount = 80;
+// ===== SNOW EFFECT =====
+function createSnow() {
+    const snowContainer = document.getElementById('snowContainer');
+    if (!snowContainer) return;
     
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        
-        const size = Math.random() * 8 + 1;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.animationDelay = `${Math.random() * 20}s`;
-        particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
-        
-        particlesContainer.appendChild(particle);
+    // Clear existing snow
+    snowContainer.innerHTML = '';
+    
+    const snowflakeCount = 80;
+    
+    for (let i = 0; i < snowflakeCount; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        snowflake.innerHTML = ['❄️', '❅', '❆', '雪'][Math.floor(Math.random() * 4)];
+        snowflake.style.left = Math.random() * 100 + '%';
+        snowflake.style.fontSize = (Math.random() * 1.5 + 0.5) + 'rem';
+        snowflake.style.animationDuration = (Math.random() * 5 + 3) + 's';
+        snowflake.style.animationDelay = (Math.random() * 10) + 's';
+        snowflake.style.opacity = Math.random() * 0.6 + 0.2;
+        snowContainer.appendChild(snowflake);
     }
 }
 
@@ -41,29 +46,20 @@ function createParticles() {
 function updateSystemTime() {
     const now = new Date();
     const timeString = now.toLocaleTimeString('id-ID', { hour12: false });
-    document.getElementById('systemTime').textContent = timeString;
+    const timeElement = document.getElementById('systemTime');
+    if (timeElement) timeElement.textContent = timeString;
 }
 
 function updateSystemStatus(status, type = 'normal') {
     const statusElement = document.getElementById('systemStatus');
-    statusElement.textContent = status;
-    
-    const colorMap = {
-        'error': 'var(--danger-color)',
-        'success': 'var(--accent-color)',
-        'warning': 'var(--warning-color)',
-        'normal': 'var(--primary-color)'
-    };
-    statusElement.style.color = colorMap[type] || colorMap.normal;
+    if (statusElement) statusElement.textContent = status;
 }
 
 // ===== TERMINAL OUTPUT =====
-function showTerminalOutput() {
-    document.getElementById('terminalOutput').style.display = 'block';
-}
-
 function addTerminalLine(text, type = 'normal') {
-    const terminal = document.getElementById('terminalOutput');
+    const terminalBody = document.getElementById('terminalBody');
+    if (!terminalBody) return;
+    
     const line = document.createElement('div');
     line.classList.add('terminal-line');
     
@@ -75,8 +71,8 @@ function addTerminalLine(text, type = 'normal') {
     };
     
     line.innerHTML = `<span class="${classMap[type]}">SYSTEM></span> ${text}`;
-    terminal.appendChild(line);
-    terminal.scrollTop = terminal.scrollHeight;
+    terminalBody.appendChild(line);
+    line.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // ===== DEBUG PANEL =====
@@ -84,24 +80,49 @@ function updateDebugInfo() {
     if (!debugMode) return;
     
     const debugInfo = document.getElementById('debugInfo');
+    if (!debugInfo) return;
+    
     const cacheData = localStorage.getItem('cybersearch_data');
     const cacheTimestamp = localStorage.getItem('cybersearch_timestamp');
     
     debugInfo.innerHTML = `
         <div>Total Data: ${sheetData.length}</div>
-        <div>Filtered Data: ${filteredData.length}</div>
-        <div>Current Detail: ${currentDetail ? currentDetail.title : 'None'}</div>
-        <div>Editing ID: ${editingId || 'None'}</div>
+        <div>Filtered: ${filteredData.length}</div>
+        <div>Current View: ${currentView}</div>
         <div>Cache: ${cacheData ? 'Available' : 'Empty'}</div>
         <div>Cache Time: ${cacheTimestamp ? new Date(cacheTimestamp).toLocaleString('id-ID') : 'N/A'}</div>
-        <div>API Endpoint: ${API_ENDPOINT}</div>
     `;
 }
 
-// ===== FUZZY SEARCH (LEVENSHTEIN) =====
+// ===== NAVIGATION =====
+function switchView(view) {
+    currentView = view;
+    
+    // Hide all views
+    const views = ['menuView', 'addView', 'calculatorView', 'aboutView'];
+    views.forEach(v => {
+        const el = document.getElementById(v);
+        if (el) el.style.display = 'none';
+    });
+    
+    // Show selected view
+    const selectedView = document.getElementById(`${view}View`);
+    if (selectedView) selectedView.style.display = 'block';
+    
+    // Update active nav item
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.view === view) {
+            item.classList.add('active');
+        }
+    });
+    
+    addTerminalLine(`Switched to ${view} view`, 'normal');
+}
+
+// ===== FUZZY SEARCH =====
 function levenshteinDistance(str1, str2) {
     const matrix = [];
-    
     for (let i = 0; i <= str2.length; i++) matrix[i] = [i];
     for (let j = 0; j <= str1.length; j++) matrix[0][j] = j;
     
@@ -118,16 +139,7 @@ function levenshteinDistance(str1, str2) {
             }
         }
     }
-    
     return matrix[str2.length][str1.length];
-}
-
-function calculateSimilarity(str1, str2) {
-    const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
-    const longer = str1.length > str2.length ? str1 : str2;
-    
-    if (longer.length === 0) return 100;
-    return Math.round(((longer.length - distance) / longer.length) * 100);
 }
 
 function fuzzyMatch(query, text) {
@@ -149,23 +161,17 @@ function fuzzyMatch(query, text) {
             }
         }
         
-        const similarity = calculateSimilarity(queryLower, word);
+        const distance = levenshteinDistance(queryLower, word);
+        const similarity = Math.round(((word.length - distance) / Math.max(word.length, queryLower.length)) * 100);
         if (similarity >= 60 && similarity > bestMatch.score) {
             bestMatch = { match: true, score: similarity, type: 'fuzzy' };
-        }
-        
-        if (word.includes(queryLower)) {
-            const score = Math.round((queryLower.length / word.length) * 90);
-            if (score > bestMatch.score) {
-                bestMatch = { match: true, score, type: 'contains' };
-            }
         }
     }
     
     return bestMatch;
 }
 
-// ===== NEON DATABASE API CALLS =====
+// ===== API CALLS =====
 async function fetchMenuData() {
     updateSystemStatus('MENGHUBUNGKAN KE NEON...', 'warning');
     addTerminalLine('Connecting to Neon.tech PostgreSQL...', 'warning');
@@ -179,7 +185,6 @@ async function fetchMenuData() {
         
         const data = await response.json();
         
-        // Normalize data (handle both {title, info} and {title, info, id})
         sheetData = data.map(item => ({
             id: item.id,
             title: String(item.title || '').trim(),
@@ -189,7 +194,6 @@ async function fetchMenuData() {
         addTerminalLine(`SUCCESS: Loaded ${sheetData.length} menu items from Neon database`, 'success');
         updateSystemStatus('NEON DATABASE ONLINE', 'success');
         
-        // Cache to localStorage
         localStorage.setItem('cybersearch_data', JSON.stringify(sheetData));
         localStorage.setItem('cybersearch_timestamp', new Date().toISOString());
         
@@ -199,15 +203,12 @@ async function fetchMenuData() {
         
     } catch (error) {
         addTerminalLine(`ERROR: ${error.message}`, 'error');
-        console.error('Fetch error:', error);
         
-        // Try loading from cache
         const cachedData = localStorage.getItem('cybersearch_data');
         if (cachedData) {
             try {
                 sheetData = JSON.parse(cachedData);
-                const timestamp = localStorage.getItem('cybersearch_timestamp');
-                addTerminalLine(`Loaded ${sheetData.length} items from cache (${new Date(timestamp).toLocaleString('id-ID')})`, 'warning');
+                addTerminalLine(`Loaded ${sheetData.length} items from cache`, 'warning');
                 updateSystemStatus('OFFLINE MODE (CACHE)', 'warning');
                 filteredData = [...sheetData];
                 displayMenuItems();
@@ -218,7 +219,6 @@ async function fetchMenuData() {
             }
         }
         
-        // Show error state
         updateSystemStatus('KONEKSI GAGAL', 'error');
         document.getElementById('loadingContainer').style.display = 'none';
         document.getElementById('noMenu').style.display = 'block';
@@ -299,28 +299,23 @@ function displayMenuItems() {
     const loadingContainer = document.getElementById('loadingContainer');
     const noMenu = document.getElementById('noMenu');
     
-    loadingContainer.style.display = 'none';
+    if (loadingContainer) loadingContainer.style.display = 'none';
     
     if (filteredData.length === 0) {
-        container.style.display = 'none';
-        noMenu.style.display = 'block';
+        if (container) container.style.display = 'none';
+        if (noMenu) noMenu.style.display = 'block';
         return;
     }
     
-    container.style.display = 'grid';
-    noMenu.style.display = 'none';
+    if (container) container.style.display = 'grid';
+    if (noMenu) noMenu.style.display = 'none';
     
     container.innerHTML = filteredData.map((item, index) => `
         <div class="menu-card" data-index="${index}">
-            <div class="match-indicator">${item.matchType || 'MATCH'}</div>
-            <div class="menu-icon">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-                </svg>
-            </div>
+            <div class="menu-icon">${getRandomJapaneseIcon()}</div>
             <h3 class="menu-title">${escapeHtml(item.title)}</h3>
-            <div class="menu-preview">${escapeHtml(item.info)}</div>
-            <div class="menu-badge">MENU #${index + 1} ${item.id ? `(ID: ${item.id})` : ''}</div>
+            <div class="menu-preview">${escapeHtml(item.info.substring(0, 100))}${item.info.length > 100 ? '...' : ''}</div>
+            <div class="menu-badge">#${index + 1} · ${item.id ? `ID:${item.id}` : ''}</div>
         </div>
     `).join('');
     
@@ -332,6 +327,11 @@ function displayMenuItems() {
     });
 }
 
+function getRandomJapaneseIcon() {
+    const icons = ['🍜', '🍣', '🍱', '🥟', '🍙', '🍘', '🍥', '🍢', '🍡', '🍵', '🍶', '🥢'];
+    return icons[Math.floor(Math.random() * icons.length)];
+}
+
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
@@ -341,18 +341,15 @@ function escapeHtml(text) {
 // ===== DETAIL MODAL =====
 function showDetail(item) {
     currentDetail = item;
-    const modal = document.getElementById('detailModal');
     document.getElementById('detailTitle').textContent = item.title;
     document.getElementById('detailText').textContent = item.info;
-    modal.classList.add('show');
+    document.getElementById('detailModal').classList.add('show');
     updateDebugInfo();
-    addTerminalLine(`Opening menu: ${item.title}`, 'normal');
 }
 
 function hideDetail() {
     document.getElementById('detailModal').classList.remove('show');
     currentDetail = null;
-    updateDebugInfo();
 }
 
 function copyToClipboard() {
@@ -363,56 +360,35 @@ function copyToClipboard() {
         successElement.classList.add('show');
         addTerminalLine(`Copied: ${currentDetail.info.substring(0, 50)}...`, 'success');
         setTimeout(() => successElement.classList.remove('show'), 2000);
-    }).catch(err => {
-        addTerminalLine(`ERROR copying: ${err.message}`, 'error');
     });
 }
 
-// ===== FORM MODAL =====
-function showFormModal(item = null) {
-    const modal = document.getElementById('formModal');
-    const title = document.getElementById('formTitle');
-    const titleInput = document.getElementById('menuTitle');
-    const infoInput = document.getElementById('menuInfo');
-    
-    if (item) {
-        editingId = item.id;
-        title.textContent = 'EDIT MENU';
-        titleInput.value = item.title;
-        infoInput.value = item.info;
-    } else {
-        editingId = null;
-        title.textContent = 'TAMBAH MENU BARU';
-        titleInput.value = '';
-        infoInput.value = '';
-    }
-    
-    modal.classList.add('show');
+// ===== EDIT MODAL =====
+function showEditModal(item) {
+    editingId = item.id;
+    document.getElementById('editMenuTitle').value = item.title;
+    document.getElementById('editMenuInfo').value = item.info;
+    document.getElementById('editModal').classList.add('show');
 }
 
-function hideFormModal() {
-    document.getElementById('formModal').classList.remove('show');
+function hideEditModal() {
+    document.getElementById('editModal').classList.remove('show');
     editingId = null;
 }
 
-async function saveForm() {
-    const title = document.getElementById('menuTitle').value.trim();
-    const info = document.getElementById('menuInfo').value.trim();
+async function saveEdit() {
+    const title = document.getElementById('editMenuTitle').value.trim();
+    const info = document.getElementById('editMenuInfo').value.trim();
     
     if (!title) {
         alert('Judul menu tidak boleh kosong!');
         return;
     }
     
-    let success;
     if (editingId) {
-        success = await updateMenu(editingId, title, info);
-    } else {
-        success = await createMenu(title, info);
-    }
-    
-    if (success) {
-        hideFormModal();
+        await updateMenu(editingId, title, info);
+        hideEditModal();
+        hideDetail();
     }
 }
 
@@ -421,37 +397,32 @@ function filterMenuItems() {
     const query = document.getElementById('filterInput').value.trim();
     
     if (query === '') {
-        filteredData = sheetData.map(item => ({ ...item }));
+        filteredData = [...sheetData];
     } else {
         const results = [];
-        
         for (const item of sheetData) {
             const titleMatch = fuzzyMatch(query, item.title);
             const infoMatch = fuzzyMatch(query, item.info);
             const bestMatch = titleMatch.score > infoMatch.score ? titleMatch : infoMatch;
             
             if (bestMatch.match) {
-                results.push({
-                    ...item,
-                    matchScore: bestMatch.score,
-                    matchType: bestMatch.type.toUpperCase()
-                });
+                results.push({ ...item, matchScore: bestMatch.score });
             }
         }
-        
         results.sort((a, b) => b.matchScore - a.matchScore);
         filteredData = results;
     }
     
     displayMenuItems();
     updateDebugInfo();
-    addTerminalLine(`Filter: "${query}" (${filteredData.length} results)`, 'normal');
 }
 
 // ===== CALCULATOR =====
 function updateCalculatorDisplay() {
-    document.getElementById('calculatorValue').textContent = calculatorState.displayValue;
-    document.getElementById('calculatorExpression').textContent = calculatorState.expression;
+    const valueEl = document.getElementById('calculatorValue');
+    const exprEl = document.getElementById('calculatorExpression');
+    if (valueEl) valueEl.textContent = calculatorState.displayValue;
+    if (exprEl) exprEl.textContent = calculatorState.expression;
 }
 
 function inputDigit(digit) {
@@ -463,7 +434,6 @@ function inputDigit(digit) {
     } else {
         calculatorState.displayValue = displayValue === '0' ? String(digit) : displayValue + digit;
     }
-    
     updateCalculatorDisplay();
 }
 
@@ -476,7 +446,6 @@ function inputDecimal() {
     } else if (displayValue.indexOf('.') === -1) {
         calculatorState.displayValue = displayValue + '.';
     }
-    
     updateCalculatorDisplay();
 }
 
@@ -502,11 +471,6 @@ function calculate(firstValue, secondValue, operation) {
     }
 }
 
-function getOperatorSymbol(operation) {
-    const symbols = { '+': '+', '-': '-', '*': '×', '/': '÷', '%': '%' };
-    return symbols[operation] || '';
-}
-
 function performOperation(nextOperation) {
     const { displayValue, previousValue, operation } = calculatorState;
     const inputValue = parseFloat(displayValue);
@@ -517,16 +481,15 @@ function performOperation(nextOperation) {
         const newValue = calculate(previousValue, inputValue, operation);
         calculatorState.displayValue = String(newValue);
         calculatorState.previousValue = newValue;
-        calculatorState.expression = `${previousValue} ${getOperatorSymbol(operation)} ${inputValue} =`;
+        calculatorState.expression = `${previousValue} ${operation} ${inputValue} =`;
     }
     
     calculatorState.waitingForOperand = true;
     calculatorState.operation = nextOperation;
     
     if (nextOperation) {
-        calculatorState.expression = `${displayValue} ${getOperatorSymbol(nextOperation)}`;
+        calculatorState.expression = `${displayValue} ${nextOperation}`;
     }
-    
     updateCalculatorDisplay();
 }
 
@@ -537,12 +500,11 @@ function handleEquals() {
     if (previousValue !== null && operation) {
         const newValue = calculate(previousValue, inputValue, operation);
         calculatorState.displayValue = String(newValue);
-        calculatorState.expression = `${previousValue} ${getOperatorSymbol(operation)} ${inputValue} =`;
+        calculatorState.expression = `${previousValue} ${operation} ${inputValue} =`;
         calculatorState.previousValue = null;
         calculatorState.operation = null;
         calculatorState.waitingForOperand = true;
     }
-    
     updateCalculatorDisplay();
 }
 
@@ -558,16 +520,39 @@ function handlePercent() {
     updateCalculatorDisplay();
 }
 
-function toggleCalculator() {
-    document.getElementById('calculatorContainer').classList.toggle('show');
+// ===== SUBMIT NEW MENU =====
+async function submitNewMenu() {
+    const title = document.getElementById('newMenuTitle').value.trim();
+    const info = document.getElementById('newMenuInfo').value.trim();
+    
+    if (!title) {
+        alert('Judul menu tidak boleh kosong!');
+        return;
+    }
+    
+    const success = await createMenu(title, info);
+    if (success) {
+        document.getElementById('newMenuTitle').value = '';
+        document.getElementById('newMenuInfo').value = '';
+        switchView('menu');
+    }
 }
 
 // ===== INITIALIZATION =====
 window.onload = function() {
-    createParticles();
+    // Create snow effect
+    createSnow();
+    
+    // Update time
     updateSystemTime();
     setInterval(updateSystemTime, 1000);
-    showTerminalOutput();
+    
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchView(btn.dataset.view);
+        });
+    });
     
     // Debug toggle
     document.getElementById('debugToggle').addEventListener('click', function() {
@@ -578,12 +563,18 @@ window.onload = function() {
     
     setInterval(updateDebugInfo, 1000);
     
-    // Filter input with debounce
+    // Filter input
     let debounceTimer;
     document.getElementById('filterInput').addEventListener('input', function() {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(filterMenuItems, 300);
     });
+    
+    // Refresh button
+    document.getElementById('refreshBtn').addEventListener('click', fetchMenuData);
+    
+    // Submit new menu
+    document.getElementById('submitNewMenu').addEventListener('click', submitNewMenu);
     
     // Detail modal events
     document.getElementById('detailClose').addEventListener('click', hideDetail);
@@ -596,7 +587,7 @@ window.onload = function() {
     document.getElementById('editBtn').addEventListener('click', function() {
         if (currentDetail) {
             hideDetail();
-            showFormModal(currentDetail);
+            showEditModal(currentDetail);
         }
     });
     
@@ -607,20 +598,16 @@ window.onload = function() {
         }
     });
     
-    // Form modal events
-    document.getElementById('addMenuBtn').addEventListener('click', () => showFormModal());
-    document.getElementById('refreshBtn').addEventListener('click', fetchMenuData);
-    document.getElementById('formClose').addEventListener('click', hideFormModal);
-    document.getElementById('formCancel').addEventListener('click', hideFormModal);
-    document.getElementById('formSave').addEventListener('click', saveForm);
-    document.getElementById('formModal').addEventListener('click', function(e) {
-        if (e.target === this) hideFormModal();
+    // Edit modal events
+    document.getElementById('editModalClose').addEventListener('click', hideEditModal);
+    document.getElementById('editModalCancel').addEventListener('click', hideEditModal);
+    document.getElementById('editModalSave').addEventListener('click', saveEdit);
+    document.getElementById('editModal').addEventListener('click', function(e) {
+        if (e.target === this) hideEditModal();
     });
     
-    // Calculator
-    document.getElementById('calculatorToggle').addEventListener('click', toggleCalculator);
-    
-    document.querySelectorAll('.calculator-btn').forEach(button => {
+    // Calculator buttons
+    document.querySelectorAll('.calc-btn').forEach(button => {
         button.addEventListener('click', function() {
             const action = this.dataset.action;
             
@@ -636,6 +623,8 @@ window.onload = function() {
         });
     });
     
-    // Fetch data from Neon
+    // Fetch data
     fetchMenuData();
+    
+    addTerminalLine('Kaizen Search initialized. Welcome! 🇯🇵', 'success');
 };
