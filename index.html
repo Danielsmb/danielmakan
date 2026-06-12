@@ -2,240 +2,253 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERSEARCH - Sistem Menu Digital | Pencarian Menu Cerdas</title>
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="CYBERSEARCH adalah sistem menu digital dengan pencarian cerdas dan toleransi kesalahan ketik. Menggunakan Neon.tech database.">
-    <meta name="keywords" content="cybersearch, sistem menu digital, menu digital, pencarian menu, fuzzy search, neon database, postgresql, web menu">
-    <meta name="author" content="Daniel">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="Indonesian">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="CYBERSEARCH - Sistem Menu Digital">
-    <meta property="og:description" content="Sistem menu digital dengan pencarian cerdas dan toleransi kesalahan ketik - Powered by Neon.tech">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://danielmakan-yvmw.vercel.app/">
-
-    <!-- Google Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-    <!-- External CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>KAIZEN SEARCH - Japanese Theme Menu System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background Animation -->
-    <div class="bg-animation">
-        <div class="particles" id="particles"></div>
-        <div class="grid-overlay"></div>
-        <div class="floating-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-        </div>
+    <!-- Japanese Theme Background Layers -->
+    <div class="japanese-bg">
+        <div class="sun-layer sun-rise"></div>
+        <div class="sun-layer sun-set"></div>
+        <div class="snow-container" id="snowContainer"></div>
+        <div class="mountains"></div>
+        <div class="cherry-blossoms"></div>
     </div>
 
     <!-- Status Bar -->
     <div class="status-bar">
         <div class="system-time" id="systemTime">--:--:--</div>
-        <div class="system-status" id="systemStatus">SISTEM INISIALISASI</div>
+        <div class="system-status" id="systemStatus">SYSTEM READY</div>
+        <div class="japan-location">🗻 FUJI · TOKYO</div>
     </div>
 
-    <div class="container scanline">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo-container">
-                <div class="hexagon-bg"></div>
-                <div class="icon">
-                    <svg class="icon-cpu" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm7 0h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
-                    </svg>
-                    <div class="icon-glow cpu-glow"></div>
+    <!-- Main Layout: Sidebar + Content -->
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="logo-icon">⛩️</span>
+                    <span class="logo-text">KAIZEN</span>
                 </div>
-                <h1 class="title glitch">CYBERSEARCH</h1>
-                <div class="icon">
-                    <svg class="icon-globe" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                    </svg>
-                    <div class="icon-glow globe-glow"></div>
+                <div class="sidebar-subtitle">Menu System</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-view="menu">
+                    <span class="nav-icon">🍜</span>
+                    <span class="nav-text">Menu List</span>
+                </button>
+                <button class="nav-item" data-view="add">
+                    <span class="nav-icon">➕</span>
+                    <span class="nav-text">Tambah Menu</span>
+                </button>
+                <button class="nav-item" data-view="calculator">
+                    <span class="nav-icon">🧮</span>
+                    <span class="nav-text">Calculator</span>
+                </button>
+                <button class="nav-item" data-view="about">
+                    <span class="nav-icon">🎴</span>
+                    <span class="nav-text">About</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="weather-info">
+                    <span>❄️ 雪 -2°C</span>
+                    <span>🌸 Sakura Season</span>
+                </div>
+                <button class="debug-toggle" id="debugToggle">🔧 DEBUG</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-container">
+                    <span class="filter-icon">🔍</span>
+                    <input type="text" class="filter-input" id="filterInput" placeholder="Cari menu...">
+                </div>
+                <button class="refresh-btn" id="refreshBtn">
+                    <span>🔄</span>
+                </button>
+            </div>
+
+            <!-- MENU VIEW -->
+            <div class="view-container" id="menuView">
+                <div class="loading-container" id="loadingContainer">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Memuat menu...</div>
+                </div>
+                <div class="menu-container" id="menuContainer"></div>
+                <div class="no-menu" id="noMenu" style="display: none;">
+                    <div class="no-menu-icon">🍱</div>
+                    <div class="no-menu-title">Menu Kosong</div>
+                    <div class="no-menu-subtitle">Klik Tambah Menu untuk membuat menu baru</div>
                 </div>
             </div>
-            <p class="subtitle neon-flicker">// SISTEM MENU DIGITAL // NEON DATABASE</p>
-        </header>
 
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-            <button class="action-btn add-btn" id="addMenuBtn">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>
-                TAMBAH MENU
-            </button>
-            <button class="action-btn refresh-btn" id="refreshBtn">
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                </svg>
-                REFRESH
-            </button>
-        </div>
-
-        <!-- Menu Filter -->
-        <div class="menu-filter">
-            <div class="filter-container">
-                <input
-                    type="text"
-                    class="filter-input"
-                    id="filterInput"
-                    placeholder="FILTER MENU (FLEXIBLE)..."
-                    autocomplete="off"
-                >
-                <span class="filter-hint">Filter cerdas dengan toleransi kesalahan ketik</span>
+            <!-- ADD MENU VIEW -->
+            <div class="view-container" id="addView" style="display: none;">
+                <div class="japan-card">
+                    <div class="card-header">
+                        <span class="card-icon">📝</span>
+                        <h2>Tambah Menu Baru</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>📌 Judul Menu *</label>
+                            <input type="text" class="form-input" id="newMenuTitle" placeholder="Contoh: Ramen Tonkotsu">
+                        </div>
+                        <div class="form-group">
+                            <label>📄 Deskripsi / Info</label>
+                            <textarea class="form-input form-textarea" id="newMenuInfo" placeholder="Detail tentang menu ini..." rows="5"></textarea>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn-primary" id="submitNewMenu">✨ Tambah Menu</button>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Loading Container -->
-        <div class="loading-container" id="loadingContainer">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">MENGHUBUNGKAN KE NEON DATABASE...</div>
-        </div>
+            <!-- CALCULATOR VIEW -->
+            <div class="view-container" id="calculatorView" style="display: none;">
+                <div class="japan-card">
+                    <div class="card-header">
+                        <span class="card-icon">🧮</span>
+                        <h2>Soroban Calculator</h2>
+                    </div>
+                    <div class="calculator-display">
+                        <div class="calculator-expression" id="calculatorExpression"></div>
+                        <div class="calculator-value" id="calculatorValue">0</div>
+                    </div>
+                    <div class="calculator-buttons">
+                        <button class="calc-btn clear" data-action="clear">AC</button>
+                        <button class="calc-btn" data-action="backspace">⌫</button>
+                        <button class="calc-btn" data-action="percent">%</button>
+                        <button class="calc-btn operator" data-action="operator" data-value="/">÷</button>
+                        
+                        <button class="calc-btn" data-action="number" data-value="7">7</button>
+                        <button class="calc-btn" data-action="number" data-value="8">8</button>
+                        <button class="calc-btn" data-action="number" data-value="9">9</button>
+                        <button class="calc-btn operator" data-action="operator" data-value="*">×</button>
+                        
+                        <button class="calc-btn" data-action="number" data-value="4">4</button>
+                        <button class="calc-btn" data-action="number" data-value="5">5</button>
+                        <button class="calc-btn" data-action="number" data-value="6">6</button>
+                        <button class="calc-btn operator" data-action="operator" data-value="-">-</button>
+                        
+                        <button class="calc-btn" data-action="number" data-value="1">1</button>
+                        <button class="calc-btn" data-action="number" data-value="2">2</button>
+                        <button class="calc-btn" data-action="number" data-value="3">3</button>
+                        <button class="calc-btn operator" data-action="operator" data-value="+">+</button>
+                        
+                        <button class="calc-btn zero" data-action="number" data-value="0">0</button>
+                        <button class="calc-btn" data-action="decimal">.</button>
+                        <button class="calc-btn equals" data-action="equals">=</button>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Menu Container -->
-        <div class="menu-container" id="menuContainer" style="display: none;"></div>
+            <!-- ABOUT VIEW -->
+            <div class="view-container" id="aboutView" style="display: none;">
+                <div class="japan-card about-card">
+                    <div class="about-header">
+                        <span class="about-icon">🎌</span>
+                        <h1>KAIZEN SEARCH</h1>
+                        <p>Ver 2.0 · Neon Database</p>
+                    </div>
+                    <div class="about-body">
+                        <div class="about-section">
+                            <h3>🇯🇵 和の精神 (Wa no Seishin)</h3>
+                            <p>Sistem manajemen menu dengan sentuhan estetika Jepang — memadukan keindahan matahari terbit, senja, dan salju yang turun.</p>
+                        </div>
+                        <div class="about-section">
+                            <h3>⚡ Teknologi</h3>
+                            <p>Neon.tech PostgreSQL · Vercel Serverless · Fuzzy Search · Real-time Updates</p>
+                        </div>
+                        <div class="about-section">
+                            <h3>🌸 Fitur</h3>
+                            <ul>
+                                <li>CRUD Menu dengan Database Neon</li>
+                                <li>Fuzzy Search (Levenshtein Distance)</li>
+                                <li>Mode Offline (Cache)</li>
+                                <li>Terminal Output Log</li>
+                                <li>Sidebar Navigation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="about-footer">
+                        <span>⛩️ 継続は力なり</span>
+                        <span>Continuous improvement</span>
+                    </div>
+                </div>
+            </div>
 
-        <!-- No Menu Items -->
-        <div class="no-menu" id="noMenu" style="display: none;">
-            <div class="no-menu-title">TIDAK ADA MENU YANG TERSEDIA</div>
-            <div class="no-menu-subtitle">PERIKSA KONEKSI ANDA ATAU TAMBAHKAN MENU BARU</div>
-        </div>
-
-        <!-- Terminal Output -->
-        <div class="terminal-output" id="terminalOutput">
-            <div class="terminal-line"><span class="terminal-prompt">SYSTEM></span> Initializing CYBERSEARCH Engine v3.0.0</div>
-            <div class="terminal-line"><span class="terminal-prompt">SYSTEM></span> Connecting to Neon.tech PostgreSQL...</div>
-            <div class="terminal-line"><span class="terminal-prompt">SYSTEM></span> Ready for menu access...</div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p class="footer-text">&lt; CYBERSEARCH ENGINE v3.0.0 | POWERED BY NEON &gt;</p>
-        </footer>
+            <!-- Terminal Output -->
+            <div class="terminal-output" id="terminalOutput">
+                <div class="terminal-header">⚡ SYSTEM LOG ⚡</div>
+                <div class="terminal-body" id="terminalBody">
+                    <div class="terminal-line"><span class="terminal-prompt">SYSTEM></span> Initializing Kaizen Search...</div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Detail Modal -->
     <div class="detail-modal" id="detailModal">
         <div class="detail-content">
             <div class="detail-header">
-                <h2 class="detail-title" id="detailTitle">MENU TITLE</h2>
+                <h3 class="detail-title" id="detailTitle">Menu Title</h3>
                 <div class="detail-actions-header">
-                    <button class="icon-btn edit-btn" id="editBtn" title="Edit">
-                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                        </svg>
-                    </button>
-                    <button class="icon-btn delete-btn" id="deleteBtn" title="Hapus">
-                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                        </svg>
-                    </button>
-                    <button class="detail-close" id="detailClose">
-                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                        </svg>
-                    </button>
+                    <button class="icon-btn edit-btn" id="editBtn">✏️</button>
+                    <button class="icon-btn delete-btn" id="deleteBtn">🗑️</button>
+                    <button class="detail-close" id="detailClose">✕</button>
                 </div>
             </div>
             <div class="detail-body">
-                <div class="detail-text" id="detailText">MENU CONTENT</div>
+                <p class="detail-text" id="detailText"></p>
             </div>
             <div class="detail-actions">
-                <button class="copy-button" id="copyButton">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
-                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                    </svg>
-                    SALIN
-                </button>
-                <span id="copySuccess" class="copy-success">Tersalin!</span>
+                <button class="copy-button" id="copyButton">📋 Copy</button>
+                <span class="copy-success" id="copySuccess">Copied!</span>
             </div>
         </div>
     </div>
 
-    <!-- Add/Edit Menu Modal -->
-    <div class="detail-modal" id="formModal">
+    <!-- Edit Modal -->
+    <div class="detail-modal" id="editModal">
         <div class="detail-content">
             <div class="detail-header">
-                <h2 class="detail-title" id="formTitle">TAMBAH MENU BARU</h2>
-                <button class="detail-close" id="formClose">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                    </svg>
-                </button>
+                <h3 class="detail-title" id="editModalTitle">Edit Menu</h3>
+                <button class="detail-close" id="editModalClose">✕</button>
             </div>
             <div class="detail-body">
                 <div class="form-group">
-                    <label for="menuTitle">JUDUL MENU</label>
-                    <input type="text" id="menuTitle" class="form-input" placeholder="Masukkan judul menu...">
+                    <label>Judul Menu</label>
+                    <input type="text" class="form-input" id="editMenuTitle">
                 </div>
                 <div class="form-group">
-                    <label for="menuInfo">DESKRIPSI / INFORMASI</label>
-                    <textarea id="menuInfo" class="form-input form-textarea" placeholder="Masukkan deskripsi menu..." rows="8"></textarea>
+                    <label>Deskripsi</label>
+                    <textarea class="form-input form-textarea" id="editMenuInfo" rows="5"></textarea>
                 </div>
             </div>
             <div class="detail-actions">
-                <button class="copy-button cancel-btn" id="formCancel">BATAL</button>
-                <button class="copy-button" id="formSave">SIMPAN</button>
+                <button class="btn-secondary" id="editModalCancel">Batal</button>
+                <button class="btn-primary" id="editModalSave">Simpan</button>
             </div>
         </div>
     </div>
-
-    <!-- Calculator Toggle -->
-    <div class="calculator-toggle" id="calculatorToggle">
-        <svg viewBox="0 0 24 24">
-            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-2h-2v2zm0-4h2v-2h-2v2zm0-4h2V7h-2v2z"/>
-        </svg>
-    </div>
-
-    <!-- Calculator Container -->
-    <div class="calculator-container" id="calculatorContainer">
-        <div class="calculator-display">
-            <div class="calculator-expression" id="calculatorExpression"></div>
-            <div class="calculator-value" id="calculatorValue">0</div>
-        </div>
-        <div class="calculator-buttons">
-            <button class="calculator-btn clear" data-action="clear">C</button>
-            <button class="calculator-btn operator" data-action="operator" data-value="/">÷</button>
-            <button class="calculator-btn operator" data-action="operator" data-value="*">×</button>
-            <button class="calculator-btn operator" data-action="backspace">←</button>
-            <button class="calculator-btn" data-action="number" data-value="7">7</button>
-            <button class="calculator-btn" data-action="number" data-value="8">8</button>
-            <button class="calculator-btn" data-action="number" data-value="9">9</button>
-            <button class="calculator-btn operator" data-action="operator" data-value="-">-</button>
-            <button class="calculator-btn" data-action="number" data-value="4">4</button>
-            <button class="calculator-btn" data-action="number" data-value="5">5</button>
-            <button class="calculator-btn" data-action="number" data-value="6">6</button>
-            <button class="calculator-btn operator" data-action="operator" data-value="+">+</button>
-            <button class="calculator-btn" data-action="number" data-value="1">1</button>
-            <button class="calculator-btn" data-action="number" data-value="2">2</button>
-            <button class="calculator-btn" data-action="number" data-value="3">3</button>
-            <button class="calculator-btn operator" data-action="percent" style="grid-row: span 2;">%</button>
-            <button class="calculator-btn zero" data-action="number" data-value="0">0</button>
-            <button class="calculator-btn" data-action="decimal">.</button>
-            <button class="calculator-btn equals" data-action="equals">=</button>
-        </div>
-    </div>
-
-    <!-- Debug Toggle -->
-    <button class="debug-toggle" id="debugToggle">DEBUG</button>
 
     <!-- Debug Panel -->
     <div class="debug-panel" id="debugPanel">
-        <div class="debug-title">DEBUG INFO</div>
-        <div class="debug-info" id="debugInfo">Loading...</div>
+        <div class="debug-title">🐞 DEBUG INFO</div>
+        <div class="debug-info" id="debugInfo"></div>
     </div>
 
-    <!-- External JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
