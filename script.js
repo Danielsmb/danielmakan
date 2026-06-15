@@ -1,3 +1,63 @@
+// ===== ANTI DEV TOOLS PROTECTION =====
+function protectPage() {
+    // Mencegah Klik Kanan
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        addTerminalLine('⚠️ Akses ditolak: Klik kanan tidak diizinkan', 'warning');
+        return false;
+    });
+
+    // Mencegah Shortcut Keyboard Tertentu
+    document.addEventListener('keydown', function(e) {
+        // Mencegah Ctrl + U, Ctrl + S, Ctrl + P
+        if (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p')) {
+            e.preventDefault();
+            addTerminalLine('⚠️ Shortcut diblokir: ' + e.key, 'warning');
+            return false;
+        }
+        
+        // Mencegah F12 (Developer Tools)
+        if (e.key === 'F12') {
+            e.preventDefault();
+            addTerminalLine('⚠️ F12 diblokir', 'warning');
+            return false;
+        }
+        
+        // Mencegah Ctrl + Shift + I / J / C
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+            e.preventDefault();
+            addTerminalLine('⚠️ Developer Tools diblokir', 'warning');
+            return false;
+        }
+        
+        // Mencegah Ctrl + Shift + R (Hard Refresh tanpa cache)
+        if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+            e.preventDefault();
+            addTerminalLine('⚠️ Hard refresh diblokir', 'warning');
+            return false;
+        }
+        
+        // Mencegah Ctrl + R (Refresh)
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            addTerminalLine('⚠️ Refresh manual diblokir, gunakan tombol refresh', 'warning');
+            return false;
+        }
+    });
+    
+    // Deteksi DevTools terbuka (deteksi console.log)
+    let devToolsOpen = false;
+    const element = new Image();
+    Object.defineProperty(element, 'id', {
+        get: function() {
+            devToolsOpen = true;
+            addTerminalLine('⚠️ DEVTOOLS DETEKSI!', 'error');
+            document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #000; color: #ff0000; font-family: monospace; flex-direction: column;"><h1>🔒 AKSES DITOLAK</h1><p>Developer Tools tidak diizinkan pada halaman ini.</p></div>';
+        }
+    });
+    console.log(element);
+}
+
 // ===== STATE MANAGEMENT =====
 let sheetData = [];
 let filteredData = [];
@@ -91,6 +151,7 @@ function updateDebugInfo() {
         <div>Current View: ${currentView}</div>
         <div>Cache: ${cacheData ? 'Available' : 'Empty'}</div>
         <div>Cache Time: ${cacheTimestamp ? new Date(cacheTimestamp).toLocaleString('id-ID') : 'N/A'}</div>
+        <div>Protection: ACTIVE 🔒</div>
     `;
 }
 
@@ -220,8 +281,10 @@ async function fetchMenuData() {
         }
         
         updateSystemStatus('KONEKSI GAGAL', 'error');
-        document.getElementById('loadingContainer').style.display = 'none';
-        document.getElementById('noMenu').style.display = 'block';
+        const loadingContainer = document.getElementById('loadingContainer');
+        const noMenu = document.getElementById('noMenu');
+        if (loadingContainer) loadingContainer.style.display = 'none';
+        if (noMenu) noMenu.style.display = 'block';
     }
 }
 
@@ -360,6 +423,8 @@ function copyToClipboard() {
         successElement.classList.add('show');
         addTerminalLine(`Copied: ${currentDetail.info.substring(0, 50)}...`, 'success');
         setTimeout(() => successElement.classList.remove('show'), 2000);
+    }).catch(() => {
+        addTerminalLine('Failed to copy to clipboard', 'error');
     });
 }
 
@@ -540,6 +605,9 @@ async function submitNewMenu() {
 
 // ===== INITIALIZATION =====
 window.onload = function() {
+    // Aktifkan proteksi halaman
+    protectPage();
+    
     // Create snow effect
     createSnow();
     
@@ -555,56 +623,87 @@ window.onload = function() {
     });
     
     // Debug toggle
-    document.getElementById('debugToggle').addEventListener('click', function() {
-        debugMode = !debugMode;
-        document.getElementById('debugPanel').classList.toggle('show', debugMode);
-        updateDebugInfo();
-    });
+    const debugToggle = document.getElementById('debugToggle');
+    if (debugToggle) {
+        debugToggle.addEventListener('click', function() {
+            debugMode = !debugMode;
+            const debugPanel = document.getElementById('debugPanel');
+            if (debugPanel) debugPanel.classList.toggle('show', debugMode);
+            updateDebugInfo();
+        });
+    }
     
     setInterval(updateDebugInfo, 1000);
     
     // Filter input
-    let debounceTimer;
-    document.getElementById('filterInput').addEventListener('input', function() {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(filterMenuItems, 300);
-    });
+    const filterInput = document.getElementById('filterInput');
+    if (filterInput) {
+        let debounceTimer;
+        filterInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(filterMenuItems, 300);
+        });
+    }
     
     // Refresh button
-    document.getElementById('refreshBtn').addEventListener('click', fetchMenuData);
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) refreshBtn.addEventListener('click', fetchMenuData);
     
     // Submit new menu
-    document.getElementById('submitNewMenu').addEventListener('click', submitNewMenu);
+    const submitNewMenuBtn = document.getElementById('submitNewMenu');
+    if (submitNewMenuBtn) submitNewMenuBtn.addEventListener('click', submitNewMenu);
     
     // Detail modal events
-    document.getElementById('detailClose').addEventListener('click', hideDetail);
-    document.getElementById('detailModal').addEventListener('click', function(e) {
-        if (e.target === this) hideDetail();
-    });
-    document.getElementById('copyButton').addEventListener('click', copyToClipboard);
+    const detailClose = document.getElementById('detailClose');
+    if (detailClose) detailClose.addEventListener('click', hideDetail);
+    
+    const detailModal = document.getElementById('detailModal');
+    if (detailModal) {
+        detailModal.addEventListener('click', function(e) {
+            if (e.target === this) hideDetail();
+        });
+    }
+    
+    const copyButton = document.getElementById('copyButton');
+    if (copyButton) copyButton.addEventListener('click', copyToClipboard);
     
     // Edit & Delete buttons
-    document.getElementById('editBtn').addEventListener('click', function() {
-        if (currentDetail) {
-            hideDetail();
-            showEditModal(currentDetail);
-        }
-    });
+    const editBtn = document.getElementById('editBtn');
+    if (editBtn) {
+        editBtn.addEventListener('click', function() {
+            if (currentDetail) {
+                hideDetail();
+                showEditModal(currentDetail);
+            }
+        });
+    }
     
-    document.getElementById('deleteBtn').addEventListener('click', async function() {
-        if (currentDetail && currentDetail.id) {
-            const success = await deleteMenu(currentDetail.id);
-            if (success) hideDetail();
-        }
-    });
+    const deleteBtn = document.getElementById('deleteBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', async function() {
+            if (currentDetail && currentDetail.id) {
+                const success = await deleteMenu(currentDetail.id);
+                if (success) hideDetail();
+            }
+        });
+    }
     
     // Edit modal events
-    document.getElementById('editModalClose').addEventListener('click', hideEditModal);
-    document.getElementById('editModalCancel').addEventListener('click', hideEditModal);
-    document.getElementById('editModalSave').addEventListener('click', saveEdit);
-    document.getElementById('editModal').addEventListener('click', function(e) {
-        if (e.target === this) hideEditModal();
-    });
+    const editModalClose = document.getElementById('editModalClose');
+    if (editModalClose) editModalClose.addEventListener('click', hideEditModal);
+    
+    const editModalCancel = document.getElementById('editModalCancel');
+    if (editModalCancel) editModalCancel.addEventListener('click', hideEditModal);
+    
+    const editModalSave = document.getElementById('editModalSave');
+    if (editModalSave) editModalSave.addEventListener('click', saveEdit);
+    
+    const editModal = document.getElementById('editModal');
+    if (editModal) {
+        editModal.addEventListener('click', function(e) {
+            if (e.target === this) hideEditModal();
+        });
+    }
     
     // Calculator buttons
     document.querySelectorAll('.calc-btn').forEach(button => {
@@ -627,4 +726,5 @@ window.onload = function() {
     fetchMenuData();
     
     addTerminalLine('Kaizen Search initialized. Welcome! 🇯🇵', 'success');
+    addTerminalLine('🔒 Page protection ACTIVE', 'warning');
 };
