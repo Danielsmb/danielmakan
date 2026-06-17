@@ -1,254 +1,695 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>KAIZEN SEARCH - Japanese Theme Menu System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Mix Parlay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #faf8f4;
+            --bg-secondary: #f3efe8;
+            --card: #ffffff;
+            --card-hover: #fffdf9;
+            --border: rgba(180, 140, 60, 0.12);
+            --border-active: rgba(180, 140, 60, 0.4);
+            --accent: #d97706;
+            --accent-light: #f59e0b;
+            --accent-dim: rgba(217, 119, 6, 0.08);
+            --win: #059669;
+            --win-bg: rgba(5, 150, 105, 0.06);
+            --lose: #dc2626;
+            --lose-bg: rgba(220, 38, 38, 0.06);
+            --draw: #d97706;
+            --draw-bg: rgba(217, 119, 6, 0.06);
+            --half: #2563eb;
+            --half-bg: rgba(37, 99, 235, 0.06);
+            --fg: #1c1917;
+            --fg-muted: #57534e;
+            --fg-dim: #a8a29e;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* === Animated Background === */
+        .bg-scene {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .bg-scene::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -10%;
+            width: 70vw;
+            height: 70vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(245,158,11,0.07) 0%, transparent 65%);
+            animation: floatBlob1 22s ease-in-out infinite;
+        }
+        .bg-scene::after {
+            content: '';
+            position: absolute;
+            bottom: -25%;
+            right: -10%;
+            width: 55vw;
+            height: 55vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(5,150,105,0.05) 0%, transparent 65%);
+            animation: floatBlob2 28s ease-in-out infinite;
+        }
+        @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(8%, 4%) scale(1.08); }
+            66% { transform: translate(-4%, 8%) scale(0.96); }
+        }
+        @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-6%, -5%) scale(1.06); }
+        }
+
+        /* === Grid Pattern Overlay === */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(180,140,60,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(180,140,60,0.035) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* === Card === */
+        .glass-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: var(--border-active);
+            box-shadow: 0 2px 8px rgba(217,119,6,0.06), 0 8px 24px rgba(0,0,0,0.04);
+            background: var(--card-hover);
+        }
+
+        /* === Inputs === */
+        .input-field {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--fg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            padding: 10px 14px;
+            width: 100%;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+        .input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+            background: #fff;
+        }
+        .input-field::placeholder {
+            color: var(--fg-dim);
+        }
+        .input-field::-webkit-outer-spin-button,
+        .input-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .input-field[type=number] { -moz-appearance: textfield; }
+
+        /* === Radio Buttons Custom === */
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .radio-option {
+            position: relative;
+            cursor: pointer;
+        }
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .radio-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 13px;
+            border-radius: 9px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            border: 1.5px solid var(--border);
+            background: var(--bg);
+            color: var(--fg-muted);
+            transition: all 0.2s ease;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .radio-label:hover {
+            border-color: var(--border-active);
+            color: var(--fg);
+            background: #fff;
+        }
+        .radio-option input[value="1"]:checked + .radio-label {
+            background: var(--win-bg);
+            border-color: var(--win);
+            color: var(--win);
+            box-shadow: 0 0 12px rgba(5,150,105,0.1);
+        }
+        .radio-option input[value="0.5"]:checked + .radio-label {
+            background: var(--half-bg);
+            border-color: var(--half);
+            color: var(--half);
+            box-shadow: 0 0 12px rgba(37,99,235,0.1);
+        }
+        .radio-option input[value="-0.5"]:checked + .radio-label {
+            background: var(--lose-bg);
+            border-color: var(--lose);
+            color: var(--lose);
+            box-shadow: 0 0 12px rgba(220,38,38,0.1);
+        }
+        .radio-option input[value="0"]:checked + .radio-label {
+            background: var(--draw-bg);
+            border-color: var(--draw);
+            color: var(--draw);
+            box-shadow: 0 0 12px rgba(217,119,6,0.1);
+        }
+
+        /* === Buttons === */
+        .btn-add {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(5,150,105,0.2);
+        }
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5,150,105,0.3);
+        }
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
+        .btn-remove {
+            background: transparent;
+            border: 1.5px solid rgba(220,38,38,0.2);
+            color: var(--lose);
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-remove:hover {
+            background: var(--lose-bg);
+            border-color: var(--lose);
+            transform: translateY(-1px);
+        }
+
+        /* === Stat Cards === */
+        .stat-card {
+            border-radius: 14px;
+            padding: 20px 24px;
+            position: relative;
+            overflow: hidden;
+            background: var(--card);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .stat-odds {
+            border: 1px solid rgba(37,99,235,0.1);
+        }
+        .stat-odds::before { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+        .stat-result {
+            border: 1px solid rgba(217,119,6,0.15);
+        }
+        .stat-result::before { background: linear-gradient(90deg, #d97706, #f59e0b); }
+        .stat-result.win {
+            border-color: rgba(5,150,105,0.15);
+        }
+        .stat-result.win::before { background: linear-gradient(90deg, #059669, #34d399); }
+        .stat-result.lose {
+            border-color: rgba(220,38,38,0.15);
+        }
+        .stat-result.lose::before { background: linear-gradient(90deg, #dc2626, #f87171); }
+
+        /* === Parlay Row Animation === */
+        .parlay-row {
+            animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* === Odds Badge === */
+        .odds-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 5px 14px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .odds-badge.win { background: var(--win-bg); color: var(--win); border: 1px solid rgba(5,150,105,0.15); }
+        .odds-badge.half-win { background: var(--half-bg); color: var(--half); border: 1px solid rgba(37,99,235,0.15); }
+        .odds-badge.half-lose { background: var(--lose-bg); color: var(--lose); border: 1px solid rgba(220,38,38,0.15); }
+        .odds-badge.draw { background: var(--draw-bg); color: var(--draw); border: 1px solid rgba(217,119,6,0.15); }
+
+        /* === Label === */
+        .field-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--fg-dim);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        /* === Scrollbar === */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+
+        /* === Note Card === */
+        .note-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        /* === Pulse dot === */
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.75); }
+        }
+
+        .stat-value { transition: all 0.3s ease; }
+
+        /* === Partikel === */
+        .particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            animation: particleFloat linear infinite;
+        }
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.15; }
+            100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+        }
+
+        /* === Header badge === */
+        .header-badge {
+            background: linear-gradient(135deg, rgba(217,119,6,0.08), rgba(217,119,6,0.03));
+            border: 1px solid rgba(217,119,6,0.15);
+        }
+
+        /* === Partai Number Badge === */
+        .partai-num {
+            background: linear-gradient(135deg, rgba(217,119,6,0.1), rgba(217,119,6,0.04));
+            color: var(--accent);
+            border: 1px solid rgba(217,119,6,0.15);
+        }
+
+        @media (max-width: 640px) {
+            .stat-card { padding: 14px 16px; }
+            .radio-label { font-size: 0.7rem; padding: 5px 8px; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Japanese Theme Background Layers -->
-    <div class="japanese-bg">
-        <div class="sun-layer sun-rise"></div>
-        <div class="sun-layer sun-set"></div>
-        <div class="snow-container" id="snowContainer"></div>
-        <div class="mountains"></div>
-        <div class="cherry-blossoms"></div>
-    </div>
+    <!-- Background layers -->
+    <div class="bg-scene"></div>
+    <div class="grid-overlay"></div>
+    <div id="particles"></div>
 
-    <!-- Status Bar -->
-    <div class="status-bar">
-        <div class="system-time" id="systemTime">--:--:--</div>
-        <div class="system-status" id="systemStatus">SYSTEM READY</div>
-        <div class="japan-location">🗻 FUJI · TOKYO</div>
-    </div>
+    <main class="relative z-10 max-w-4xl mx-auto px-4 py-8 sm:py-12">
+        <form id="app" class="space-y-6" onsubmit="return false;">
 
-    <!-- Main Layout: Sidebar + Content -->
-    <div class="app-container">
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
-                    <span class="logo-icon">⛩️</span>
-                    <span class="logo-text">KAIZEN</span>
+            <!-- Header -->
+            <header class="text-center mb-10">
+                <div class="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full header-badge text-xs font-semibold tracking-wider uppercase" style="color: var(--accent);">
+                    <span class="pulse-dot" style="background: var(--accent);"></span>
+                    Mix Parlay Calculator
                 </div>
-                <div class="sidebar-subtitle">Menu System</div>
-            </div>
+                <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight" style="color: var(--fg);">
+                    Kalkulator <span style="background: linear-gradient(135deg, #d97706, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Parlay</span>
+                </h1>
+                <p class="mt-3 text-sm sm:text-base" style="color: var(--fg-muted);">
+                    Hitung keuntungan mix parlay dengan akurat — menang full, setengah, kalah setengah, atau seri
+                </p>
+            </header>
 
-            <nav class="sidebar-nav">
-                <button class="nav-item active" data-view="menu">
-                    <span class="nav-icon">🍜</span>
-                    <span class="nav-text">Menu List</span>
-                </button>
-                <button class="nav-item" data-view="add">
-                    <span class="nav-icon">➕</span>
-                    <span class="nav-text">Tambah Menu</span>
-                </button>
-                <button class="nav-item" data-view="calculator">
-                    <span class="nav-icon">🧮</span>
-                    <span class="nav-text">Calculator</span>
-                </button>
-                <button class="nav-item" data-view="about">
-                    <span class="nav-icon">🎴</span>
-                    <span class="nav-text">About</span>
-                </button>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="weather-info">
-                    <span>❄️ 雪 -2°C</span>
-                    <span>🌸 Sakura Season</span>
+            <!-- Controls Row: Bet + Add -->
+            <div class="flex flex-wrap gap-4 items-end">
+                <div class="flex-1 min-w-[180px] max-w-[240px]">
+                    <label class="field-label">
+                        <i class="fa-solid fa-coins mr-1"></i> Nilai Bet (Rp)
+                    </label>
+                    <input type="number" name="nilaibet" v-model="nilaibet"
+                        class="input-field text-lg font-bold" min="1" max="10000000"
+                        @change="oddstotal()">
                 </div>
-                <button class="debug-toggle" id="debugToggle">🔧 DEBUG</button>
-            </div>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
-            <!-- Filter Bar -->
-            <div class="filter-bar">
-                <div class="filter-container">
-                    <span class="filter-icon">🔍</span>
-                    <input type="text" class="filter-input" id="filterInput" placeholder="Cari menu...">
-                </div>
-                <button class="refresh-btn" id="refreshBtn">
-                    <span>🔄</span>
+                <button type="button" v-on:click="addNewParlay" class="btn-add">
+                    <i class="fa-solid fa-plus"></i>
+                    Tambah Partai
                 </button>
             </div>
 
-            <!-- MENU VIEW -->
-            <div class="view-container" id="menuView">
-                <div class="loading-container" id="loadingContainer">
-                    <div class="loading-spinner"></div>
-                    <div class="loading-text">Memuat menu...</div>
-                </div>
-                <div class="menu-container" id="menuContainer"></div>
-                <div class="no-menu" id="noMenu" style="display: none;">
-                    <div class="no-menu-icon">🍱</div>
-                    <div class="no-menu-title">Menu Kosong</div>
-                    <div class="no-menu-subtitle">Klik Tambah Menu untuk membuat menu baru</div>
-                </div>
-            </div>
-
-            <!-- ADD MENU VIEW -->
-            <div class="view-container" id="addView" style="display: none;">
-                <div class="japan-card">
-                    <div class="card-header">
-                        <span class="card-icon">📝</span>
-                        <h2>Tambah Menu Baru</h2>
+            <!-- Stat Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="stat-card stat-odds">
+                    <div class="field-label" style="margin-bottom:2px;">Total Partai</div>
+                    <div class="stat-value text-2xl font-bold font-mono" style="color: #2563eb;">
+                        {{ totalbet }}
                     </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label>📌 Judul Menu *</label>
-                            <input type="text" class="form-input" id="newMenuTitle" placeholder="Contoh: Ramen Tonkotsu">
-                        </div>
-                        <div class="form-group">
-                            <label>📄 Deskripsi / Info</label>
-                            <textarea class="form-input form-textarea" id="newMenuInfo" placeholder="Detail tentang menu ini..." rows="5"></textarea>
-                        </div>
+                </div>
+                <div class="stat-card stat-odds">
+                    <div class="field-label" style="margin-bottom:2px;">Hasil Odds</div>
+                    <div class="stat-value text-2xl font-bold font-mono" style="color: #2563eb;">
+                        {{ totalodds }}x
                     </div>
-                    <div class="card-footer">
-                        <button class="btn-primary" id="submitNewMenu">✨ Tambah Menu</button>
+                </div>
+                <div class="stat-card stat-result"
+                     :class="{ win: isWin, lose: isLose }">
+                    <div class="field-label" style="margin-bottom:2px;">Hasil Akhir</div>
+                    <div class="stat-value text-2xl font-bold font-mono" :style="{ color: resultColor }">
+                        {{ totalc }}
                     </div>
                 </div>
             </div>
 
-            <!-- CALCULATOR VIEW -->
-            <div class="view-container" id="calculatorView" style="display: none;">
-                <div class="japan-card">
-                    <div class="card-header">
-                        <span class="card-icon">🧮</span>
-                        <h2>Soroban Calculator</h2>
-                    </div>
-                    <div class="calculator-display">
-                        <div class="calculator-expression" id="calculatorExpression"></div>
-                        <div class="calculator-value" id="calculatorValue">0</div>
-                    </div>
-                    <div class="calculator-buttons">
-                        <button class="calc-btn clear" data-action="clear">AC</button>
-                        <button class="calc-btn" data-action="backspace">⌫</button>
-                        <button class="calc-btn" data-action="percent">%</button>
-                        <button class="calc-btn operator" data-action="operator" data-value="/">÷</button>
-                        
-                        <button class="calc-btn" data-action="number" data-value="7">7</button>
-                        <button class="calc-btn" data-action="number" data-value="8">8</button>
-                        <button class="calc-btn" data-action="number" data-value="9">9</button>
-                        <button class="calc-btn operator" data-action="operator" data-value="*">×</button>
-                        
-                        <button class="calc-btn" data-action="number" data-value="4">4</button>
-                        <button class="calc-btn" data-action="number" data-value="5">5</button>
-                        <button class="calc-btn" data-action="number" data-value="6">6</button>
-                        <button class="calc-btn operator" data-action="operator" data-value="-">-</button>
-                        
-                        <button class="calc-btn" data-action="number" data-value="1">1</button>
-                        <button class="calc-btn" data-action="number" data-value="2">2</button>
-                        <button class="calc-btn" data-action="number" data-value="3">3</button>
-                        <button class="calc-btn operator" data-action="operator" data-value="+">+</button>
-                        
-                        <button class="calc-btn zero" data-action="number" data-value="0">0</button>
-                        <button class="calc-btn" data-action="decimal">.</button>
-                        <button class="calc-btn equals" data-action="equals">=</button>
-                    </div>
-                </div>
-            </div>
+            <!-- Parlay Rows -->
+            <div class="space-y-4">
+                <div v-for="(parlay, index) in parlays" :key="index"
+                     class="parlay-row glass-card p-5">
 
-            <!-- ABOUT VIEW -->
-            <div class="view-container" id="aboutView" style="display: none;">
-                <div class="japan-card about-card">
-                    <div class="about-header">
-                        <span class="about-icon">🎌</span>
-                        <h1>KAIZEN SEARCH</h1>
-                        <p>Ver 2.0 · Neon Database</p>
+                    <!-- Row Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="partai-num w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold font-mono">
+                                {{ index + 1 }}
+                            </span>
+                            <span class="text-sm font-semibold" style="color: var(--fg-muted);">Partai {{ index + 1 }}</span>
+                        </div>
+                        <button type="button" v-on:click="removeParlay(index)" class="btn-remove"
+                                v-show="parlays.length > 1">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                            Hapus
+                        </button>
                     </div>
-                    <div class="about-body">
-                        <div class="about-section">
-                            <h3>🇯🇵 和の精神 (Wa no Seishin)</h3>
-                            <p>Sistem manajemen menu dengan sentuhan estetika Jepang — memadukan keindahan matahari terbit, senja, dan salju yang turun.</p>
+
+                    <!-- Odds Input + Radio + Result -->
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+                        <!-- Odds -->
+                        <div class="sm:col-span-3">
+                            <label class="field-label">Odds</label>
+                            <input @change="oddstotal()" v-model="parlay.odds"
+                                type="number" step="0.01" name="parlays[][odds]"
+                                class="input-field" placeholder="1.75">
                         </div>
-                        <div class="about-section">
-                            <h3>⚡ Teknologi</h3>
-                            <p>Neon.tech PostgreSQL · Vercel Serverless · Fuzzy Search · Real-time Updates</p>
+
+                        <!-- Radio Group -->
+                        <div class="sm:col-span-6">
+                            <label class="field-label">Hasil Partai</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" @change="oddstotal()" v-model="parlay.hasil" value="1">
+                                    <span class="radio-label">
+                                        <i class="fa-solid fa-circle-check text-xs"></i> Menang Full
+                                    </span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" @change="oddstotal()" v-model="parlay.hasil" value="0.5">
+                                    <span class="radio-label">
+                                        <i class="fa-solid fa-circle-half-stroke text-xs"></i> Menang 1/2
+                                    </span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" @change="oddstotal()" v-model="parlay.hasil" value="-0.5">
+                                    <span class="radio-label">
+                                        <i class="fa-solid fa-circle-xmark text-xs"></i> Kalah 1/2
+                                    </span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" @change="oddstotal()" v-model="parlay.hasil" value="0">
+                                    <span class="radio-label">
+                                        <i class="fa-solid fa-circle-minus text-xs"></i> Seri
+                                    </span>
+                                </label>
+                            </div>
                         </div>
-                        <div class="about-section">
-                            <h3>🌸 Fitur</h3>
-                            <ul>
-                                <li>CRUD Menu dengan Database Neon</li>
-                                <li>Fuzzy Search (Levenshtein Distance)</li>
-                                <li>Mode Offline (Cache)</li>
-                                <li>Terminal Output Log</li>
-                                <li>Sidebar Navigation</li>
-                            </ul>
+
+                        <!-- Result Badge -->
+                        <div class="sm:col-span-3 flex items-end justify-end">
+                            <div class="text-right">
+                                <div class="field-label text-right">Odds Efektif</div>
+                                <span class="odds-badge"
+                                      :class="oddsBadgeClass(parlay.hasil)">
+                                    {{ parlay.oddsx }}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <div class="about-footer">
-                        <span>⛩️ 継続は力なり</span>
-                        <span>Continuous improvement</span>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+                <div class="note-card">
+                    <h3 class="text-sm font-bold mb-3 flex items-center gap-2" style="color: var(--accent);">
+                        <i class="fa-solid fa-book-open text-xs"></i> Catatan Perhitungan
+                    </h3>
+                    <ul class="space-y-2.5 text-xs" style="color: var(--fg-muted); line-height: 1.7;">
+                        <li class="flex items-start gap-2.5">
+                            <span class="mt-1.5 w-2 h-2 rounded-full flex-shrink-0" style="background: var(--win);"></span>
+                            <span><strong style="color: var(--win);">Menang Full</strong> — Odds tetap sesuai nilai</span>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <span class="mt-1.5 w-2 h-2 rounded-full flex-shrink-0" style="background: var(--half);"></span>
+                            <span><strong style="color: var(--half);">Menang Setengah</strong> — (Odds - 1) / 2 + 1</span>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <span class="mt-1.5 w-2 h-2 rounded-full flex-shrink-0" style="background: var(--lose);"></span>
+                            <span><strong style="color: var(--lose);">Kalah Setengah</strong> — Odds menjadi 0.5</span>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <span class="mt-1.5 w-2 h-2 rounded-full flex-shrink-0" style="background: var(--draw);"></span>
+                            <span><strong style="color: var(--draw);">Seri</strong> — Odds menjadi 1 (netral)</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="note-card">
+                    <h3 class="text-sm font-bold mb-3 flex items-center gap-2" style="color: var(--accent);">
+                        <i class="fa-solid fa-calculator text-xs"></i> Rumus Mix Parlay
+                    </h3>
+                    <div class="text-xs space-y-3" style="color: var(--fg-muted); line-height: 1.7;">
+                        <div class="p-3 rounded-lg font-mono text-center text-sm"
+                             style="background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(217,119,6,0.12);">
+                            (Odds Total x Bet) - Bet
+                        </div>
+                        <p><i class="fa-solid fa-circle-plus mr-1" style="color: var(--win);"></i> Hasil <strong style="color: var(--win);">plus</strong> = Anda menang sejumlah hasil</p>
+                        <p><i class="fa-solid fa-circle-minus mr-1" style="color: var(--lose);"></i> Hasil <strong style="color: var(--lose);">minus</strong> = Anda kalah sejumlah hasil</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Terminal Output -->
-            <div class="terminal-output" id="terminalOutput">
-                <div class="terminal-header">⚡ SYSTEM LOG ⚡</div>
-                <div class="terminal-body" id="terminalBody">
-                    <div class="terminal-line"><span class="terminal-prompt">SYSTEM></span> Initializing Kaizen Search...</div>
-                </div>
-            </div>
-        </main>
-    </div>
+            <!-- Footer -->
+            <footer class="text-center mt-10 pb-6">
+                <p class="text-xs" style="color: var(--fg-dim);">
+                    Dibuat untuk membantu perhitungan mix parlay. Gunakan dengan bijak.
+                </p>
+            </footer>
+        </form>
+    </main>
 
-    <!-- Detail Modal -->
-    <div class="detail-modal" id="detailModal">
-        <div class="detail-content">
-            <div class="detail-header">
-                <h3 class="detail-title" id="detailTitle">Menu Title</h3>
-                <div class="detail-actions-header">
-                    <button class="icon-btn edit-btn" id="editBtn">✏️</button>
-                    <button class="icon-btn delete-btn" id="deleteBtn">🗑️</button>
-                    <button class="detail-close" id="detailClose">✕</button>
-                </div>
-            </div>
-            <div class="detail-body">
-                <p class="detail-text" id="detailText"></p>
-            </div>
-            <div class="detail-actions">
-                <button class="copy-button" id="copyButton">📋 Copy</button>
-                <span class="copy-success" id="copySuccess">Copied!</span>
-            </div>
-        </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script>
+        // === Partikel latar belakang ===
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            const count = 14;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (15 + Math.random() * 22) + 's';
+                p.style.animationDelay = (Math.random() * 18) + 's';
+                p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+                // Warna lembut untuk background terang
+                const colors = [
+                    'rgba(217,119,6,0.35)',
+                    'rgba(5,150,105,0.3)',
+                    'rgba(37,99,235,0.25)',
+                    'rgba(245,158,11,0.3)'
+                ];
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(p);
+            }
+        })();
 
-    <!-- Edit Modal -->
-    <div class="detail-modal" id="editModal">
-        <div class="detail-content">
-            <div class="detail-header">
-                <h3 class="detail-title" id="editModalTitle">Edit Menu</h3>
-                <button class="detail-close" id="editModalClose">✕</button>
-            </div>
-            <div class="detail-body">
-                <div class="form-group">
-                    <label>Judul Menu</label>
-                    <input type="text" class="form-input" id="editMenuTitle">
-                </div>
-                <div class="form-group">
-                    <label>Deskripsi</label>
-                    <textarea class="form-input form-textarea" id="editMenuInfo" rows="5"></textarea>
-                </div>
-            </div>
-            <div class="detail-actions">
-                <button class="btn-secondary" id="editModalCancel">Batal</button>
-                <button class="btn-primary" id="editModalSave">Simpan</button>
-            </div>
-        </div>
-    </div>
+        // === Vue App ===
+        new Vue({
+            el: '#app',
+            data: {
+                nilaibet: 10000,
+                parlays: [
+                    { odds: 1.75, hasil: '1', oddsx: 0 }
+                ]
+            },
+            computed: {
+                totalbet() {
+                    return this.parlays.length;
+                },
+                totalodds() {
+                    let total = 1;
+                    for (let i = 0; i < this.parlays.length; i++) {
+                        const parlay = this.parlays[i];
+                        let oddsValue = 0;
+                        const hasil = parlay.hasil;
+                        const odds = parseFloat(parlay.odds) || 0;
 
-    <!-- Debug Panel -->
-    <div class="debug-panel" id="debugPanel">
-        <div class="debug-title">🐞 DEBUG INFO</div>
-        <div class="debug-info" id="debugInfo"></div>
-    </div>
+                        if (hasil === '1') {
+                            oddsValue = odds;
+                        } else if (hasil === '0.5') {
+                            oddsValue = ((odds - 1) / 2) + 1;
+                        } else if (hasil === '-0.5') {
+                            oddsValue = 0.5;
+                        } else if (hasil === '0') {
+                            oddsValue = 1;
+                        }
 
-    <script src="script.js"></script>
+                        parlay.oddsx = parseFloat(oddsValue.toFixed(3));
+                        total *= oddsValue;
+                    }
+                    return parseFloat(total.toFixed(3));
+                },
+                totalc() {
+                    const totalOdds = parseFloat(this.totalodds) || 0;
+                    const nilaiBet = parseFloat(this.nilaibet) || 0;
+                    const hasil = (totalOdds * nilaiBet) - nilaiBet;
+                    const formatted = Math.round(hasil).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    return 'Rp ' + formatted;
+                },
+                isWin() {
+                    const totalOdds = parseFloat(this.totalodds) || 0;
+                    return totalOdds > 1;
+                },
+                isLose() {
+                    const totalOdds = parseFloat(this.totalodds) || 0;
+                    return totalOdds < 1;
+                },
+                resultColor() {
+                    const totalOdds = parseFloat(this.totalodds) || 0;
+                    if (totalOdds > 1) return '#059669';
+                    if (totalOdds < 1) return '#dc2626';
+                    return '#d97706';
+                }
+            },
+            methods: {
+                addNewParlay() {
+                    this.parlays.push({ odds: 1.75, hasil: '1', oddsx: 0 });
+                },
+                removeParlay(index) {
+                    if (this.parlays.length > 1) {
+                        this.parlays.splice(index, 1);
+                        this.oddstotal();
+                    }
+                },
+                oddstotal() {
+                    this.$forceUpdate();
+                },
+                oddsBadgeClass(hasil) {
+                    if (hasil === '1') return 'win';
+                    if (hasil === '0.5') return 'half-win';
+                    if (hasil === '-0.5') return 'half-lose';
+                    if (hasil === '0') return 'draw';
+                    return '';
+                }
+            },
+            mounted() {
+                this.oddstotal();
+            }
+        });
+    </script>
 </body>
 </html>
